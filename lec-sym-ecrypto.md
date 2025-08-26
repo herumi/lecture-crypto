@@ -1,0 +1,249 @@
+---
+marp: true
+html: true
+title: slides
+theme: default
+paginate: true
+size: 16:9
+style: |
+  section {
+    justify-content: flex-start;
+    margin: 0px;
+    background-color: white;
+    padding: 0px;
+    background: linear-gradient(180deg,#E7FFE7 10%, #008080 10%,#008080 10.5%, white 10.5%, white 100%);
+    display: flex;
+    font-family: Noto Sans JP;
+  }
+  code {
+    font-family: 'BIZ UDGothic', monospace;
+  }
+  pre {
+    font-family: inherit;
+  }
+  pre code {
+    font-family: 'BIZ UDGothic', monospace;
+  }
+  section h1 {
+    margin: 0px;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    background-size: 15%;
+    background-repeat: no-repeat;
+    background-position: right 5px top 5px;
+  }
+  section.title {
+    font-size: 200%;
+    padding: 40px;
+    background: linear-gradient(180deg,#E7FFE7 49%, #008080 49%,#008080 50%, white 50%, white 100%);
+    text-align: center;
+    justify-content: center;
+  }
+  section h2 {
+    padding-left: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  section h3 {
+    padding-left: 30px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  section ul {
+    margin: 0px;
+  }
+  section::after {
+   font-size: 70%;
+   content: attr(data-marpit-pagination) " / " attr(data-marpit-pagination-total);
+  }
+  table {
+    margin-left: auto;
+    margin-right: auto;
+    table-layout: fixed;
+    width: auto;
+    display:table;
+  }
+  thead th {text-align: center !important;}
+  thead tr {background: #eaeaea;}
+  tbody tr:nth-child(2n+1) {text-align: center !important;background: #fff;}
+  tbody tr:nth-child(2n) {text-align: center !important;background: #eeeeee;}
+  section .emp { color: red; }
+  section pre {
+    margin: 0px;
+  }
+  em {
+    color: red;
+    font-style: normal;
+  }
+  img {
+    display: inline;
+    vertical-align: top;
+  }
+---
+<!--
+headingDivider: 1
+-->
+<!--
+_class: title
+-->
+# 共通鍵暗号
+<br>
+光成滋生
+<br>
+2025/08/22
+
+# 共通鍵暗号とは
+## 「暗号鍵＝復号鍵＝秘密鍵」な暗号方式
+- 秘密鍵暗号, 対称鍵暗号ともいう
+- 秘密鍵は事前に二者間で安全に共有しておく必要がある
+- 秘密鍵 $s$ で平文 $m$ を暗号化して暗号文 $c$ を得る: $c=Enc(s, m)$
+- 秘密鍵 $s$ で暗号文 $c$ を復号して平文 $m$ を得る: $m=Dec(s, c)$
+  - 暗号化して復号したら元に戻る必要がある: $Dec(s, Enc(s, m))=m$
+![w:800px](images/lec-sym-enc.drawio.svg)
+- 秘密鍵: secret key, 暗号化: encrypt, 復号: decrypt, 平文: message, 暗号文: ciphertext
+
+# 共通鍵暗号の種類
+## ブロック暗号
+- 平文を一定の固まり（ブロック）ごとに分割し、ブロック単位で暗号化する
+- DES, 3DES, AES, etc.
+## ストリーム暗号
+- ノイズ（乱数）を生成し、平文とビット単位で混ぜ合わせて暗号化する
+  - RC4, ChaCha20, etc.
+- ストリーム暗号＝乱数＋排他的論理和
+
+# 乱数
+## でたらめな数の列
+- 「でたらめ」とは?
+- それまでに出力されている数の列を見ても次に出る数が予測できないこと
+  - 次に出る値が過去の履歴と独立
+  - 理想的なコインの裏表の出方
+  - 裏が出たら0, 表が出たら1とすると次に出る数の確率は0か1が1/2ずつ
+## でたらめではない例
+- 010101010...
+  - 0と1が交互（ただしコインを振って偶然交互に出る可能性はある）
+
+# 排他的論理和 XOR (exclusive or)
+## 定義
+- 1ビット変数 $a$ と $b$ の排他的論理和（以降xorと略す） $a \oplus b$ は次の表で定義される
+
+$a$|0|0|1|1
+-|-|-|-|-
+$b$|0|1|0|1
+$a \oplus b$|0|1|1|0
+
+## 性質
+- $a \oplus b = b \oplus a$ （交換法則）
+- $a \oplus 0 = a$ （単位元）
+- $a \oplus 1 = \neg a$ （否定）
+- $a \oplus (b \oplus c) = (a \oplus b) \oplus c$ （結合法則）
+- $(a \oplus b) \oplus b = a$ （同じ値を2回作用させると*元に戻る*）
+
+# ワンタイムパッド OTP (One-Time Pad)
+## 乱数とxorを組み合わせた暗号
+- $n$ ビットの平文 $m$ に対して $n$ ビットの乱数 $s$ を用意する
+  - $s$ が秘密鍵
+- 暗号文は ビットごとに $m$ と $s$ のxorをとり暗号文 $c$ を作る
+それをまとめて $c = Enc(s, m) = m \oplus s$ と書く
+- 復号はビットごとに暗号文 $c$ と乱数 $s$ のxorをとる
+$Dec(s, c)=m$
+  - xorの性質により $Dec(s, Enc(s, m))=(m \oplus s) \oplus s = m$
+## 特徴
+- 平文と秘密鍵の大きさが同じ
+- 情報理論的安全性（次のスライド）を持つ
+
+# 情報理論的安全性
+## 絶対に破れない暗号?
+- $n=1$ のとき暗号文 $c$ は 0 or 1
+秘密鍵 $s$ とそのときの平文 $m$ の組み合わせは
+
+秘密鍵＼暗号文|0|1
+-|-|-
+0|0|1
+1|1|0
+
+- 平文 $m$ は確率1/2で0 or 1: これは暗号文 $c$ を知らなくても同じ
+- 一般の $n$ ビット暗号文のとき $c$ は 000...0 から 111...1 の $2^n$ 通り
+- 秘密鍵 $s$ も 000...0 から 111...1 の $2^n$ 通り
+- 平文も 000...0 から 111...1 の $2^n$ 通りでどれも同じ確率 $1/2^n$
+  - やはり $c$ を知らなくても同じ. $c$ の情報が $m$ の推測に役に立たないので安全という
+  - $1/2^n$ の確率でたまたま当たることはある
+
+# 欠点
+## 一度しか使えない
+- One-Time Pad ＝ 一度きりの便箋
+- 同じ秘密鍵で複数回使うと安全性が保てない
+  - $c_1=m_1 \oplus s$, $c_2=m_2 \oplus s$ とする（単純化のために1ビットで考える）と
+  - $c_1 = c_2$ なら $m_1 = m_2$, $c_1 \neq c_2$ なら $m_1 \neq m_2$: 平文の情報が漏れる
+
+## 平文のサイズ＝秘密鍵のサイズ
+- 平文 $m$ が1GiBのデータなら秘密鍵 $s$ も1GiB必要
+  - $s$ を安全に共有できるのならその方法で $m$ を共有すればよいのでは
+
+## ビット反転に弱い
+- 暗号文の特定のビットを反転させると対応する平文のビットが反転する
+  - 中身は分からなくても平文を制御できる可能性（完全性は別の方法で担保する）
+
+# 問題
+## 秘密鍵の転送
+- 64TiBのHDDデータを東京から大阪に転送したい
+  - 秘密鍵を安全に送るには?
+  - 10Gbpsの専用線で送るとどれぐらい時間がかかる?
+## 秘密鍵の2回利用
+- 年齢を1バイトの整数値としてOTPによる暗号化を考える
+  - 子供の年齢の暗号文が0x1eだったとき, 同じ秘密鍵を利用した大人の暗号文が0x5eだった
+  - 大人の年齢は何歳以上?
+
+# 回答例
+## 秘密鍵の転送
+- 64TiB = 64 * 1024 * 1024 * 1024 * 1024 * 8 B ≒ 5.6e14 B
+- 10Gbpsの実際の効率 (x0.9) で5.6e14 / (10e9*0.9) ≒ 17.4 時間
+  - 鞄に入れて新幹線で運ぶ方が速い
+
+## 年齢
+- 子供の年齢 $x$, 大人の年齢 $y$, 秘密鍵 $s$ とする
+- $x \oplus s = \texttt{0x1e}$
+- $y \oplus s = \texttt{0x5e}$
+- $x \oplus y = \texttt{0x1e} \oplus \texttt{0x5e} = \texttt{0x40} = \texttt{64}$
+- 子供＝未成年（二十歳以下）なら大人の年齢は64歳以上
+
+# 疑似乱数生成器 PRG (Pseudo-Random Generator)
+## OTPの秘密鍵を小さくしたい
+- PRGは「小さい情報」から「大きな疑似乱数」を作る決定的アルゴリズム
+  - 決定的 ＝ 入力が同じならいつも同じ出力をするアルゴリズム
+  - 「小さい情報」 ＝ $s$ ＝ 秘密鍵
+![width:800px](images/lec-stream1.drawio.svg)
+
+# 疑似ランダム関数 PRF (Pseudo-Random Function)
+## 秘密鍵を繰り返し使いたい
+- 「小さい情報」 $s$ と「入力」$r$ を与えると疑似乱数を出力する決定的アルゴリズム $F(s,r)$
+  - $r$ は秘密でなくてよいが2回同じものを使ってはいけない
+- ストリーム暗号 $Enc(s,m):=(r, F(s,r) \oplus m)$, ここで $r$ はランダムに選んだ値
+![width:800px](images/lec-stream2.drawio.svg)
+
+# ストリーム暗号の例
+## ChaCha20
+- 入力: 256ビットの秘密鍵 $k$ と96ビットのナンス $n$
+  - ナンス (nonce): 一度だけ使われる値
+- 出力: 32ビットのカウンタ $b$ 1個につき512ビットの乱数
+![width:500px](images/lec-chacha20-1.drawio.svg)
+
+# ChaCha20のPRF
+## 全体図
+![width:800px](images/lec-chacha20-2.drawio.svg)
+- 1/4ラウンド関数 `QR(a,b,c,d)`: `a`,`b`,`c`,`d` は32ビット整数
+- `rotLeft(x,n)` は `x` を左に `n` ビット回転させる
+```python
+def QR(a, b, c, d):
+  a ← a + b; d ← d ⊕ a; d ← rotLeft(d, 16);
+  c ← c + d; b ← b ⊕ c; b ← rotLeft(b, 12);
+  a ← a + b; d ← d ⊕ a; d ← rotLeft(d, 8);
+  c ← c + d; b ← b ⊕ c; b ← rotLeft(b, 7);
+  return (a, b, c, d)
+```
+# 1/4ラウンド関数QRの適用方法
+## 512ビットの内部状態を32ビットx4x4の正方形に並べる
+![width:1000px](images/lec-chacha20-3.drawio.svg)
+- 縦ライン1~4, 斜めライン5~8の4個の $x_i$ に対して `QR()` を適用（合計8回）
+- これを10回繰り返す
+

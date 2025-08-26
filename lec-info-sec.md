@@ -80,12 +80,6 @@ style: |
     display: inline;
     vertical-align: top;
   }
-  .custom-image1 {
-    width: 400px;
-    float: right;
-    margin-top: -200px;
-    margin-right: 10px;
-  }
 ---
 <!--
 headingDivider: 1
@@ -146,6 +140,13 @@ _class: title
 3. 正当な送信者からのデータが伝送中に傍受
 4. 年に一度メンテナンスで数日間止まるシステム
 
+# 問題の答え
+## 次は何を満たし、何を満たさないか
+1. 正当な送信者からのデータが伝送中に破損
+2. 不正者が送信した完全なデータ
+3. 正当な送信者からのデータが伝送中に傍受
+4. 年に一度メンテナンスで数日間止まるシステム
+
 ## 答え
 1. 真正性: o, 完全性: x
 2. 真正性: x, 完全性: o
@@ -178,7 +179,7 @@ _class: title
   - 暗号（化）は暗号技術のうち、主に機密性に関わる技術
   - 暗号技術のことを「暗号」ということも多いので文脈で判断
 
-# 認証
+# 認証 (Authentication)
 ## 完全性や真正性に関わる技術
 - パスワードによる認証
   - 他人が推測できない複雑なものを決めて使う
@@ -201,7 +202,7 @@ _class: title
 - 生体情報を利用した認証
 - 専用ハードウェアが必要
 ## クライアント証明書
-- 会社などから支給されたデータをブラウザやOSに登録する<img src="images/lec-client-auth.png" class="custom-image1">
+- 会社などから支給されたデータをブラウザやOSに登録する<img src="images/lec-client-auth.png" width="400px" style="float:right;margin-top:-200px;margin-right:10px">
   - 登録したブラウザからしかアクセスできない
 
 # 認証の種類
@@ -235,3 +236,9 @@ _class: title
 ## Appleのパスキー
 - スマホが壊れたときの対策として秘密鍵をクラウドに保存
 - 秘密鍵の一元管理のリスクよりもフィッシング詐欺・スマホの紛失対策を優先
+
+# 認可 (Authorization)
+## アクセス制御
+- ユーザの属性に応じてシステムへのアクセス権を決める
+- 本人を認証した後に行う
+![](images/lec-auth.png)
