@@ -104,13 +104,14 @@ _class: title
 - 秘密鍵: secret key, 暗号化: encrypt, 復号: decrypt, 平文: message, 暗号文: ciphertext
 
 # 共通鍵暗号の種類
-## ブロック暗号
-- 平文を一定の固まり（ブロック）ごとに分割し、ブロック単位で暗号化する
-- DES, 3DES, AES, etc.
 ## ストリーム暗号
 - ノイズ（乱数）を生成し、平文とビット単位で混ぜ合わせて暗号化する
-  - RC4, ChaCha20, etc.
+  - 主な方式: ChaCha20
 - ストリーム暗号＝乱数＋排他的論理和
+
+## ブロック暗号
+- 平文を一定の固まり（ブロック）ごとに分割し、ブロック単位で暗号化する
+- 主な方式: AES
 
 # 乱数
 ## でたらめな数の列
@@ -125,7 +126,7 @@ _class: title
 
 # 排他的論理和 XOR (exclusive or)
 ## 定義
-- 1ビット変数 $a$ と $b$ の排他的論理和（以降xorと略す） $a \oplus b$ は次の表で定義される
+- 1bit変数 $a$ と $b$ の排他的論理和（以降xorと略す） $a \oplus b$ は次の表で定義される
 
 $a$|0|0|1|1
 -|-|-|-|-
@@ -141,7 +142,7 @@ $a \oplus b$|0|1|1|0
 
 # ワンタイムパッド OTP (One-Time Pad)
 ## 乱数とxorを組み合わせた暗号
-- $n$ ビットの平文 $m$ に対して $n$ ビットの乱数 $s$ を用意する
+- $n$ bitの平文 $m$ に対して $n$ bitの乱数 $s$ を用意する
   - $s$ が秘密鍵
 - 暗号文は ビットごとに $m$ と $s$ のxorをとり暗号文 $c$ を作る
 それをまとめて $c = Enc(s, m) = m \oplus s$ と書く
@@ -163,7 +164,7 @@ $Dec(s, c)=m$
 1|1|0
 
 - 平文 $m$ は確率1/2で0 or 1: これは暗号文 $c$ を知らなくても同じ
-- 一般の $n$ ビット暗号文のとき $c$ は 000...0 から 111...1 の $2^n$ 通り
+- 一般の $n$ bit暗号文のとき $c$ は 000...0 から 111...1 の $2^n$ 通り
 - 秘密鍵 $s$ も 000...0 から 111...1 の $2^n$ 通り
 - 平文も 000...0 から 111...1 の $2^n$ 通りでどれも同じ確率 $1/2^n$
   - やはり $c$ を知らなくても同じ. $c$ の情報が $m$ の推測に役に立たないので安全という
@@ -173,7 +174,7 @@ $Dec(s, c)=m$
 ## 一度しか使えない
 - One-Time Pad ＝ 一度きりの便箋
 - 同じ秘密鍵で複数回使うと安全性が保てない
-  - $c_1=m_1 \oplus s$, $c_2=m_2 \oplus s$ とする（単純化のために1ビットで考える）と
+  - $c_1=m_1 \oplus s$, $c_2=m_2 \oplus s$ とする（単純化のために1bitで考える）と
   - $c_1 = c_2$ なら $m_1 = m_2$, $c_1 \neq c_2$ なら $m_1 \neq m_2$: 平文の情報が漏れる
 
 ## 平文のサイズ＝秘密鍵のサイズ
@@ -210,9 +211,10 @@ $Dec(s, c)=m$
 # 疑似乱数生成器 PRG (Pseudo-Random Generator)
 ## OTPの秘密鍵を小さくしたい
 - PRGは「小さい情報」から「大きな疑似乱数」を作る決定的アルゴリズム
+- 情報理論的安全性は無くなる: 代わりに計算量的安全性を考える（後の講義）
   - 決定的 ＝ 入力が同じならいつも同じ出力をするアルゴリズム
   - 「小さい情報」 ＝ $s$ ＝ 秘密鍵
-![width:800px](images/lec-stream1.drawio.svg)
+![width:700px](images/lec-stream1.drawio.svg)
 
 # 疑似ランダム関数 PRF (Pseudo-Random Function)
 ## 秘密鍵を繰り返し使いたい
@@ -223,16 +225,16 @@ $Dec(s, c)=m$
 
 # ストリーム暗号の例
 ## ChaCha20
-- 入力: 256ビットの秘密鍵 $k$ と96ビットのナンス $n$
+- 入力: 256bitの秘密鍵 $k$ と96bitのナンス $n$
   - ナンス (nonce): 一度だけ使われる値
-- 出力: 32ビットのカウンタ $b$ 1個につき512ビットの乱数
+- 出力: 32bitのカウンタ $b$ 1個につき512bitの乱数
 ![width:500px](images/lec-chacha20-1.drawio.svg)
 
 # ChaCha20のPRF
 ## 全体図
 ![width:800px](images/lec-chacha20-2.drawio.svg)
-- 1/4ラウンド関数 `QR(a,b,c,d)`: `a`,`b`,`c`,`d` は32ビット整数
-- `rotLeft(x,n)` は `x` を左に `n` ビット回転させる
+- 1/4ラウンド関数 `QR(a,b,c,d)`: `a`,`b`,`c`,`d` は32bit整数
+- `rotLeft(x,n)` は `x` を左に `n` bit回転させる
 ```python
 def QR(a, b, c, d):
   a ← a + b; d ← d ⊕ a; d ← rotLeft(d, 16);
@@ -242,8 +244,42 @@ def QR(a, b, c, d):
   return (a, b, c, d)
 ```
 # 1/4ラウンド関数QRの適用方法
-## 512ビットの内部状態を32ビットx4x4の正方形に並べる
+## 512bitの内部状態を32bit×4×4の正方形に並べる
 ![width:1000px](images/lec-chacha20-3.drawio.svg)
 - 縦ライン1~4, 斜めライン5~8の4個の $x_i$ に対して `QR()` を適用（合計8回）
 - これを10回繰り返す
 
+# AES
+## 最も広く使われているブロック暗号
+![bg right:40% width:500px](images/lec-aes1.png)
+- ブロックの単位は128bit
+- 秘密鍵のサイズは128, 192, 256bitのいずれか
+## 暗号化方法
+- 秘密鍵からラウンド鍵を生成
+- AddRoundKey（1回）
+- ラウンド関数（128bitなら9回）
+  - SubBytes
+  - ShiftRows
+  - MixColumns
+  - AddRoundKey
+- 最終ラウンド関数（1回）
+
+# AddRoundKeyとSubBytes
+![bg right:45% vertical width:550px](images/lec-aes-block.png)
+![bg right:45% vertical width:550px](images/lec-aes-subbytes.png)
+## AddRoundKey
+- ラウンド鍵との排他的論理和
+- 128bitのブロックを8bit×4×4の正方形に並べる
+## SubBytes
+- 各8bitの値をindexとするテーブル引き
+- テーブル (S-Box) の値は固定
+
+# ShiftRowとMixColumns
+![bg right:50% vertical width:600px](images/lec-aes-shiftrows.png)
+![bg right:50% vertical width:600px](images/lec-aes-mixcolumns.png)
+## ShiftRow
+- データをずらす
+## MixColumns
+- 行列の掛け算
+- $x'_0=A_{00}x_0+A_{01}x_1+A_{02}x_2+A_{03}x_3$
+- 掛け算や足し算は有限体（後の講義）を利用
