@@ -283,3 +283,43 @@ def QR(a, b, c, d):
 - 行列の掛け算
 - $x'_0=A_{00}x_0+A_{01}x_1+A_{02}x_2+A_{03}x_3$
 - 掛け算や足し算は有限体（後の講義）を利用
+
+# 暗号利用モード
+## ブロック暗号の使い方
+- ECB (Electronic Codebook) モード
+![](images/lec-ecb.png)
+- 平文を128bitごとに分割して暗号化
+- 一番単純な使い方
+- *安全ではない*
+
+# ECBモードで画像を暗号化
+## 32bitカラー画像を白黒2値化した無圧縮データをECBモードで暗号化
+![w:500px](images/lec-compare-ecb.png)
+- 元の情報がある程度見えてしまう（極端な例）
+- 2020年Zoomの暗号化方式がECBモードを使っていたとしてニュースになる
+  - （注意）動画などの圧縮データは分割されたブロックが同じ値になる確率は低い
+
+# 確率的アルゴリズム
+## そもそもアルゴリズムとは
+- 入力に対して出力を返す手続き（ざっくりとした説明）
+## 決定的 (deterministic) アルゴリズム
+- 同じ入力に対して常に同じ出力を返すアルゴリズム
+![w:450px](images/lec-deterministic.drawio.svg)
+
+## 確率的 (probabilistic) アルゴリズム
+- 同じ入力に対して異なる出力を返す可能性があるアルゴリズム
+- アルゴリズム実行中に乱数を参照して結果を変化させる
+![w:450px](images/lec-probabilistic.drawio.svg)
+
+# CBC モード
+## IV (Initialization Vector) を利用
+![bg right:50% vertical w:600px](images/lec-cbc.png)
+![bg right:50% vertical w:400px](images/lec-compare-cbc.png)
+- CBC=Cipher Block Chaining = ブロックの鎖
+- IVは一度しか使わないナンス
+- 暗号文と一緒にIVも送る
+- $c_1=Enc(s, m_1 \oplus IV)$
+- $c_k=Enc(s, m_k \oplus c_{k-1})$ for $k \ge 2$.
+## 特徴
+- IVが変わると同じ平文でも暗号文が変わる
+- ECBでは見えていた鳥の情報が見えない
