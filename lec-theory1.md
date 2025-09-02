@@ -196,8 +196,7 @@ $x>3/ε$ とすればよい
 - 「見分けがつかない」を無視できる関数で表現する
 
 # 疑似乱数生成器 PRG の定義
-### $G:\Set{0,1}^n \to \Set{0,1}^{l(n)}$ がPRGであるとは次を満たすもの
-- $l(n) > n$ である多項式
+### $G:\Set{0,1}^n \to \Set{0,1}^{l(n)}$（$l(n) > n$ な多項式）がPRGであるとは次を満たすもの
 - $\forall {\cal A}(x) \in \Set{0,1}$: PPT多項式について
 $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)} \right] - \Pr \left[{\cal A}(G(s))=1 \mid s \underset{U}{\leftarrow} \Set{0,1}^{n} \right]\right| < \texttt{negl}(n)$
 ### 意味
@@ -207,13 +206,12 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
   - 両者をそれぞれ ${\cal A}$ に渡して乱数と判定する確率の差が無視できる
 - どんな判定者も区別できないなら、その疑似乱数は真の乱数とみなしてよいだろう
   - 計算量的識別不可能な疑似乱数
-
+- （注意）PRG が存在するかは未解決問題（少なくとも $P \subsetneq NP$ が必要）
 # 共通鍵暗号の定義
 ## セキュリティパラメータ $k$
 - 暗号システムの安全性を表すパラメータ: $1^k$ とかく（$λ$ や他の記号を使うことも多い）
   - これは「1の $k$ 乗」ではなく「1か $k$ 個ならんだ文字列」を表す
-- アルゴリズム ${\cal A}$ について ${\cal A}(1^k)$ と書いたとき、
-これは${\cal A}$が$k$に関する（確率的）多項式時間アルゴリズムであることを示す
+- アルゴリズム ${\cal A}$ について ${\cal A}(1^k)$ は ${\cal A}$ が $k$ に関する（確率的）多項式時間アルゴリズムであることを示す（$1^k$ を省略することも多い）
 ## $\Pi=(KeyGen,Enc,Dec)$ が共通鍵暗号であるとは
 - ${\cal K}$: 鍵空間, ${\cal M}$: 平文空間, ${\cal C}$: 暗号文空間
 - $KeyGen(1^k)=s \underset{R}{\leftarrow} {\cal K}$: 鍵生成（${\cal K}$ からランダムサンプリング）
@@ -243,7 +241,7 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 1. 敵対者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して出力する
-- $b=b'$ なら A の勝ち(1)<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
+- $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
 - $Adv(k):=\left| \Pr \left[\texttt{IND-CPA}_{\cal A}^{\Pi}(k)=1\right] - \frac{1}{2} \right|<\texttt{negl}(k)$.
 
