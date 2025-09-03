@@ -4,6 +4,7 @@ html: true
 title: slides
 theme: default
 paginate: true
+math: mathjax
 size: 16:9
 style: |
   section {
@@ -236,14 +237,14 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 # IND-CPA
 ## 情報が漏れないとは
 - 自分で選んだ平文 $m_1$, $m_2$ のどちらかの暗号文 $c$ をもらってもどちらの平文か当てられない
-## 平文当てゲーム $\texttt{IND-CPA}_{\cal A}^{\Pi}(k)$
+## 平文当てゲーム $\texttt{Exp}(k)$: 実験 (experiment)
 1. 挑戦者 C (Challenger): $s =KeyGen(1^k)$
 1. 敵対者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して出力する
 - $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
-- $Adv(k):=\left| \Pr \left[\texttt{IND-CPA}_{\cal A}^{\Pi}(k)=1\right] - \frac{1}{2} \right|<\texttt{negl}(k)$.
+- $Adv(k):=\left| \Pr \left[\texttt{Exp}(k)=1\right] - \frac{1}{2} \right|<\texttt{negl}(k)$.
 
 # 疑似ランダム関数 PRF の定義
 ## ランダム関数

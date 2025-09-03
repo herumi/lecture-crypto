@@ -4,6 +4,7 @@ html: true
 title: slides
 theme: default
 paginate: true
+math: mathjax
 size: 16:9
 style: |
   section {
