@@ -209,13 +209,13 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
   - 計算量的識別不可能な疑似乱数
 - （注意）PRG が存在するかは未解決問題（少なくとも $P \subsetneq NP$ が必要）
 # 共通鍵暗号の定義
-## セキュリティパラメータ $k$
-- 暗号システムの安全性を表すパラメータ: $1^k$ とかく（$λ$ や他の記号を使うことも多い）
-  - これは「1の $k$ 乗」ではなく「1か $k$ 個ならんだ文字列」を表す
-- アルゴリズム ${\cal A}$ について ${\cal A}(1^k)$ は ${\cal A}$ が $k$ に関する（確率的）多項式時間アルゴリズムであることを示す（$1^k$ を省略することも多い）
+## セキュリティパラメータ $λ$
+- 暗号システムの安全性を表すパラメータ. $k$ や他の記号を使うことも多い
+  - $1^λ$ は「1の $λ$ 乗」ではなく「1か $λ$ 個ならんだ文字列」を表す
+- アルゴリズム ${\cal A}$ について ${\cal A}(1^λ)$ は ${\cal A}$ が $λ$ に関する（確率的）多項式時間アルゴリズムであることを示す（$1^λ$ を省略することも多い）
 ## $\Pi=(KeyGen,Enc,Dec)$ が共通鍵暗号であるとは
 - ${\cal K}$: 鍵空間, ${\cal M}$: 平文空間, ${\cal C}$: 暗号文空間
-- $KeyGen(1^k)=s \underset{R}{\leftarrow} {\cal K}$: 鍵生成（${\cal K}$ からランダムサンプリング）
+- $KeyGen(1^λ)=s \underset{R}{\leftarrow} {\cal K}$: 鍵生成（${\cal K}$ からランダムサンプリング）
 - $Enc: {\cal K} \times {\cal M} \ni (s,m) \mapsto c \in {\cal C}$: （確率的）暗号化アルゴリズム
 - $Dec: {\cal K} \times {\cal C} \ni (s,c) \mapsto m \in {\cal M}$: （決定的）復号アルゴリズム
 で、$\forall s \in {\cal K}, \forall m \in {\cal M}$ について $Dec(s,Enc(s,m))=m$ を満たす
@@ -237,16 +237,32 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 # IND-CPA
 ## 情報が漏れないとは
 - 自分で選んだ平文 $m_1$, $m_2$ のどちらかの暗号文 $c$ をもらってもどちらの平文か当てられない
-## 平文当てゲーム $\texttt{Exp}(k)$: 実験 (experiment)
-1. 挑戦者 C (Challenger): $s =KeyGen(1^k)$
+## 平文当てゲーム $\texttt{Exp}(λ)$: 実験 (experiment)
+1. 挑戦者 C (Challenger): $s =KeyGen(1^λ)$
 1. 敵対者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して出力する
 - $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
-- $Adv(k):=\left| \Pr \left[\texttt{Exp}(k)=1\right] - \frac{1}{2} \right|<\texttt{negl}(k)$.
+- $Adv_{Exp}(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$.
 
-# 疑似ランダム関数 PRF の定義
+# 疑似ランダム関数 PRF (Pseudo-Random Function)
 ## ランダム関数
 - $RF_{n,m}=\Set{f \mid f:\Set{0,1}^n \to \Set{0,1}^m}$: $n$ bitの入力から $m$ bitを出力する関数全体
-$f \underset{U}{\leftarrow} RF_{n,m}$ をランダム関数という
+$f \underset{U}{\leftarrow} RF_{n,m}$ をランダム関数という（$|RF_{n,m}|=({2^m})^{2^n}$）
+### $F:\Set{0,1}^n \times \Set{0,1}^{in} \to \Set{0,1}^{out}$: PT関数, $in$, $out$ は $n$ の多項式
+- $s \in \Set{0,1}^n$, $F_s(x):=F(s,x)$ が PRF とは
+入力が疑似乱数なら1を返す $\forall$ PPT algo. ${\cal A}$,
+$\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \right] - \Pr \left[{\cal A}(f)=1 \mid f \underset{U}\leftarrow RF_{in,out}\right] \right| < \texttt{negl}(n)$
+  となることをいう
+- ここで ${\cal A}(F_s)$ は ${\cal A}$ が必要なだけ好きな $x$ を選んで $F_s(x)$ の結果を得られることを意味する
+- ${\cal A}(f)$ も同様
+- $|\Set{0,1}^n|=2^n$ なので $RF_{in,out}$ よりずっと小さいけれども区別できないということ
+
+# PRFを用いたIND-CPA安全な暗号の構成
+## 記号の準備
+- $F$: PRF, ${\cal K}=\Set{0,1}^n$, ${\cal M}=\Set{0,1}^{out}$, ${\cal C}=\Set{0,1}^{in} \times \Set{0,1}^{out}$
+- $KeyGen(1^n)=s \underset{U}{\leftarrow} \Set{0,1}^n$
+- $Enc(s,m)=(r,F_s(r) \oplus m)$ for $r \underset{U}{\leftarrow} \Set{0,1}^{in}$
+- $Dec(s,c)=F_s(r) \oplus c$
+としたとき$\Pi=(KeyGen,Enc,Dec)$ はIND-CPA安全な共通鍵暗号である
