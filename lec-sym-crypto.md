@@ -447,6 +447,24 @@ $n$ bitセキュリティという
 - 改竄した暗号文を多数サーバに送り
 応答から平文の情報を入手して攻撃
 
+# 問題
+## 1. ChaCha20はIND-CCA2安全ではない理由
+## 2. CBCモードはIND-CCA2安全ではない理由
+
+# 答え
+![bg right:35% w:400px](images/lec-stream-attack.drawio.svg)
+## 1. ChaCha20はIND-CCA2安全ではない理由
+- $s$ をChaCha20の秘密鍵, $n$ をナンスとする
+- $c=Enc(s,m)=(n, F(s,n) \oplus m)$.
+- $c$ の2番目の要素の0bit目を反転させた暗号文を $c'$ とする
+- $c' \neq c$ をオラクルに渡して復号してもらい $m'$ を得る
+- $m'$ の0bit目を反転させると $m$ を得る
+
+## 2. CBCモードはIND-CCA2安全ではない理由
+- $c_1=Enc(s, m_1 \oplus IV)$
+- $IV$ の0bit目を反転させたものを $IV'$ とする
+- $(IV', c_1)$ をオラクルに渡して復号してもらい $m'_1$ を得る
+- $m_1 \oplus IV = Dec(s, c_1)=m'_1 \oplus IV'$ より $m$ を得る
 
 # メッセージ認証コード
 ![bg right:45% width:550px](images/lec-mac.png)
