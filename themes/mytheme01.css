@@ -9,17 +9,21 @@ section {
   font-family: Noto Sans JP !important;
 }
 
+/*
 code {
   font-family: 'BIZ UDGothic', monospace !important;
 }
+*/
 
 pre {
   font-family: inherit !important;
 }
 
+/*
 pre code {
   font-family: 'BIZ UDGothic', monospace !important;
 }
+*/
 
 section h1 {
   margin: 0px !important;
@@ -35,6 +39,16 @@ section.title {
   font-size: 200% !important;
   padding: 40px !important;
   background: linear-gradient(180deg, #E7FFE7 49%, #008080 49%, #008080 50%, white 50%, white 100%) !important;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+section.subtitle {
+  font-size: 200% !important;
+  padding-left: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  background: white !important;
   text-align: center !important;
   justify-content: center !important;
 }
