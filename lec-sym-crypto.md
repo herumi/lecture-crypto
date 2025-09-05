@@ -469,7 +469,7 @@ $n$ bitセキュリティという
 # メッセージ認証コード
 ![bg right:45% width:550px](images/lec-mac.png)
 ## MAC (Message Authentication Code)
-- メッセージの改竄を検知する暗号技術
+- データの改竄を検知する暗号技術
 - 次の(KeyGen, Mac, Verify)をMACという
 ## 三つ組アルゴリズム
 - $KeyGen(1^λ)=s$: 秘密鍵
@@ -483,15 +483,39 @@ MAC値（タグともいう）$t$ を出力
 # MACの安全性
 ![bg right:40% width:500px](images/lec-mac-attack.png)
 ## 存在的偽造不可能性
-- $s$ を知らない攻撃者が攻撃対象の $m$ に対して、
-それとは異なる $m_i$ と$t_i=Mac(s,m_i)$ を
-入手できたとする（適応的選択文書攻撃）
-- それでも $Verify(s,m,t)=1$ なる $t$ は作れない
-
+- 適応的選択文書攻撃 CMA (Chosen Message Attack)
+  - 攻撃者が $m_i$ を選びオラクルに問い合わせて $t_i=Mac(s,m_i)$ の入手を好きなだけ繰り返し $\Set{(m_i,t_i)}$ を得る
+- $Verify(s,m,t)=1$ なる $(m,t) \notin \Set{(m_i,t_i)}$
+を作れないときCMAに対して（強）存在的偽造不可能
+(strong existentially unforgeable) sUF-CMAという
+- 完全性（改竄耐性）/真正性（当人しか作れない）
 
 ## MACの例
 - CMAC (Cipher-based MAC): ブロック暗号を利用
 - HMAC (Hash-based MAC): 後述のハッシュ関数を利用
+
+# 暗号化とMACを組み合わせる
+## EtM (Enc-then-Mac)
+- 暗号化は秘匿性のため, MACは完全性のために使う
+1. KeyGen: $s_1$ を暗号化用の秘密鍵, $s_2$ をMAC用の秘密鍵とする
+2. Enc: $m$ に対して $c=Enc(s_1,m)$, $t=Mac(s_2,c)$ を計算して $(c, t)$ を送る
+3. Dec: $(c, t)$ に対して $Verify(s_2, c, t)=1$ ならば $m=Dec(s_1,c)$ を返す
+そうでなければ失敗・停止（$\bot$ (bot) を返すともいう）
+## 安全性に関する定理
+- EncがIND-CPA安全, MACが存在的偽造不可能ならばEnc-then-MacはIND-CCA2安全
+  - R. Canetti & H. Krawczyk, ["Analysis of Key-Exchange Protocols and Their Use for Building Secure Channels"](https://link.springer.com/chapter/10.1007/3-540-44987-6_28), Eurocrypt 2001
+  - H. Krawczyk, ["The Order of Encryption and Authentication for Protecting Communications (or: How Secure is SSL?)"](https://iacr.org/archive/crypto2001/21390309.pdf), CRYPTO 2001
+
+# 安全ではない組み合わせ
+## E&M (Enc-and-Mac)
+  - $(Enc(s_1,m), Mac(s_2,m))$
+  - 一般的な構成では安全とはいえない
+## MtE (Mac-then-Enc)
+  - $Enc(s, m||Mac(s,m))$
+  - 一般的な構成では安全とはいえない
+  - （例外）CBCモードやストリーム暗号（CTRモード含む）では安全
+    - ただしIVの扱いや関数処理時間など実装上の問題で脆弱になりえる
+    - 実際TLS1.3では廃止された
 
 # ハッシュ関数
 ## 任意サイズのデータを固定長データに変換する関数 $H$
