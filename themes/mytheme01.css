@@ -1,0 +1,105 @@
+/* @theme mytheme */
+section {
+  justify-content: flex-start !important;
+  margin: 0px !important;
+  background-color: white !important;
+  padding: 0px !important;
+  background: linear-gradient(180deg, #E7FFE7 10%, #008080 10%, #008080 10.5%, white 10.5%, white 100%) !important;
+  display: flex !important;
+  font-family: Noto Sans JP !important;
+}
+
+code {
+  font-family: 'BIZ UDGothic', monospace !important;
+}
+
+pre {
+  font-family: inherit !important;
+}
+
+pre code {
+  font-family: 'BIZ UDGothic', monospace !important;
+}
+
+section h1 {
+  margin: 0px !important;
+  padding-left: 10px !important;
+  padding-top: 5px !important;
+  padding-bottom: 3px !important;
+  background-size: 15% !important;
+  background-repeat: no-repeat !important;
+  background-position: right 5px top 5px !important;
+}
+
+section.title {
+  font-size: 200% !important;
+  padding: 40px !important;
+  background: linear-gradient(180deg, #E7FFE7 49%, #008080 49%, #008080 50%, white 50%, white 100%) !important;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+section h2 {
+  padding-left: 10px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+section h3 {
+  padding-left: 30px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+section ul {
+  margin: 0px !important;
+}
+
+section::after {
+  font-size: 70% !important;
+  content: attr(data-marpit-pagination) " / " attr(data-marpit-pagination-total) !important;
+}
+
+table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  table-layout: fixed !important;
+  width: auto !important;
+  display: table !important;
+}
+
+thead th {
+  text-align: center !important;
+}
+
+thead tr {
+  background: #eaeaea !important;
+}
+
+tbody tr:nth-child(2n+1) {
+  text-align: center !important;
+  background: #fff !important;
+}
+
+tbody tr:nth-child(2n) {
+  text-align: center !important;
+  background: #eeeeee !important;
+}
+
+section .emp {
+  color: red !important;
+}
+
+section pre {
+  margin: 0px !important;
+}
+
+em {
+  color: red !important;
+  font-style: normal !important;
+}
+
+img {
+  display: inline !important;
+  vertical-align: top !important;
+}
