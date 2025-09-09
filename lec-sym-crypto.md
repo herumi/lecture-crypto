@@ -490,23 +490,64 @@ $H(x)=H(x')$ となる $x$, $x'$ ($x \neq x'$) を見つけるのが難しい
 - ![w:1000px](images/lec-hash-history.png)
 - SHA (Secure Hash Algorithm)
   - NISTが標準化
-  - 現在はSHA-2が普及（出力が256bit, 512bitのSHA-256, SHA-512などがある）
+  - 現在はSHA-2が普及（ハッシュ値が256bit, 512bitのSHA-256, SHA-512などがある）
   - SHA-3が2015年に標準化された
 
 # SHA-2 (Secure Hash Algorithm 2)
-![bg right:40% w:400px](images/lec-sha256-comp-func.png)
 ## 内部構造
 - 圧縮関数 $f:B \times S \to S$
-$B$: 512bitブロック, $S$: 256bit （32bit整数x8個
+$B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 ## Merkle-Damgård (MD) 構造
-- 入力 $m$ を512bitブロックに分割
-- 余りはpaddingとして「サイズ(64bit)＋1＋0...0」の形にする
+- MD5, SHA-1, SHA-2など多くのハッシュ関数で採用
+- SHA-256は入力 $m$ を512bitブロックに分割
+- 余りはpaddingとして「1＋0...0+サイズ(64bit)」の形のブロック
 - 初期値 $S_0$ は定数
-![](images/lec-sha256.png)
+<img src="images/lec-sha256-comp-func.png" width="400px" style="float:right;margin-top:-300px;margin-right:10px">![w:800px](images/lec-sha256.png)
 
 # SHA-256の圧縮関数の概要
 ## 厳密な定義はFIPS 180-4参照
 - 512bitのブロックを32bit整数16個に分割
 - ビット回転やビットシフト、排他的論理和を組み合わせて32bit整数64個 $W$ に増やす
 - 複雑なビット演算 $F$ を64回適用して $S'$ を出力する
-- ![w:800px](images/lec-sha256-compress.png)
+- ![w:900px](images/lec-sha256-compress.png)
+
+# MDの弱点
+## 伸長攻撃が可能
+- $m$ について「$m$ の大きさと $h=H(m)$」が既知のとき
+任意の $m'$ に対して $H(m||pad(m)||m')$ を計算可能
+  - $pad(m)$: $m$ のサイズから決まる最後のpaddingデータ
+## 理由
+- MD構造は最後の内部状態 $S'$ がそのまま $H(m)$ となる
+- $S_0=h$ を初期値として $m'$ に対して圧縮関数を適用す
+- $H(m||pad(m)||m')$ を計算できる
+![w:800px](images/lec-extension-attack.drawio.svg)
+
+# 問題
+## 脆弱なHMAC
+- $H$ をSHA-2とする
+- $s$ を秘密鍵として $MAC(s,m):=H(s||m)$ と作ったMACが安全ではない理由は?
+
+# SHA-3
+<!-- _class: image-right-center -->
+![w:550px](images/lec-sha3.drawio.svg)
+## SHA-2に変わるハッシュ関数
+- NISTがハッシュ関数のコンペ(competition)を開催
+- 2012年にKeccak（ケチャック）が選ばれ2015年にSHA-3として標準化
+## 特徴
+- ハッシュ値のサイズは256, 512bitなど
+- スポンジ構造
+  - 入力データをスポンジに入れる吸収フェーズ
+    - 内部状態は1600bit
+    - SHA-2の256bitよりずっと大きい
+  - スポンジからデータを取り出す搾取フェーズ
+    - 内部状態の最初の256bitを出力
+
+# 吸収フェーズ概要
+## SHA-3-256のブロック分割
+- $r=1088=(1600-256\times 2)$bitのブロック
+- 余りは最初に1bitの1, 次にブロック長にあうように0が0個以上, 最後に1bitの1を追加する
+- MD構造と異なりデータサイズは追加されない
+## 吸収フェーズ
+- 初期状態 $S$ は0で初期化
+- 各ブロックを $S$ の先頭からxorして複雑な置換関数 $f$ を適用（詳細は略）
+![w:800px](images/lec-sha3-absorb.png)
