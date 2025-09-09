@@ -2,7 +2,6 @@
 marp: true
 html: true
 title: slides
-theme: default
 paginate: true
 math: mathjax
 size: 16:9
@@ -43,6 +42,8 @@ _class: title
 $\forall ε>0$, $\exists N>0$ s.t. $\forall x>N$, $|f(x)-a|<ε$.
 - 読み方: どんな（小さな） $ε>0$ に対しても、それに対応して
   「$x>N$ ならば $|f(x)-a|<ε$ となる」ような $N>0$ を選べる
+- どんなに小さい（0でない）誤差 $ε$ を持ってきても、十分大きな $N$ を選ぶと
+それより大きい $x$ は $|f(x)-a|<ε$ とできる
 
 # 具体例
 ## $f(x)=2+3/x → 2$ for $x→\infty$

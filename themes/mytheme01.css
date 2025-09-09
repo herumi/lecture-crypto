@@ -1,4 +1,9 @@
-/* @theme mytheme */
+/* 
+ * @auto-scaling true
+*/
+
+@import 'default';
+
 section {
   justify-content: flex-start !important;
   margin: 0px !important;
@@ -9,21 +14,17 @@ section {
   font-family: Noto Sans JP !important;
 }
 
-/*
-code {
-  font-family: 'BIZ UDGothic', monospace !important;
-}
-*/
-
 pre {
   font-family: inherit !important;
 }
 
-/*
+code {
+  font-family: 'BIZ UDGothic', monospace !important;
+}
+
 pre code {
   font-family: 'BIZ UDGothic', monospace !important;
 }
-*/
 
 section h1 {
   margin: 0px !important;
@@ -116,4 +117,30 @@ em {
 img {
   display: inline !important;
   vertical-align: top !important;
+}
+
+section.image-right p:has(img) {
+  height: calc(100% - 80px);
+  position: absolute;
+  top: 3.5em;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  margin: 0;
+  padding-right: 10px;
+}
+
+section.image-right-center p:has(img) {
+  height: calc(100% - 80px);
+  position: absolute;
+  top: 3.5em;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0;
+  padding-right: 10px;
 }

@@ -2,7 +2,6 @@
 marp: true
 html: true
 title: slides
-theme: default
 paginate: true
 math: mathjax
 size: 16:9
@@ -163,11 +162,14 @@ $Dec(s, c)=m$
 ![width:800px](images/lec-stream2.drawio.svg)
 
 # ストリーム暗号の例
+<!-- _class: image-right -->
+![width:500px](images/lec-chacha20-1.drawio.svg)
 ## ChaCha20
 - 入力: 256bitの秘密鍵 $k$ と96bitのナンス $n$
   - ナンス (nonce): 一度だけ使われる値
 - 出力: 32bitのカウンタ $b$ 1個につき512bitの乱数
-![width:500px](images/lec-chacha20-1.drawio.svg)
+- $b$ を1から始めて1ずつ増やして疑似乱数を生成
+- 平文と排他的論理和をとり暗号文とする
 
 # ChaCha20のPRF
 ## 全体図
@@ -188,9 +190,10 @@ def QR(a, b, c, d):
 - 縦ライン1~4, 斜めライン5~8の4個の $x_i$ に対して `QR()` を適用（合計8回）
 - これを10回繰り返す
 
-# AES
+# AES (Advanced Encryption Standard)
+<!-- _class: image-right -->
+![width:500px](images/lec-aes1.png)
 ## 最も広く使われているブロック暗号
-![bg right:40% width:500px](images/lec-aes1.png)
 - ブロックの単位は128bit
 - 秘密鍵のサイズは128, 192, 256bitのいずれか
 ## 暗号化方法
@@ -490,14 +493,20 @@ $H(x)=H(x')$ となる $x$, $x'$ ($x \neq x'$) を見つけるのが難しい
   - 現在はSHA-2が普及（出力が256bit, 512bitのSHA-256, SHA-512などがある）
   - SHA-3が2015年に標準化された
 
-# SHA-2 (Secure Hash Algorithm 2)ddddd
-![bg right:40% w:700px](images/lec-sha256.png)
+# SHA-2 (Secure Hash Algorithm 2)
+![bg right:40% w:400px](images/lec-sha256-comp-func.png)
 ## 内部構造
 - 圧縮関数 $f:B \times S \to S$
-$B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
+$B$: 512bitブロック, $S$: 256bit （32bit整数x8個
 ## Merkle-Damgård (MD) 構造
-- paddingはサイズ(64bit)＋1＋0...0, 初期値 $S_0$ は定数
+- 入力 $m$ を512bitブロックに分割
+- 余りはpaddingとして「サイズ(64bit)＋1＋0...0」の形にする
+- 初期値 $S_0$ は定数
+![](images/lec-sha256.png)
 
-# SHA-256の圧縮関数の構造
-##
+# SHA-256の圧縮関数の概要
+## 厳密な定義はFIPS 180-4参照
+- 512bitのブロックを32bit整数16個に分割
+- ビット回転やビットシフト、排他的論理和を組み合わせて32bit整数64個 $W$ に増やす
+- 複雑なビット演算 $F$ を64回適用して $S'$ を出力する
 - ![w:800px](images/lec-sha256-compress.png)

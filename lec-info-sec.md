@@ -2,7 +2,6 @@
 marp: true
 html: true
 title: slides
-theme: default
 paginate: true
 math: mathjax
 size: 16:9
@@ -21,8 +20,9 @@ _class: title
 <br>
 
 # 情報セキュリティとは
+<!-- _class: image-right -->
 ## ネットショッピングにおける望ましい状態
-![bg right:33% width:300px](images/lec-info-sec.drawio.svg)
+![width:300px](images/lec-info-sec.drawio.svg)
 - 自分がどんな商品を買ったか他人に知られない
 - 商品の値段や送付先が勝手に書き換えられない
 - いつでも買い物ができる
@@ -81,8 +81,9 @@ _class: title
 4. 信頼性: o, 可用性: x
 
 # 暗号 (encryption)
+<!-- _class: image-right-center -->
 ## 情報を第三者が見てもわからないようにする技術
-![bg right:33% width:400px](images/lec-enc.drawio.svg)
+![width:400px](images/lec-enc.drawio.svg)
 - 情報セキュリティの機密性を守るために最も重要な要素
 ## 暗号化と復号
 - 平文: 変換前の情報
