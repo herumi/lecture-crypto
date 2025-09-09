@@ -481,3 +481,23 @@ $H(x)=H(x')$ となる $x$, $x'$ ($x \neq x'$) を見つけるのが難しい
   - もし $H'(x)=H'(x')$ となる $x'(\neq x)$ が見つかれば $H(x_{>0})=H(x'_{>0})$.
   $x_{>0}=x'_{>0}$ となる確率はとても小さいので $x_{>0} \neq x'_{>0}$ となり $H$ の一方向性に矛盾
 2. $H'(x||0)=H'(x||1)$ なので衝突困難性が破れる
+
+# ハッシュ関数の歴史
+## MD5, SHA-1, SHA-2, SHA-3, ...
+- ![w:1000px](images/lec-hash-history.png)
+- SHA (Secure Hash Algorithm)
+  - NISTが標準化
+  - 現在はSHA-2が普及（出力が256bit, 512bitのSHA-256, SHA-512などがある）
+  - SHA-3が2015年に標準化された
+
+# SHA-2 (Secure Hash Algorithm 2)ddddd
+![bg right:40% w:700px](images/lec-sha256.png)
+## 内部構造
+- 圧縮関数 $f:B \times S \to S$
+$B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
+## Merkle-Damgård (MD) 構造
+- paddingはサイズ(64bit)＋1＋0...0, 初期値 $S_0$ は定数
+
+# SHA-256の圧縮関数の構造
+##
+- ![w:800px](images/lec-sha256-compress.png)

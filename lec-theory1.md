@@ -15,7 +15,7 @@ headingDivider: 1
 <!--
 _class: title
 -->
-# 暗号理論の準備
+# 暗号理論の基礎
 <br>
 光成滋生
 <br>
