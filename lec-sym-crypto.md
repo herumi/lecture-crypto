@@ -29,7 +29,7 @@ _class: title
 - 暗号の安全性, 強秘匿性, 頑強性
 - MAC, 存在的偽造不可能
 - IND-CPA安全, IND-CCA2安全, Enc-then-Mac
-- ハッシュ関数
+- ハッシュ関数, SHA-2, 伸長攻撃, SHA-3
 
 # 共通鍵暗号とは
 ## 「暗号鍵＝復号鍵＝秘密鍵」な暗号方式
@@ -172,10 +172,10 @@ $Dec(s, c)=m$
 - 平文と排他的論理和をとり暗号文とする
 
 # ChaCha20のPRF
-## 全体図
-![width:800px](images/lec-chacha20-2.drawio.svg)
+## 全体図![width:800px](images/lec-chacha20-2.drawio.svg)
 - 1/4ラウンド関数 `QR(a,b,c,d)`: `a`,`b`,`c`,`d` は32bit整数
 - `rotLeft(x,n)` は `x` を左に `n` bit回転させる
+`x=[H:L]`, H:n bit, L:(32-n) bitのとき `rotLeft(x,n)=[L:H]`
 ```python
 def QR(a, b, c, d):
   a ← a + b; d ← d ⊕ a; d ← rotLeft(d, 16);
