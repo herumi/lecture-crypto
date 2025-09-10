@@ -551,3 +551,44 @@ $B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 - 初期状態 $S$ は0で初期化
 - 各ブロックを $S$ の先頭からxorして複雑な置換関数 $f$ を適用（詳細は略）
 ![w:800px](images/lec-sha3-absorb.png)
+
+# ハッシュ関数の安全性
+## 衝突困難性を破るには
+- $H$: $n$ bitのハッシュ値のハッシュ関数, $N=2^n$
+- $k$ 回ランダムな値のハッシュ値を計算する
+  - 2回目でハッシュ値が同じになる（衝突する）確率 $P_2=1/N$
+  - $P_3=1-\texttt{（全部異なる確率）}=1-((N-1)/N\times (N-2)/N)$
+  - $k$ 回目の $P_k=1-\prod_{i=1}^{k-1}(1-i/N)$
+  - $N \gg k$ のとき $e^{-i/N} \approx 1-i/N$ より
+$P_k \approx 1 - \prod_{i=1}^{k-1} e^{-i/N} = 1-e^{\sum_{i=1}^{k-1}(-i/N)} = 1-e^{-k(k-1)/2N}$
+$k \approx \sqrt{N}$ ならば $P_k \approx 1-e^{-1/2} \approx 0.4=40\%$
+- $O(\sqrt{N})=O(2^{n/2})$ 回の計算で衝突困難性を破れる確率になる（大雑把な評価）
+  - これを誕生日攻撃 (birthday attack) という
+- 理想的な $n$ bitのハッシュ関数は $n/2$ bitセキュリティ安全という
+
+# HMACの構成
+<!-- _class: image-right-center -->
+![w:350px](images/lec-hmac-sha-256.png)
+## HMAC-SHA-256
+- $s$: 256bit秘密鍵, $m$: データ
+- $HMAC(s,m)=H(s \oplus C_2 || H(s \oplus C_1 || m))$
+  - $C_1=0x3636...36$ (256bit), $C_2=0x5c5c...5c$ (256bit)
+  - $||$ はデータの連結, $\oplus$ はビットごとの排他的論理和
+## 安全性
+- M. Bellare, "New Proofs for NMAC and HMAC:
+Security Without Collision-Resistance", CRYPTO2006
+  - 圧縮関数がPRFならHMACはPRFであることを示す
+
+# SHA-3ベースのMAC
+## SHAKE
+- SHA-3のスポンジ構造を利用した可変長出力可能な関数 XOF (eXtendable Output Function)
+  - cSHAKE256(X, L, N, S)
+    - X: 入力データ
+    - L: 出力データ長 (bit)
+    - N: "KMAC"などの文字列, S: アプリ区別用文字列
+## KMAC
+- スポンジ構造には圧縮関数の構造が無いので伸長攻撃がない
+- ハッシュを2回して安全性を高めるのは冗長
+  - $KMAC(s, m)=cSHAKE256(s||m||256, 256, \texttt{"KMAC"}, \texttt{""})$ の形で安全
+  - 厳密には $s||m||256$ の部分はバイトエンコーディングなどが行われる
+  - 詳細はNIST Special Publication 800-185参照
