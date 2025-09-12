@@ -81,17 +81,45 @@ _class: title
 
 - 詳細は後の講義で
 
-# ECDH (Elliptic Curve Diffie-Hellman) 鍵共有
-## 楕円曲線を用いた鍵共有
-- 現在TLS1.3で標準的に使われている鍵共有手法
-- DH鍵共有が3000bitで128bitセキュリティだったのに対して
-ECDH鍵共有は256bitで128bitセキュリティを実現する
-- 小さい鍵で同じセキュリティを実現できる
-## ECDHの量子計算機に対する安全性
-- 安全ではない
-- $n$ bitのECDHは $O(n^3)$ 程度の多項式時間で解けるアルゴリズムが知られている
+# 楕円曲線
+<!-- _class: image-right-center -->
+![w:400px](images/lec-ec-point.drawio.svg)
+## 楕円曲線 EC (Elliptic Curve) とは
+- 「楕円」でも「曲線」でも無い「楕円曲線」という数学用語
+  - イメージ的には「複素曲線」で浮輪の表面のようなもの
+  - 代数的な定義は後述
+## 楕円曲線の点集合
+- $G$ を $\Set{0, P, 2P, \dots, (r-1)P}$ という形で表せる
+楕円曲線の $r$ 個の点集合とする
+  - $G$ には $aP \pm bP := ((a \pm b)\bmod{r})P$
+  という*加減算*が定義されている
+  - $(a P + b P) + c P = a P + (b P + c P) = (a+b+c) P$
+  - $aP := P + P + \cdots + P$ （$a$ 個の $P$ の和）, $a(b P) = (ab) P$
+  - $0$ は整数の0に相当する点, $-aP := (r-a)P$ とする
 
-# 数学の準備
+# ECDH鍵共有
+## DH鍵共有の類推
+- A は $x \in [1, r-1]$ をランダムに選んで $X:= x P$ を B に送る
+- B は $y \in [1, r-1]$ をランダムに選んで $Y:= y P$ を A に送る
+- A は $s_1=x Y = x y P$, B は $s_2 = y X = y x P = x y P$ を計算する
+![w:600px](images/lec-ecdh.drawio.svg)
+## DH鍵共有との比較
+- $g^x$, $g^y$ の代わりに $x P$, $y P$. $g^{xy}$ の代わりに $xy P$
+
+# ECDH鍵共有の安全性
+## DLPとDHPの楕円曲線版
+- ECDLP: $P$, $X=x P$ が与えられたとき $x$ を求めよ
+- ECDHP: $P$, $X=x P$, $Y = y P$ が与えられたとき $x y P$ を求めよ
+## ECDHPの難しさ
+- 2025年現在, ECDHPを解く最良の手法はECDLPを解くこと
+  - DHPと同様にECDHPがECDLPより真に易しいか・同じぐらいの難しさかは不明
+- DH鍵共有が3000bitで128bitセキュリティだったのに対して
+ECDH鍵共有は256bitの小さい鍵で同じセキュリティレベル
+## ECDHの量子計算機に対する安全性
+- $n$ bitのECDHは $O(n^3)$ の多項式時間で解けるので安全ではないが
+TLS1.3で標準的に使われている鍵共有手法
+
+# しばらく数学の準備
 ## 合同
 - 整数 $m(>0)$, $a$, $b$ に対して $a \equiv b \pmod{m}$ とは $(a-b) \bmod{p} = 0$ のときをいう
   - $m$ で割った余りが同じ. このとき $a$ と $b$ は $m$ を法として合同という
@@ -122,7 +150,8 @@ ECDH鍵共有は256bitで128bitセキュリティを実現する
 - **定理**: $\forall a \in {\mathbb{F}_p}^*:=\mathbb{F}_p \setminus \{0\}$ に対して $a$ の逆数が存在する
   - つまり $a b \equiv 1 \pmod{p}$ となる $b \in {\mathbb{F}_p}^*$ が存在する
 - $\mathbb{F}_p$ は四則演算ができる
-  - 逆元の存在: $a \in {\mathbb{F}_p}^*$ に対して $a^{-1}$ が存在して $a a^{-1} = 1$
+  - 逆元の存在: $a \in {\mathbb{F}_p}^*$ に対して $a^{-1} \in {\mathbb{F}_p}^*$ が存在して $a a^{-1} = 1$
+  - 問: 逆元は存在すればただ一つしかないことを示せ
 - このとき $\mathbb{F}_p$ を有限体という
 
 # Euclidの互除法
@@ -154,3 +183,36 @@ ECDH鍵共有は256bitで128bitセキュリティを実現する
 - $\gcd(a,b)=\gcd(r_0,r_1)=r_2=r_0-q_2 r_1=r_0 - q_2(b-q_1 r_0)$
 $=(1+q_1 q_2)r_0 + b(-q_2)=(1+q_1 q_2) (a-b q_0) + b(-q_2)$
 $=a(1+q_1 q_2) + b(-q_0 q_1 q_2 - q_2)=a x + by$ となる $(x,y)$ が求まった
+# 有限体の逆元
+## 拡張Euclidの互除法を用いて逆元を求める
+- $\forall a \in {\mathbb{F}_p}^*$ に対して $a$ と $p$ は互いに素である（$p$ は素数だから）
+  - つまり $\gcd(a, p)=1$
+- 互除法を用いて $a x + p y = \gcd(a,p)=1$ となる整数 $x$, $y$ が存在する
+- これは $a x \equiv 1 \pmod{p}$, つまり $x \bmod{p}$ は $a$ の逆数
+## $\mathbb{Z}/m$ が有限体になる条件
+- $m$ が合成数 $m=uv$ ($u, v > 1$) のとき, $u v \equiv 0 \pmod{m}$ なので $u$ の逆数は存在しない
+- よって $\mathbb{Z}/m$ が有限体になる必要十分条件は $m$ が素数である
+
+### 別の方法も紹介する
+
+# 二項定理
+## 組合せ（組み合わせ）の数
+- $n$ 個の中から $k$ 個選ぶ組合せ ${n \choose k} := \frac{n!}{k!(n-k)!}$. 例 ${5 \choose 2} = \frac{5!}{2!3!} = 10$
+- $(x+y)^n = \sum_{k=0}^{n} {n \choose k} x^k y^{n-k}$ が成り立つ
+  - 問題: 数学的帰納法を使って証明せよ
+- 素数 $p$ と $0 < k < p$ に対して ${p \choose k}$ は $p$ の倍数
+  - ${p \choose k} = \frac{p!}{k!(p-k)!}$ の分子に $p$ があり, 分母に $p$ がない
+- $(x+y)^p \equiv x^p + y^p \pmod{p}$
+  - $(x+y)^p = \sum_{k=0}^{p} {p \choose k} x^k y^{p-k} \equiv x^p + y^p \pmod{p}$
+- $x^p \equiv x \pmod{p}$
+  - $x^p \equiv (1+(x-1))^p \equiv 1 + (x-1)^p \equiv 1 + \cdots + 1 \equiv x \pmod{p}$
+
+# Fermatの小定理
+## 素数 $p$ と $a\in {\mathbb{F}_p}^*$ に対して $a^{p-1} \equiv 1 \pmod{p}$
+- $a^p \equiv a \pmod{p}$ より $a(a^{p-1}-1) \equiv 0 \pmod{p}$
+- $a$ と $p$ は互いに素なので $a^{p-1}-1 \equiv 0 \pmod{p}$.
+## 逆元の計算
+- Fermatの小定理より $a \in {\mathbb{F}_p}^*$ に対して $a (a^{p-2}) \equiv 1 \pmod{p}$.
+- これは $a^{-1} = a^{p-2} \bmod{p}$ を意味するので逆元を計算できる
+## 注意
+- $a=0$ のときは $a^{p-2}=0$ になってしまう（そもそも逆元は存在しない）
