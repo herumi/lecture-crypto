@@ -144,3 +144,11 @@ section.image-right-center p:has(img) {
   margin: 0;
   padding-right: 10px;
 }
+
+.any_pos {
+  position: absolute !important;
+  z-index: 9999 !important;
+  color: red !important;
+  font-size: 1em !important;
+  padding: 5px !important;
+}
