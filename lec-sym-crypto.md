@@ -429,7 +429,7 @@ MAC値（タグともいう）$t$ を出力
   - 攻撃者が $m_i$ を選びオラクルに問い合わせて $t_i=Mac(s,m_i)$ の入手を好きなだけ繰り返し $\Set{(m_i,t_i)}$ を得る
 - $Verify(s,m,t)=1$ なる $(m,t) \notin \Set{(m_i,t_i)}$
 を作れないときCMAに対して（強）存在的偽造不可能
-(strong existentially unforgeable) sUF-CMAという
+(strong existentially unforgeable) sEUF-CMAという
 - 完全性（改竄耐性）/真正性（当人しか作れない）
 
 ## MACの例
