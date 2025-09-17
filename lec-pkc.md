@@ -47,7 +47,7 @@ _class: title
   - $y=a^x$ のとき $x=\log_a y$ を底 $a$ について $y$ の対数と呼んだ
   - 今回はその整数版なので離散対数という
 ## DLP を解くコスト
-- 2025年現在, 一般数体篩法 GNFS (General Number Field Sieve) が最良の手法
+- 2025年現在, 大きな$p$について一般数体篩法 GNFS (General Number Field Sieve) が最良の手法
 - 計算コストは $L_p[1/3, (64/9)^{1/3}]$
   - $L_p[a, c] := \exp\left((c + o(1))(\log p)^a (\log \log p)^{1-a}\right)$: 準指数時間
   - $f(x)$ が $o(g(n))$ であるとは $\lim_{x \to \infty} f(x)/g(x) = 0$ であること
@@ -401,3 +401,85 @@ $Pr[Ver(vk, m, Sig(sk,m)))=1 \mid Gen(1^λ)=(sk,vk), m \underset{U}\leftarrow {\
 ## 安全性の定義
 - どんなPPT攻撃者 $\cal A$ に対しても優位性 $Adv_{\cal A}(λ):=Pr[Exp_{\cal A}(λ)=1] < negl(λ)$ のときsEUF-CMA安全という
 ![w:800px](images/lec-sign-seuf-cma.drawio.svg)
+
+# ECDSA (Elliptic Curve Digital Signature Algorithm)
+## 楕円曲線を用いた署名
+- $G:=\langle P \rangle=\Set{O, P, \dots, (r-1)P}$: 楕円曲線 $E(\mathbb{F}_p)$ の有限巡回群, $H$: ハッシュ関数
+- $Gen(1^λ)$: $s \underset{U}\leftarrow {\mathbb{F}_r}^*$ を署名鍵, $S := s P$ を検証鍵とする
+- $Sig(s, m)$: $k \underset{U}\leftarrow {\mathbb{F}_r}^*$ を選び $R := k P$ の $x$ 座標を $t$ として
+$σ:=(t, (H(m)+s t)/k \bmod{r})$ を署名とする
+- $Ver(S, m, σ=(t, u))$:
+$P':=(H(m) P + t S)/u$ の $x$ 座標が $t$ ならば1, それ以外は0を出力
+- 分母が0になる場合はやり直す
+## 正当性の確認
+- $P'=(H(m) P + t s P)/((H(m)+s t)/k)=k P=R$ なので $P'$ の $x$ 座標は $t$
+
+# RSA (Rivest, Shamir, Adleman) の準備
+## 歴史
+- 1977年公開. ただし1970年代初頭にCocksたちが先に考えていた（CESGの発表）
+## RSA関数の生成
+- RSAの落とし戸つき一方向性関数 (trapdoor one-way function): $f_e$
+  - $p$, $q$ を素数, $n:=p q$, 整数 $a$ に対して $f_a(x):=x^a \bmod{n}$ とする
+  - $d, e \in [1, n-1]$ を $d e \equiv 1 \pmod{(p-1)(q-1)}$ となる整数とする
+  - $f_e(x)=x^e \bmod{n}$ をRSAの落とし戸つき一方向性関数という
+  - $(n,e)$ を公開情報, $(p, q, d)$ を秘密情報とする
+## $f_e$ の性質
+- $\forall x \in [0, n-1]$ に対して $f_d(f_e(x))=f_e(f_d(x))=x$. すなわち $f_d(x)=f_e^{-1}(x)$
+- $f_e:[0,n-1]\to [0,n-1]$ は一方向性置換（全単射）でもある
+
+# RSA仮定
+## 素因数分解 IF (Integer Factoring)
+- $n=p q$ が与えられたとき $p$, $q$ を求める問題
+- 2025年現在, 一般数体篩法 GNFS (General Number Field Sieve) が最良の手法（DLPと同じ）
+- 計算コストは $L_n[1/3, (64/9)^{1/3}]$ で
+  - 例えば $n = 2^{2048}$ で $2^{116}$, $n=2^{3000}$ で $2^{137}$ 程度
+## RSA問題
+- $n,e, y:=f_e(x)$ が与えられたとき $x$ を求める問題
+- RSA仮定: 十分大きな $p$, $q$ に対してRSA問題はIFと同等に難しい
+## $n$ から $p$, $q$ が求まれば
+- $(p-1)(q-1)$ が求まるので拡張Euclidの互除法で $e$ の逆元 $d$ が求まる
+- IFが解ければRSA問題も解ける / 逆は未解決問題
+
+# RSASSA-PKCS1-v1_5
+## 広く使われているRSAを使った署名の一つ [RFC-8017](https://datatracker.ietf.org/doc/html/rfc8017)
+- encode関数: $encode(m):=\texttt{0x00|0x01|0xf...f|0x00|T|H(m)}$
+  - $H(m)$ の先頭に固定値を連結する. $\texttt{T}$ は固定バイト列
+- $Gen(1^λ)$: RSA関数を生成し $d$ を署名鍵, $(n, e)$ を検証鍵とする
+- $Sign(d, m)$:
+  - $m':=encode(m)$ として $σ:=f_d(m')=m'^d \bmod{n}$ を署名とする
+  - *$σ=H(m)^d \bmod{n}$ ではない*
+- $Ver((n, e), m, σ)$:
+  - $m'' := f_e(σ)=σ^e \bmod{n}$ と $m'=encode(m)$ を求めて
+  $m''=m'$ なら1, それ以外は0を返す
+## 正当性の確認
+- $m'' = f_e(f_d(m'))=m'$ が成り立つ
+
+# RSASSA-PSS (Probabilistic Signature Scheme)
+<!-- _class: image-right -->
+![w:680px](images/lec-rsassa-pss-sign.drawio.svg)
+## より安全なRSAを使った署名方式
+- saltを入力可能にすることで同じ $m$ でも
+異なる署名を生成できる
+- MGF (Mask Generation Function): PRF
+  - count:=0, T:=""
+  - T := T|Hash(seed|count), count++
+- 署名
+  - $m$ から $h=H(m)$ を求めて salt と連結
+  - もう一度HashしてMGFでmaskを生成
+  - maskとsaltを連結してDBを作りmaskとxor
+  - それからEMを作りRSA関数で $σ$ を出力
+
+# RSASSA-PSSの検証
+<!-- _class: image-right -->
+![w:680px](images/lec-rsassa-pss-verify.drawio.svg)
+## $Ver(e, m, σ)$
+- $EM=σ^d \bmod{n}$ を求め
+masked DBとh'を取り出す
+- $h'$ からMFGでmaskを生成し
+masked DBとxorしてmaskを復元
+- maskからsaltを取り出し
+$h''=Hash(0..0|h|salt)$ を計算
+- $h'=h''$ ならvalid
+## 特徴
+- saltは途中で復元される
+- $σ$ だけからでは $h$ を復元できない
