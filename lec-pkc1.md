@@ -14,7 +14,7 @@ headingDivider: 1
 <!--
 _class: title
 -->
-# 公開鍵暗号
+# 公開鍵暗号1
 <br>
 光成滋生
 <br>
@@ -90,8 +90,8 @@ _class: title
 ## ML-KEM (Module-Lattice Key Encapsulation Mechanism)
 - [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final): 2024年NISTで標準化された
 - ブラウザ Chrome, Edge, Firefoxなどで利用可能になってきている
-
-- 詳細は後の講義で
+  - [Cloudflare Research](https://pq.cloudflareresearch.com/)
+- 詳細は講義の後半で
 
 # 楕円曲線
 <!-- _class: image-right-center -->
