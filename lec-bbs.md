@@ -14,7 +14,7 @@ headingDivider: 1
 <!--
 _class: title
 -->
-# 公開鍵暗号2
+# マイナンバーカード, BBS署名
 <br>
 光成滋生
 <br>

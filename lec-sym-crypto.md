@@ -30,6 +30,7 @@ _class: title
 - MAC, 存在的偽造不可能
 - IND-CPA安全, IND-CCA2安全, Enc-then-Mac
 - ハッシュ関数, SHA-2, 伸長攻撃, SHA-3
+- AEAD, 拡大体
 
 # 共通鍵暗号とは
 ## 「暗号鍵＝復号鍵＝秘密鍵」な暗号方式
@@ -565,3 +566,104 @@ Security Without Collision-Resistance", CRYPTO2006
   - $KMAC(s, m)=cSHAKE256(s||m||256, 256, \texttt{"KMAC"}, \texttt{""})$ の形で安全
   - 厳密には $s||m||256$ の部分はバイトエンコーディングなどが行われる
   - 詳細はNIST Special Publication 800-185参照
+
+# AEAD (Authenticated Encryption with Associated Data)
+## 認証付き暗号
+- 秘匿性と完全性の両方を同時に満たす暗号
+- 共通鍵暗号とMACの組み合わせで実現
+  - 組み合わせ方法や実装によって安全でないこともあった
+  - 最初から組み合わせることを前提とした設計が望ましい
+
+- 共通鍵暗号・MAC・AEADの違い
+
+暗号技術＼性質|秘匿性|完全性
+---|---|---
+共通鍵暗号|ある|無い
+MAC|無い|ある
+AEAD|ある|ある
+
+# AEADのアルゴリズム
+<!-- _class: image-right -->
+![w:400px](images/lec-aead.drawio.svg)
+## 暗号化
+- 入力: 平文: $m$, ナンス: $n$, 秘密鍵: $s$, 関連データ: $d$
+  - ナンス $n$ は同じ値を再利用してはいけない
+  - 関連データは暗号化されないが改竄防止対象
+- 出力: 暗号文: $c$, 認証タグ: $t$
+## 復号
+- 入力: ナンス: $n$, 関連データ: $d$, 暗号文: $c$, 認証タグ $t$, 秘密鍵: $s$
+- 出力: $t$ が正しいときのみ平文 $m$. それ以外は停止 $\bot$
+## 安全性
+- 共通鍵暗号の安全性とMACの安全性の両方を併せ持つ
+
+# AEADの例1
+<!-- _class: image-right -->
+![w:700px](images/lec-poly1305.drawio.svg)
+## Chacha20-Poly1305
+- [RFC 8439](https://datatracker.ietf.org/doc/html/rfc8439)
+- 暗号化: ChaCha20 + MAC: Poly1305
+## Poly1305
+- $p:=2^{130}-5$
+- 256bitの秘密鍵 $k$ から
+128bitの $r$ と 128bitの $s$ を生成
+- 平文 $m$ を128bitブロック $m_i$ に分割
+- $a:=0$ を初期値として
+$a:=((a+ m_i)r) \bmod{p}$ で更新
+- 最後に128bitの認証タグ $t:=(a+s) \bmod{2^{128}}$ を出力
+
+# AEADの例2
+<!-- _class: image-right -->
+![w:700px](image.png)
+## AES-GCM
+- [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf)
+- 暗号化: AES-CTR + MAC: GHASH
+## GHASH
+- $p(x):=x^{128}+x^7+x^2+x+1$
+- $\mathbb{F}_{2^{128}}:=\mathbb{F}_2[x]/(p(x))$
+- 128bitの0を秘密鍵 $k$ で暗号化
+  - $H:=Enc(k, 0^{128})$
+- "関連データ|暗号文|長さ"を
+128bitブロック $u_i$ に分割
+- $a=0$ を初期値として $a := (a + u_i)H$
+ここで加算・乗算は $\mathbb{F}_{2^{128}}$ 上で行う
+
+# 拡大体
+## 複素数体 $\mathbb{C}$
+- $a, b \in \mathbb{R}$ に対して $a+bi$ ($i^2=-1$) の形が複素数
+  - $(a+bi)\pm(c+di)=(a\pm c)+(b\pm d)i$
+  - $(a+bi)(c+di)=(ac-bd)+(ad+bc)i$
+## これを多項式の形で見直す
+- $\mathbb{R}[x]$ を実数係数多項式の集合
+- $K:=\mathbb{R}[x]/(f(x))$ を $f(x):=x^2+1$ で割った余りの集合とする
+- $f(x)$ は2次式なので余りの多項式は $a+bx$ ($a,b \in \mathbb{R}$) の形
+- $K$ の中で $(a+bx)\pm(c+dx)=(a\pm c)+(b\pm d)x$
+- $(a+bx)(c+dx)=ac + (ad + bc)x + bdx^2 \equiv (ac - bd) + (ad + bc)x \mod f(x)$
+  - $x$ を $i$ にシンボルとして置き換えると同じ形
+- これを $\mathbb{C}$ は（最小多項式） $x^2+1$ による $\mathbb{R}$ の 2次拡大体という
+
+# 有限体の拡大体
+## $K:=\mathbb{F}_7$ の2次拡大体の例
+- $f(x)=x^2+1$ とすると $f(x)$ は $K$ 上で既約（$f(x)$ が $K$ 係数の範囲で因数分解できない）
+- $L:=K[x]/(f(x))=\Set{a+bx|a, b \in K}$ は $K$ の2次拡大体
+  - 注意: $\mathbb{F}_5$ 上では $x^2+1=(x-2)(x+2)$ なので $\mathbb{F}_5[x]/(x^2+1)$ は体にならない
+## $K:=\mathbb{F}_2$ の拡大体
+- $K=\Set{0,1}$ は加算が $\oplus$（排他的論理和）, 乗算が $\land$（論理積）と同じ
+  - $x^2+1=(x+1)^2$ なので既約でない
+- $f(x):=x^2+x+1$ は既約だから $L:=K[x]/(f(x))$ は $K$ の2次拡大体
+  - $(a+bx)(c+dx)=ac + (ad+bc)x+bdx^2$
+  $\equiv ac + (ad+bc)x + bd(x+1)= (ac+bd) + (ad+bc+bd)x$
+  - 注意: $\mathbb{F}_2$ 上では $-1=1$ なので $x^2=-(x+1)\equiv x+1$
+  $x^2$ を $x+1$ に置き換えると思えばよい
+
+# AES-GCMで使われる拡大体
+## $K_1:={\mathbb{F}_2}^8=\mathbb{F}_2[x]/(f_1(x))$
+- $f_1(x):=x^8+x^4+x^3+x+1$ を利用（$x^8$ を $x^4+x^3+x+1$ に置き換える）
+## $K_2:={\mathbb{F}_2}^{128}=\mathbb{F}_2[x]/(f_2(x))$
+- $f_2(x):=x^{128}+x^7+x^2+x+1$ を利用（$x^{128}$ を $x^7+x^2+x+1$ に置き換える）
+## ビット演算との対応
+- $K_1$ の要素は各係数が0, 1の7次多項式なので8bitで表現できる
+- 8bitで表現した多項式 $a$, $b$ の加算は係数ごとの加算でそれが "$\oplus$"
+よって $a \oplus b$ で多項式の加算ができる
+- 8bitの $a=[a_0:a_1:\cdots:a_7]=\sum_{i=0}^7 a_i x^i$ と "$x$" の乗算は
+$a x = a_0 x + a_1 x^2 + \cdots + a_7 x^8 = a_0 x + a_1 x^2 + \cdots + a_6 x^7 + a_7 (x^4+x^3+x+1)$
+$=[a_7:(a_0+a_7):a_1:(a_2+a_7):(a_3+a_7):a_4:a_5:a_6]$ となる
