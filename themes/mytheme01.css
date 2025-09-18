@@ -145,7 +145,11 @@ section.image-right-center p:has(img) {
   padding-right: 10px;
 }
 
-.any_pos {
+
+/*
+<span class="any" style="left:70%; top:30%;">hint</span>
+*/
+.any {
   position: absolute !important;
   z-index: 9999 !important;
   color: red !important;
