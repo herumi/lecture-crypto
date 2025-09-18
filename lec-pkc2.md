@@ -69,3 +69,5 @@ TLS1.3, ビットコイン
 # 鍵導出手順
 ## 詳細はRFC8446参照
 ![w:700px](images/lec-tls-kdf.png)
+
+# 
