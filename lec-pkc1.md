@@ -29,7 +29,7 @@ _class: title
 - 能動的な攻撃者, AitM攻撃
 - 署名, sEUF-CMA
 - ECDSA, RSASSA-PKCS1-v1_5, RSASSA-PSS
-- sshの公開鍵認証, PKI
+- sshの公開鍵認証, PKI, FIDO
 
 # DH (Diffie-Hellman) 鍵共有
 ## 盗聴者のいる通信経路で安全に通信する方法

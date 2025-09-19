@@ -15,7 +15,7 @@ headingDivider: 1
 _class: title
 -->
 # 公開鍵暗号2<br>
-TLS1.3, ビットコイン
+TLS1.3, FIDO2, ビットコイン
 <br>
 光成滋生
 <br>
@@ -70,4 +70,29 @@ TLS1.3, ビットコイン
 ## 詳細はRFC8446参照
 ![w:700px](images/lec-tls-kdf.png)
 
-# 
+# FIDO2 (Fast IDentity Online)
+## 高速なオンラインID認証
+- 多要素認証を統一的に扱う規格
+- 登場人物
+  - 認証器 (Authenticator)
+    - 指紋・虹彩・静脈・顔などの認証機能
+    - 認証用に用いる署名鍵の生成・署名機能
+    - FIDOアライアンスが認定したことを示すattestation
+      - 信頼できる機関（FIDOサーバ）の検証鍵で検証されたもの
+  - RP (Relying Party)
+    - サービス提供者: FIDOサーバを兼ねることもある
+  - FIDOサーバ: ユーザのIDを登録・認証管理するサーバ
+  - クライアントアプリ
+    - WebAuthn (Web Authentication) を用いたブラウザやアプリ
+
+# 検証鍵の登録
+## FIDO2の登録の流れ
+- アプリ, RPサーバを経由して認証器で生成した検証鍵を登録する![w:800px](images/lec-fido2-reg.png)
+- パスキー (passkey) は署名鍵を暗号化して独自サーバに保存
+  - パスキーの厳密な定義はまだない（ベンダー依存）（2025年9月時点）
+
+# 認証の流れ
+## Webサービスにログインするとき
+- サーバが生成したチャレンジに署名する
+- RPサーバに保存されている検証鍵で検証![w:800px](images/lec-fido2-auth.png)
+- パスワードなどの情報がネットワークを流れない
