@@ -184,7 +184,7 @@ def QR(a, b, c, d):
 ```
 # 1/4ラウンド関数QRの適用方法
 ## 512bitの内部状態を32bit×4×4の正方形に並べる
-![width:1000px](images/lec-chacha20-3.drawio.svg)
+- ![width:1000px](images/lec-chacha20-3.drawio.svg)
 - 縦ライン1~4, 斜めライン5~8の4個の $x_i$ に対して `QR()` を適用（合計8回）
 - これを10回繰り返す
 
