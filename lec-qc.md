@@ -25,9 +25,9 @@ _class: title
 ## 量子計算機
 - 量子力学で記述される現象を利用した新しい計算機
 - 量子計算機の発展は暗号技術に対して重大な影響がある
+  - 対策: 耐量子計算機暗号, 量子鍵配送（量子暗号）
 ## 粒子と波
-- 粒子は1個, 2個と数えられる
-- 粒子は同じ場所に複数個存在できない
+- 粒子は1個, 2個と数えられ, 同じ場所に複数個存在できない
 - 波は数えられない広がりを持った状態
 - 複数の波が重なり合って干渉する
 
@@ -45,7 +45,7 @@ _class: title
 - $|\psi\rangle$ を基底 $(|0\rangle, |1\rangle)$ に従って「観測」すると
 $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られる（詳しい話はここではしない）
 - $θ$ を実数として $|\psi'\rangle:=e^{iθ} |\psi\rangle$ を観測しても同じ確率（$|e^{iθ}|=1$ なので）
-  - 物理的に区別がつかない: 位相変換に対して不変という言い方をする
+  - $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: 位相変換に対して不変
 
 # 量子ゲート : qubitの状態を変換する演算
 ## ユニタリ行列
@@ -65,21 +65,22 @@ $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られ�
 - アダマールゲート: $H:=\frac{1}{\sqrt{2}}\begin{pmatrix}1 & 1 \\ 1 & -1\end{pmatrix}$, $H|0\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$, $H|1\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$
 - $|+\rangle := H|0\rangle$, $|-\rangle := H|1\rangle$ と表記することが多い（$(|+\rangle, |-\rangle)$ も別の基底）
   - このとき $|0\rangle=\frac{1}{\sqrt{2}}(|+\rangle + |-\rangle)$, $|1\rangle=\frac{1}{\sqrt{2}}(|+\rangle - |-\rangle)$
-  - 基底$(|+\rangle, |-\rangle)$に従って $|0\rangle$ を観測すると $|+\rangle$ が得られる確率は $1/2$
-  縫田光司『耐量子計算機暗号』p.182より引用
+  - 基底$(|+\rangle, |-\rangle)$に従って $|1\rangle$ を観測すると $|-\rangle$ が得られる確率は $1/2$
+- 異なる基底での観測
+![w:900px](images/lec-qc3.drawio.svg)
 
 # 複数個のqubit
 ## テンソル積
 - 2個の2次元ベクトルの基底を組み合わせて4次元ベクトル空間の基底を作る（合成系という）
-  - 左のベクトルの各成分に右のベクトルを掛けて並べる（表記の都合で横ベクトルで表す）
+  - $(a,b)\otimes (c,d):=(ac, ad, bc, bd)$ （表記の都合で横ベクトルで表す）
+- 独立に準備された2個の1 qubit $|\psi_1\rangle$ と $|\psi_2\rangle$ がある状態を $|\psi_1\rangle \otimes |\psi_2\rangle$ と表す
+- 複素4次元ベクトル空間 $\cal H$ の基底
   - $|00\rangle:=|0\rangle \otimes |0\rangle = (1,0) \otimes (1,0)=(1,0,0,0)$
   - $|01\rangle:=|0\rangle \otimes |1\rangle = (1,0) \otimes (0,1)=(0,1,0,0)$
   - $|10\rangle:=|1\rangle \otimes |0\rangle = (0,1) \otimes (1,0)=(0,0,1,0)$
   - $|11\rangle:=|1\rangle \otimes |1\rangle = (0,1) \otimes (0,1)=(0,0,0,1)$
-  - 複素4次元ベクトル空間の基底
-  - 一般に $c_{00}|00\rangle + c_{01}|01\rangle + c_{10}|10\rangle + c_{11}|11\rangle$ ($c_{ij} \in \mathbb{C}$, $\sum |c_{ij}|^2=1$) の形
+- 一般に $\cal H$ の元は $c_{00}|00\rangle + c_{01}|01\rangle + c_{10}|10\rangle + c_{11}|11\rangle$ ($c_{ij} \in \mathbb{C}$, $\sum |c_{ij}|^2=1$) の形
   - この基底で観測したとき $|ij\rangle$ が得られる確率は $|c_{ij}|^2$
-- 独立に準備された2個の1 qubit $|\psi_1\rangle$ と $|\psi_2\rangle$ がある状態を $|\psi_1\rangle \otimes |\psi_2\rangle$ と表す
 - $n$個のqubitの状態は $2^n$ 次元複素ベクトルとなる
 
 # 量子もつれ (Entanglement)
@@ -99,19 +100,25 @@ $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られ�
 ## 2個のqubitに対する量子ゲート
 - $CNOT(a|00\rangle + b|01\rangle + c|10\rangle + d|11\rangle):=a|00\rangle + b|01\rangle + d|10\rangle + c|11\rangle$
   - 後ろ2個の基底の係数が入れ代わる
-  ![w:400px](images/lec-cnot1.drawio.svg) ![w:300px](images/lec-cnot2.drawio.svg)
+  ![w:400px](images/lec-cnot1.drawio.svg) ![w:600px](images/lec-cnot2.drawio.svg)
   - 状態 $|x y\rangle$ ($x, y \in \Set{0,1}$) に対して $x=0$ のとき $y$ はそのまま, $x=1$ のとき $y$ は反転
   - $(x, y) \mapsto (x, x \oplus y)$ と表せる
 - $x= \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$, $y=|0\rangle$ とすると $x \otimes y = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)$
   - $CNOT(x \otimes y)=\frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$ となり量子もつれの状態になる
 - 1 qubitの量子ゲートとCNOTゲートを組み合わせると任意のゲートを構成できる（定理）
 
-# 量子計算機における計算
+# 量子計算機 QC における計算
 ## $n$ qubitの状態
 - $n$ bitのデータは $2^n$ 通りのパターンのどれか一つを表す
 - $n$ qubitの状態は $2^n$ 通りのパターンが重なり合った状態を表す
   - $|\psi\rangle = \sum_{i=0}^{2^n-1} c_i |i\rangle$ ($c_i \in \mathbb{C}$, $\sum |c_i|^2=1$)
--
+## QCの処理
+- $|\psi\rangle$ に量子ゲート（ユニタリ行列）を作用させ続けるのがQC
+  - 原理的に $2^n$ 個のパターンを一度に処理できる
+- ただし最終的には観測しないと結果を得られない
+  - そのとき $|c_i|^2$ の確率で $|i\rangle$ に確定し, これが計算結果となる
+- もし $|c_0| = \dots = |c_{2^n-1}|$ ならどの $|i\rangle$ が得られるか完全にランダム
+- 望ましい答えが観測されるように $|c_i|$ を大きくするのがQCアルゴリズム
 
 
 # 量子計算機の開発状況
