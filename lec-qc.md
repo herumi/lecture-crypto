@@ -45,7 +45,7 @@ _class: title
 - $|\psi\rangle$ を基底 $(|0\rangle, |1\rangle)$ に従って「観測」すると
 $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られる（詳しい話はここではしない）
 - $θ$ を実数として $|\psi'\rangle:=e^{iθ} |\psi\rangle$ を観測しても同じ確率（$|e^{iθ}|=1$ なので）
-  - $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: 位相変換に対して不変
+- $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: $e^{iθ}$ を位相因子, 位相変換に対して不変という
 
 # 量子ゲート : qubitの状態を変換する演算
 ## ユニタリ行列
@@ -108,135 +108,112 @@ $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られ�
 - 1 qubitの量子ゲートとCNOTゲートを組み合わせると任意のゲートを構成できる（定理）
 
 # 量子計算機 QC における計算
+<!-- _class: image-right-center -->
+![w:470px](images/lec-qc-algo.png)
 ## $n$ qubitの状態
 - $n$ bitのデータは $2^n$ 通りのパターンのどれか一つを表す
 - $n$ qubitの状態は $2^n$ 通りのパターンが重なり合った状態を表す
   - $|\psi\rangle = \sum_{i=0}^{2^n-1} c_i |i\rangle$ ($c_i \in \mathbb{C}$, $\sum |c_i|^2=1$)
+  - $|i\rangle$ は $i$ を2進数展開($i=\sum_k i_k 2^k$)して $|i_0 i_1 \cdots i_{n-1}\rangle$ の略記
 ## QCの処理
-- $|\psi\rangle$ に量子ゲート（ユニタリ行列）を作用させ続けるのがQC
-  - 原理的に $2^n$ 個のパターンを一度に処理できる
+- $|\psi\rangle$ に量子ゲート（ユニタリ行列）を繰り返し作用させる
+  - 原理的に1回で $2^n$ 個のパターンを処理できる
 - ただし最終的には観測しないと結果を得られない
   - そのとき $|c_i|^2$ の確率で $|i\rangle$ に確定し, これが計算結果となる
 - もし $|c_0| = \dots = |c_{2^n-1}|$ ならどの $|i\rangle$ が得られるか完全にランダム
 - 望ましい答えが観測されるように $|c_i|$ を大きくするのがQCアルゴリズム
 
+# 一般の関数に対する量子ゲート
+## 補助ビット (ancilla) の導入
+- 関数 $f : \Set{0,1}^n \to \Set{0,1}$ に対して
+$U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rangle$ と定義する
+  - $x$: $n$ qubit, $y$: 1 qubit （$y$ が補助ビット）
+- このとき $U_f$ はユニタリ行列になる
+  - $U_f(U_f(|x\rangle \otimes |y\rangle)) = |x\rangle \otimes |y \oplus f(x) \oplus f(x)\rangle = |x\rangle \otimes |y\rangle$
+  - つまり $U_f^{-1} = U_f$
 
-# 量子計算機の開発状況
+# Groverのアルゴリズム
+## $N$ 個のデータから特定の条件を満たすものを一つ探す
+- 関数 $f(x) = 1$ if $x=a$, それ以外は0 において $f(x)=1$ となる $x=a$ を探す
+- 古典計算機なら平均 $N/2$ 回の試行が必要
+- Groverのアルゴリズムは $O(\sqrt{N})$ 回の量子クエリで可能
+  - $O(\sqrt{N})$ 回のクエリで十分高い確率で $f(x)=1$ なる $x$ が見つかるということ
+![w:700px](images/lec-grover.png)
+
+# Shorのアルゴリズム
+## $n=pq$ ($p$, $q$ は素数) を素因数分解するアルゴリズム
+- $g \in [1, n-1]$ をとり $g^r \equiv 1 \pmod{n}$ となる最小の正整数 $r$ を求める（$g$ の位数という）
+- $r$ が偶数ならば $(g^{r/2} - 1)(g^{r/2} + 1) \equiv 0 \pmod{n}$
+  - このとき有意な確率で $\gcd(g^{r/2}-1,n)$ は $n$ の真の約数となることが知られている
+  - $\gcd$ は古典計算機でも高速に求められるので $g$ の位数を高速に求められればよい
+- 全体で $O((\log n)^3)$ で素因数分解できることが知られている
+## 量子位相推定 QPE (Quantum Phase Estimation)
+- $U|\psi\rangle = e^{2\pi i θ} |\psi \rangle$ となる $U$, $\psi$ が与えられたとき $θ$ を精度よく求める
+- QPEは量子フーリエ変換 QFT (Quantum Fourier Transform) を利用して効率よく求められる
+- QFT : フーリエ変換の量子版
+  - $U|x\rangle=1/\sqrt{2^n} \sum_y \exp(2\pi ixy/2^n)|y\rangle$
+  - うまい方法を使うと $O(n^2)$ 個の量子ゲート, $O(n^2)$ ステップで実現可能
+
+# 量子計算機 QCとECDLP
+## ECDLP
+- 楕円曲線 $E/\mathbb{F}_p$ 上の点 $P$, $Q$ が与えられたとき $Q=r P$ となる $r$ を求める問題
+- QPEを利用して $O((\log p)^3)$ で解けることが知られている
+- ビット数が少ない分, 素因数分解よりも効率よく求められる
+  - 古典計算機と逆の状況
+
+# 量子計算機の課題
+## コヒーレンス時間
+- 量子状態を保っていられる時間
+- コヒーレンス時間が短いと長時間動作させられない
 ## 誤り訂正
+- 量子状態は外部環境の影響を受けやすく誤りが発生しやすい
+- 誤り訂正の技術を使って複数の物理qubitで1個の論理qubitを表す
 - 実際に計算できるためには誤り耐性量子計算（FTQC : Fault-Tolerant QC）が必要
 - 実用的なものは100万 qubit程度必要と言われている
+## メモリ
+- 現在のQCは量子メモリを持たない
+- 必要な情報は全てqubitで表現する
 
+# 量子計算機の方式
+## 様々な方式が提案・実現されている
+
+方式|コヒーレンス時間|速度|誤り率|温度|5~6年の目標
+---|---|---|---|---|---
+超電導|10~200μs|~100ns|0.1%|~10mK|$10^5$
+イオントラップ|分|~100μs|0.01%|室温|$10^3$
+中性原子|~100ms|10μs|0.1%|~1mK|$10^5$
+光|無制限|ps|0.1%|室温|$100 \sim 200$
+
+- 数値はぶれが大きく・方式が異なるものの比較も難しいのであくまで参考値
+- [1qubitで1/670万のエラー率](https://qiqb.osaka-u.ac.jp/newstopics/pr20250623)の報告
+- qubitを増やすだけでなくエラー率の低減・運用コストなども課題
+
+# 量子計算機の実装例
 ## 超伝導方式
-- 2019 : Google 53 quibit
-- [IBMのロードマップ](https://www.ibm.com/quantum/technology#roadmap)
-  - 2021/11 : 127 qubit
-  - 2022/11 : 433 qubit
-  - 2023/12 : 1121 qubit Condor
-    - 2023/12 : 日本は[64 quibit](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1)
-    - 実際に動作確認は37 qubit?
-# その他の方式
+- Google: 2019年 53 qubit, 2024年 105 qubit
+- [IBMのロードマップ](https://www.ibm.com/quantum/technology#roadmap): 2021年 127 qubit, 2022年 433 qubit, 2023年 1121 qubit Condor
+- 大阪大学: 2023年 [64 quibit](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1), 富士通と理研: 2025年 [256 qubit](https://pr.fujitsu.com/jp/news/2025/04/22.html)
 ## イオントラップ方式
-- 2023/6 : [IonQが29 quibit](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq)
-  - 2024 : 35 quibitを目指す?
+- 2023/6 : [IonQが29 quibit](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq), 2025: Quantinuum 56 qubit
 ## 中性原子方式
-- 2023/10 : [Atom Computing 1000 quibit](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/)
-  - [48 論理 quibit 実現](https://www.nature.com/articles/s41586-023-06927-3)
+- 2023/10 : Atom Computing [1180 quibit](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/)
 ## その他
 - 電子, 光, マイクロ波 etc.
-## 未来
-- 2030/? 10~100万 qubit, 量子誤り訂正, 量子ランダムアクセス
 
-# 量子計算機の復習
-## 量子ビット（qubit）
-- 量子計算機の基本単位
-- 1qbitは $a|0 \rangle +b|1\rangle$ の形（$|\cdot\rangle$ はベクトルの基底, $a$, $b$ は複素数, $|a|^2+|b|^2=1$）
-  - 観測すると $|a|^2$ の確率で $|0\rangle$ がえられる
-- 2qbitだと $|00\rangle$, $|01\rangle$, $|10\rangle$, $|11\rangle$ の4つの基底の線形和（$|i\rangle\otimes |j\rangle=|ij\rangle$ : テンソル積）
-  - $n$ qbitだと $2^n$ 個の状態を同時に扱える
-    - $i$ 番目の状態（$i$を2進数展開して$|i_0 i_1 \cdots i_{n-1}\rangle$） $|i\rangle$ と表す
-## 量子計算機の演算（ゲート）
-  - $n$ qbitの状態を変換する演算を行列 $U$ で表す
-  - $U$ は$2^n$ 次元のユニタリ行列（$U^\dagger U = UU^\dagger = I$, $\dagger$ は転置+複素共役）
-  - 量子ゲートの入出力でqbitの数は変わらない（演算は可逆でなければならない）
-  - 最後に観測したときに確率的にどれかの状態が現れる
-
-# 量子計算機の計算
-## 量子並列性
-- 入力 $x=(x_i)$ に対する関数 $f(x)$ の計算
-- $U_f : \sum_x |x\rangle\otimes |0\rangle \rightarrow \sum_x |x\rangle \otimes |f(x)\rangle$
-  - $2^n$ 個の入力（$x=(x_i)$）に対して出力 $f(x_i)$ を同時に計算することを意味する
-  - ただ, 観測したときどの $f(x_i)$ が出るかは確率的にしか決まらない
-  - 望ましい $f(x_i)$ が観測されるように確率係数を大きくなる操作が必要
-    - 量子計算機のアルゴリズムはそれをするためのもの
-
-## 量子フーリエ変換
-- $U|x\rangle=1/\sqrt{2^n} \sum_y \exp(2\pi ixy/2^n)|y\rangle$ を離散フーリエ変換DFTという
-- ナイーブにDFTを実装すると $(2^n)^2$ ステップ必要
-- うまい方法を使うと $O(n^2)$ 個の量子ゲート, $O(n^2)$ ステップで実現可能
-
-# ショアのアルゴリズム
-## 周期の探索
-- $f(x) = g^x \bmod n$ のとき $f(x)=1$ となる $x$ を求める
-  - もっと一般化された定式化があるが略
-  - 古典なら $\log_2(n)$ の指数関数時間
-  - 量子コンピュータなら $\log_2(n)$ の多項式時間
-  - $U_f : |x\rangle \otimes |0\rangle \mapsto |x\rangle \otimes |f(x)\rangle$ として $U_f$ を構成し、DFTと組み合わせる
-
-# RSA暗号の復習
-## RSA暗号の肝
-- 素数 $p, q$ を使って $n = pq$ を作る
-- $ed \equiv 1 \pmod{(p-1)(q-1)}$ を満たす $e$（公開）, $d$（秘密） を作る
-- $f(x,y) := x^y \bmod n$ として $f(f(m,e),d) \equiv m \pmod{n}$ を利用する
-## RSA暗号の解読
-- 適当な整数 $a$ に対して $a^r \equiv 1 \pmod{n}$ となる偶数 $r$ を探す
-- $a^r-1=(a^{r/2}-1)(a^{r/2}+1) \equiv 0 \pmod{n}$
-    - 因数のどちらかと $n$ の最大公約数を求めるとそれが $p$ か $q$ になる
-    - ※を求める問題に帰着 → ショアのアルゴリズムで解読可能
-
-# 楕円曲線暗号への影響
-## 楕円曲線暗号の肝
-- 楕円曲線の点 $P$ と整数 $x$（秘密）から $xP$（公開）を使って構成する暗号
-- 楕円離散対数問題(ECDLP) : $xP$ と $P$ から $x$ は求められない
-## 量子計算機による解読
-- [ショアのアルゴリズムを適用してECDLPを解く](https://arxiv.org/abs/1706.06752)
-
-## 量子計算機による解読見積もり（文献により差が大きい）
--|224 bit ECDLP|2048 bit RSA
--|---|---
-Qubits|2042|6146 (20e+6)
-gates|8.43e+10|3e+12 (5.20e+12)
-
-# 現実
-## 実際に解読できたパターン(by Wikipedia)
+# 素因数分解の評価
+## 理論的には
+- Beauregard (2003)の見積もりで $n$ bitの数の素因数分解に $2n+3$ bit必要
+## 実際に必要なqubitの見積もり
+- [Gidney and Ekerå (2019)](https://arxiv.org/abs/1905.09749) : 2048 bit RSAを解くにはエラー率0.1% 2000万 qubit, 8時間
+- [Gidney (2025)](https://arxiv.org/abs/2505.15917)（未査読）: 2048 bit RSAを解くにはエラー率0.1% 100万 qubit, 1週間
+## 実際に解読できたパターン
 - 2001 IBM : 15 = 3x5
 - 2012 [Josephson phase qubi](https://arxiv.org/abs/1202.5707) : 21 = 3x7
 - 2019 IBM : 35を素因数分解しようとしたが失敗
-- 2020 [NICT](https://www.nict.go.jp/press/2020/12/09-1.html) : $2^x\equiv 1 \pmod{2}$ は解けたが $4^x \equiv 2 \pmod{7}$ は失敗
+- (DLP) 2020 [NICT](https://www.nict.go.jp/press/2020/12/09-1.html) : $2^x\equiv 1 \pmod{2}$ は解けたが $4^x \equiv 2 \pmod{7}$ は失敗
 - ただし解けた素因数分解は素因数の情報を使ってる（[CRYPTREC](https://www.cryptrec.go.jp/exreport/cryptrec-ex-3005-2020.pdf) : それはありなのか）
 - もっと大きい素因数分解に成功したものもあるがそれも全数探索 or 素数の性質を使ってる
-## 感想
-- 量子コンピュータの進展の割に10年以上記録が更新されていないのは何故?
-- [ショアのアルゴリズムでは素因数分解できない](https://arxiv.org/abs/2306.10072)と主張する人もいる
-（査読あり学会には通っていない模様）
 
-# グローバーの探索アルゴリズム
-## $N$個のデータから特定のパターンにマッチするものを探す問題
-- $[0, N-1]$ 上の関数で, $f(a)=1 \text{ if } x = a$, otherwise $f(x)=0$ なるものを考える
-  - 仮定 : $f(x)$ の計算も量子コンピュータが行う（量子オラクル）
-  - $f(x)$ の計算ステップは無視している
-- 古典計算機なら $x=a$ を求めるのに平均 $N/2$ 回の試行が必要
-- グローバーのアルゴリズムなら $O(\sqrt{N})$ 回の試行でOK
-  - 量子ビットは $O(\log N)$ 必要
-  - $U_f$ をうまく構成して1回ごとに $x=a$ となる確率だけ大きくして,
-  他は小さくなるようにする
-    - $|a\rangle$ でだけ反転, それ以外はそのままの写像と別の写像との組み合わせの繰り返し
-  - $O(\sqrt{N})$ 回の試行で $x=a$ となる確率が $1-1/N$ になる（※）
-
-# サイモンのアルゴリズム
-## 周期の探索
-- $f : [0, 1]^n → [0, 1]^n$ が, ある $r \in [0, 1]^n \setminus 0$ が存在して $f(x \oplus r) = f(x)$ が成り立つとき,
-$r$ を求めよ
-  - $O(n \log n)$ で求められる
 
 # 共通鍵暗号への影響
 ## 攻撃モデル
