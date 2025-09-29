@@ -223,7 +223,7 @@ $U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rang
   - 共通鍵暗号はこちらのモデルを使うことが多い（実際に攻撃できないことが多い）
 ## 共通鍵暗号の素朴な安全性評価
 - 共通鍵暗号の鍵空間が $2^n$ なら古典では $O(2^n)$
-- グローバーのアルゴリズムを使う（Q2）と、$O(2^{n/2})$ で解読
+- Groberのアルゴリズムを使う（Q2）と、$O(2^{n/2})$ で解読
 - ハッシュ関数の衝突（$h(x)=h(x')$ となる $x\neq x'$）を求める問題
   - 古典 $O(2^{n/2})$ で解ける
   - Q2 : $O(2^{n/3})$ で解ける, ただし量子メモリは $O(2^{n/3})$ : 現実的でない → 当面大丈夫
@@ -281,20 +281,28 @@ $U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rang
 ---|---|---|---
 ECDH|KEM|32B|32B
 ECDSA|署名|32B|64B
-Kyber-768|KEM|1184B|1088B
+Kyber-768 (MLKEM768)|KEM|1184B|1088B
 Dilithium3|署名|1952B|3309B
 SPHINCS+|署名|32B|7856B
 
-## ブラウザ対応
-- 2024/初め : Chrome 124/Edge/FirefoxがKyber-768対応
+## MLKEM768のブラウザ対応
+- 2024/初め: Chrome 124/Edge/FirefoxがKyber-768対応
+- 2025/9: iPhone (iOS26) のブラウザも対応
+- [Cloudflare Research](https://pq.cloudflareresearch.com/) で確認できる
 
 # 格子暗号
-## LWE(Learning With Errors)問題の困難性
-- $𝔽_q=\Set{0, \dots, q-1}$, 行列 $A$, ベクトル $b$ が与えられたときに $x \in (𝔽_q)^n$ に関する方程式 
-$A x=b+e \pmod{q}$ を解くのが難しい
-  - ここで $e$ は小さいノイズ（$e_i \in [-1,1]$）
-  - $e=0$ なら普通の連立方程式で解くのは簡単
-## NTRU問題
+## LWE(Learning With Errors) 問題
+- $𝔽_q$ 係数 $m \times n$ 次行列 $A$ と $s \in {𝔽_q}^n$ を選び $b:=A s+e \pmod{q}$ とする
+$(A, b)$ が与えられたとき $s$ を求めよ
+  - ここで $e$ は小さい整数からなる $m$ 次元縦ベクトル
+  - $e=0$ なら（$m \ge n$ として）普通の連立方程式を解くので簡単
+## より厳密には
+- $\chi$: 平均0, 標準偏差 $σ$ の離散ガウス分布（整数 $x$ が $\exp(-x^2/2σ^2)$ に比例する確率）
+  - $e$ は $\chi$ からサンプリングする
+  - 厳密には通常の連続ガウス分布の結果を整数に丸めたものとは異なる
+  - ただ
+
+# NTRU問題
 - 多項式 $f, g, F, G$ が $fG - gF \equiv q \pmod{x^n+1}$ を満たすとき
 $h=gf^{-1} \bmod{(x^n+1,q)}$ からそれを満たす $f, g$ を求める問題
 - 署名FALCONで利用
