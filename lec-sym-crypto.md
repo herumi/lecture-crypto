@@ -14,7 +14,7 @@ headingDivider: 1
 <!--
 _class: title
 -->
-# 共通鍵暗号
+# 共通鍵暗号, 2025/10
 <br>
 光成滋生
 <br>
