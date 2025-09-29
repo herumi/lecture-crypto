@@ -29,6 +29,7 @@ _class: title
 - 暗号
 - 認証・FIDO
 - 認可・OAuth
+- OpenID Connect
 
 
 # 情報セキュリティとは
@@ -186,3 +187,41 @@ _class: title
 1. 認可コードを発行
 1. アプリYが認可コードを使ってAからアクセストークンを取得
 1. アプリYがアクセストークンを使ってAにアクセス
+
+# OpenID Connect (OIDC)
+## ID連携技術
+- あるWebサービスのログイン画面にある「○○でログイン」ボタン
+- OAuth 2.0 (2012) は認可の仕組み
+  - OpenID: ユーザ認証のみ (2005-2007): 事実上廃止でOIDCとは別物
+- OpenID Connect = OAuth 2.0 + 認証 + IDトークン
+## 用語
+- IDトークン: ユーザの属性情報 (claim) を含むJWT (JSON Web Token: ジョット)
+  - JWT: 改竄検知 (HMAC, 署名) 対応
+- IdP (Identity Provider): 認証してIDトークンを発行
+- RP (Relying Party): IDトークンを受け取ってログインを実現するサービス
+
+# Authorization Code Flow (1/2)
+<!-- _class: image-right -->
+![w:500px](images/lec-oidc1.drawio.svg)
+## ユーザ認証・登録の流れ
+- `RESP`が含むもの
+  - `state`: CSRF (Cross-Site Request Forgery) 対策の乱数
+    - 攻撃者の認可コードを使わせないようにする
+    - stateパラメータ検証で確認
+  - `nonce`: リプレイ攻撃対策の乱数
+    - 一度しか使わない (number used only once)
+    - 盗聴されたIDトークンを再利用させない
+    - IDトークン検証で確認（次ページ）
+- ユーザは何の情報を提供することに認可するかに同意
+- `CODE`: 認可コード（有効期限の短い乱数）を含む
+- `GRANT`: 認可コード, クライアントの情報を含む
+
+# Authorization Code Flow (2/2)
+<!-- _class: image-right -->
+![w:500px](images/lec-oidc2.drawio.svg)
+## トークンレスポンスの続き
+- 認可コードを検証しIDトークン, アクセストークンを発行
+- RPはIDトークンの署名と`nonce`を検証
+  - アクセストークンを用いてユーザ情報を取得
+  - `sub`: RPごとに異なるユーザ識別子 (Subject)
+- `sub`をキーとしてアカウント発行・登録
