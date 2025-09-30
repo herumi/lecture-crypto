@@ -224,7 +224,10 @@ _class: title
 ## トークンレスポンスの続き
 - 認可コードを検証しIDトークン, アクセストークンを発行
 - RPはIDトークンの署名と`nonce`を検証
+  - 署名の検証に必要な検証鍵（公開鍵）はIdPが提供
+    - OpenID Configurationから取得 e.g. [Google](https://accounts.google.com/.well-known/openid-configuration)
+    - 検証鍵はそこに記載された`jwks_uri`で配布
   - アクセストークンを用いてユーザ情報を取得
   - `sub`: RPごとに異なるユーザ識別子 (Subject)
-  - RPを越えてユーザを識別・追跡させないため
+    - RPを越えてユーザを識別・追跡させないため
 - `sub`をキーとしてアカウント発行・登録
