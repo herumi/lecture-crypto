@@ -23,7 +23,7 @@ _class: title
 - 現在（古典）計算機はビット (0 or 1) を基本単位として計算
 - 論理ゲート: AND, OR, NOTなどのビット演算の組合せ
 ## 量子計算機 QC (Quantum Computer)
-- 量子力学で記述される現象を利用した新しい計算機
+- 量子力学で記述される量子状態を利用した計算機
   - 攻撃: 量子計算機を利用して暗号技術を破る量子アルゴリズム
   - 対策: 耐量子計算機暗号（量子計算機が登場しても安全な現在の計算機で実行できる暗号）
   - 量子鍵配送（量子暗号）: 量子の性質を利用した秘密鍵を共有する技術
@@ -32,39 +32,87 @@ _class: title
 - 波は数えられない広がりを持った状態
 - 複数の波が重なり合って干渉する
 
-# 量子計算機
-<!-- _class: image-right -->
-![w:500px](images/lec-qc1.drawio.svg)
-## 量子の性質を利用した計算機
-- 量子: 粒子と波の両方の性質を持ったもの
-- 0の状態を$|0\rangle$, 1の状態を$|1\rangle$と表す
-- 量子ビット (qubit) : QCの基本単位
-  - qubit : $|\psi\rangle:=a|0\rangle + b|1\rangle$
-    - $a, b \in ℂ$, $|a|^2+|b|^2=1$
-    - $(|0\rangle, |1\rangle)$ は複素2次元ベクトル空間の基底
-## 観測
-- $|\psi\rangle$ を基底 $(|0\rangle, |1\rangle)$ に従って「観測」すると
-$|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られるという原理
-  - $θ$ を実数として $|\psi'\rangle:=e^{iθ} |\psi\rangle$ を観測しても同じ確率（$|e^{iθ}|=1$ なので）
-  - $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: $e^{iθ}$ を位相因子, 位相変換に対して不変という
+# 量子
+## 粒子と波の両方の性質をもった状態
+- 電子, 光子, 原子などの量子状態を最小単位 (qubit) として制御することで計算
 
-# 線形代数の復習
-## ユニタリ行列の定義と性質
-- $U^\dagger U = I$ を満たす複素行列 $U$ をユニタリ行列という（$I$ は単位行列）
-  - $U^\dagger$ は $U$ の「転置＋複素共役」（$U=(u_{ij})$ なら $U^\dagger=(\overline{u_{ji}})$）を表す
-- $U$ がユニタリ行列なら $U^{-1}=U^\dagger$ なので $U$ は可逆
+## 量子計算機の方式例
+- 超電導・イオントラップ・中性原子・光など
+  - それぞれの方式の詳細は本講演の範囲外
+- 量子状態の持続時間（コヒーレンス時間）・速度・エラー率・動作温度が一長一短
+- qubit を増やすだけでなく、エラー率の低減・大規模化・運用コストなども課題
+## 誤り訂正
+- 量子状態は外部環境の影響を受けやすく誤りが発生しやすい
+- 誤り訂正の技術を使って複数の物理qubitで1個の論理qubitを表す
+- 実際に計算できるためには誤り耐性量子計算FTQC（Fault-Tolerant QC）が必要
+- 実用的なものは100万 qubit程度必要と言われている
+## メモリ
+- 現在のQCは量子メモリを持たない
+- 必要な情報は全てqubitで表現する
+
+
+# 量子計算機の実装例
+## 超伝導方式
+- Google: 2019年 53 qubit, 2024年 105 qubit
+- [IBMのロードマップ](https://www.ibm.com/quantum/technology#roadmap): 2021年 127 qubit, 2022年 433 qubit, 2023年 1121 qubit Condor
+- 大阪大学: 2023年 [64 quibit](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1), 富士通と理研: 2025年 [256 qubit](https://pr.fujitsu.com/jp/news/2025/04/22.html)
+## イオントラップ方式
+- 2023/6: [IonQが29 quibit](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq), 2025: Quantinuum 56 qubit
+- 2025/6: [1qubitで1/670万のエラー率](https://qiqb.osaka-u.ac.jp/newstopics/pr20250623)
+
+## 中性原子方式
+- 2023/10: Atom Computing [1180 quibit](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/)
+- 2025/9: [6100 qubit, 0.02%のエラー率](https://www.caltech.edu/about/news/caltech-team-sets-record-with-6100-qubit-array)
+
+- その他: 電子, 光, マイクロ波 etc.
+
+# 量子計算機に必要な線形代数の復習
+## 行列
+- 複素数を縦に $n$ 個, 横に $m$ 個並べた $A=(a_{ij})$ ($a_{ij} \in ℂ$) を $n$ 行 $m$ 列 （複素）行列という
+  - その全体を $M_{n,m}(ℂ)$ と書く（$n=m$ のときは $n$ 次正方行列で $M_n(ℂ)$ と書く）
+- $A \in M_{n,m}(ℂ)$, $B \in M_{m,l}(ℂ)$ に対して行列の積 $AB:=((\sum_{k=1}^m a_{ik}b_{kj})_{ij} \in M_{n,l}(ℂ)$
+- $A^T$: 行列 $A$ の転置行列 $A^T:=(a_{ji})$ は $m$ 行 $n$ 列の行列
+- $A$ のエルミート共役: $A^\dagger := \overline{A}^T=(\overline{a_{ji}})$（$\overline{a_{ji}}$ は $a_{ij}$ の複素共役）
+  - $(AB)^\dagger = (\overline{(AB)_{ji})}=\overline{(\sum a_{jk} b_{ki})}=B^\dagger A^\dagger$
+## ベクトル
+- $n$ 次元縦ベクトル $v, w \in M_{n,1}(ℂ)$ の内積: $v \cdot w := v^\dagger w = \sum_{i=0}^n \overline{v_i} w_i \in ℂ$
+- $v$ のノルム（長さ）: $|v| := \sqrt{v \cdot v}$, 単位ベクトル: ノルムが1のベクトル
+- $n$ 個の $n$ 次元縦ベクトル $e_1, \dots, e_n$ が $e_i \cdot e_j = δ_{ij}$ のとき $\Set{e_i}$ を正規直交基底という
+  - $\Set{e_i:=(0, \dots, 0, 1, 0, \dots, 0)^T}$ （$i$ 番目だけ1）は標準基底
+
+# ユニタリ行列
+## 量子力学の演算に必要な行列
+- ユニタリ行列: $U^\dagger U = I$ を満たす $n$ 次行列 $U$（$I$ は単位行列）, その全体を $U(n)$ と書く
+- $U \in U(n)$ なら $U^{-1}=U^\dagger$ なので $U$ は可逆
 - ユニタリ行列はベクトルの長さを変えない
-  - $v$ が $|v|=1$ なら $1=v^\dagger v=v\dagger (U^\dagger U) v=(Uv)^\dagger (Uv)=|Uv|^2$ なので $|Uv|=1$
+  - $v$ が $|v|=l$ なら $l^2=v^\dagger v=v\dagger (U^\dagger U) v=(Uv)^\dagger (Uv)=|Uv|^2$ なので $|Uv|=l$
+  - 同様に $\Set{e_i}$ が正規直交基底なら $\Set{U e_i}$ も正規直交基底（$(Ue_i)^\dagger (Ue_j)=δ_{ij}$）
+  - 特に $U$ は単位ベクトルを単位ベクトルに移す
 ## 固有値と固有ベクトル
 - $A$: 行列, $v$: ベクトル, $λ \in ℂ$ について $Av=λv$ を満たすとき $v$: $A$ の固有ベクトル, $λ$: 固有値
 - $A$ がユニタリ行列のとき $|v|=1$ とすると $|v|=|Av|=|λ||v|$ なので $|λ|=1$
   - ユニタリ行列の固有値は絶対値が1の複素数なので $λ=e^{iθ}$ ($θ \in ℝ$) と表せる
+
+# 量子計算機の基礎
+<!-- _class: image-right -->
+![w:400px](images/lec-qc1.drawio.svg)
+## QC の演算の基本単位: 量子ビット (qubit)
+- 1 qubitとは複素2次元単位ベクトル $v := (a,b)^T \in M_{2,1}(ℂ)$
+  - $|v|=1$ より $|a|^2 + |b|^2 = 1$
+  - $v=a(1,0)^T + b(0,1)^T$ は標準基底による表現
+  - 慣習的にベクトル $v$ と標準基底 $\Set{(1,0)^T, (0,1)^T}$ を
+   $|\psi\rangle$, $\Set{|0\rangle, |1\rangle}$ と書き $|\psi\rangle=a |0\rangle + b |1\rangle$ と表記する
+$ab \neq 0$ のとき $|\psi\rangle$ は $|0\rangle, |1\rangle$ の混合状態という
+## 観測の原理
+- $|\psi\rangle$ を基底 $(|0\rangle,|1\rangle)$ に従って「観測」すると $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られる
+## 位相
+- $θ \in [0, 1]$ について $|e^{iθ}|=1$ なので $|\psi'\rangle:=e^{iθ} |\psi\rangle$ の観測結果は $|\psi\rangle$ の観測結果と同じ分布
+- $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: 位相変換に対して不変, $e^{iθ}$ を位相因子という
+
 # 量子ゲート
 ## qubitの状態を変換する演算
-- $|0\rangle$ を $\begin{pmatrix}1 \\ 0\end{pmatrix}$, $|1\rangle$ を $\begin{pmatrix}0 \\ 1\end{pmatrix}$ と表すと $|\psi\rangle$ を $a|0\rangle + b|1\rangle=\begin{pmatrix}a \\ b\end{pmatrix}=:v$ と表現できる
-  - $|v|=|a|^2 + |b|^2=1$ なので $v$ は単位ベクトル
-- 複素2次元ベクトル $\begin{pmatrix}a \\ b\end{pmatrix}$ にユニタリ行列 $U$ を掛ける操作を量子ゲートという
-  - ユニタリ行列はベクトルの長さを変えないので $Uv$ もqubitの状態を表す
+- 1 qubit $|\psi\rangle=(a,b)^T$ に対して $U \in U(2)$ を掛ける操作: $|\psi\rangle \mapsto U|\psi\rangle$ を量子ゲートという
+  - $U$ はユニタリ行列なので $|U|\psi\rangle|=||\psi\rangle|=1$ であり, $U|\psi\rangle$ もqubitの状態を表す
 - ユニタリ行列は可逆なので量子ゲートは可逆な変換しかできない
   - 例えば古典の AND ゲートは不可逆なので量子ゲートでは実現できない
   - 後述する複数のqubitを用いて $(x,y,z) \mapsto (x, y, z \oplus (x \land y))$ のような形で実現する
@@ -241,47 +289,6 @@ ECDLP: $Q \in S$ に対して $Q=kP$ となる $k$ を見つける問題
   - 結果 $(a,b)$, $(a',b') \in S_R:=\Set{(a,b)\mid aP + bQ = R}$
 - $O((\log p)^3)$ で解けることが知られている
 - ビット数が少ない分, 原理的に素因数分解よりも効率よく求められる
-
-# 量子計算機の課題
-## コヒーレンス時間
-- 量子状態を保っていられる時間
-- コヒーレンス時間が短いと長時間動作させられない
-## 誤り訂正
-- 量子状態は外部環境の影響を受けやすく誤りが発生しやすい
-- 誤り訂正の技術を使って複数の物理qubitで1個の論理qubitを表す
-- 実際に計算できるためには誤り耐性量子計算（FTQC : Fault-Tolerant QC）が必要
-- 実用的なものは100万 qubit程度必要と言われている
-## メモリ
-- 現在のQCは量子メモリを持たない
-- 必要な情報は全てqubitで表現する
-
-# 量子計算機の方式
-## 様々な方式が提案・実現されている
-
-方式|コヒーレンス時間|速度|誤り率|温度|5~6年の目標
----|---|---|---|---|---
-超電導|10~200μs|~100ns|0.1%|~10mK|$10^5$
-イオントラップ|分|~100μs|0.01%|室温|$10^3$
-中性原子|~100ms|10μs|0.1%|~1mK|$10^5$
-光|無制限|ps|0.1%|室温|$100 \sim 200$
-
-- 数値はぶれが大きく・方式が異なるものの比較も難しいのであくまで参考値
-- qubitを増やすだけでなくエラー率の低減・運用コストなども課題
-
-# 量子計算機の実装例
-## 超伝導方式
-- Google: 2019年 53 qubit, 2024年 105 qubit
-- [IBMのロードマップ](https://www.ibm.com/quantum/technology#roadmap): 2021年 127 qubit, 2022年 433 qubit, 2023年 1121 qubit Condor
-- 大阪大学: 2023年 [64 quibit](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1), 富士通と理研: 2025年 [256 qubit](https://pr.fujitsu.com/jp/news/2025/04/22.html)
-## イオントラップ方式
-- 2023/6: [IonQが29 quibit](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq), 2025: Quantinuum 56 qubit
-- 2025/6: [1qubitで1/670万のエラー率](https://qiqb.osaka-u.ac.jp/newstopics/pr20250623)
-
-## 中性原子方式
-- 2023/10: Atom Computing [1180 quibit](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/)
-- 2025/9: [6100 qubit, 0.02%のエラー率](https://www.caltech.edu/about/news/caltech-team-sets-record-with-6100-qubit-array)
-
-- その他: 電子, 光, マイクロ波 etc.
 
 # 素因数分解の評価
 ## 理論的には
