@@ -101,109 +101,141 @@ _class: title
   - $|v|=1$ より $|a|^2 + |b|^2 = 1$
   - $v=a(1,0)^T + b(0,1)^T$ は標準基底による表現
   - 慣習的にベクトル $v$ と標準基底 $\Set{(1,0)^T, (0,1)^T}$ を
-   $|\psi\rangle$, $\Set{|0\rangle, |1\rangle}$ と書き $|\psi\rangle=a |0\rangle + b |1\rangle$ と表記する
-$ab \neq 0$ のとき $|\psi\rangle$ は $|0\rangle, |1\rangle$ の混合状態という
+   $|ψ⟩$, $\Set{|0⟩, |1⟩}$ と書き $|ψ⟩=a |0⟩ + b |1⟩$ と表記する
+$ab \neq 0$ のとき $|ψ⟩$ は $|0⟩, |1⟩$ の混合状態という
 ## 観測の原理
-- $|\psi\rangle$ を基底 $(|0\rangle,|1\rangle)$ に従って「観測」すると $|a|^2$ の確率で $|0\rangle$, $|b|^2$ の確率で $|1\rangle$ が得られる
+- $|ψ⟩$ を基底 $(|0⟩,|1⟩)$ に従って「観測」すると $|a|^2$ の確率で $|0⟩$, $|b|^2$ の確率で $|1⟩$ が得られる
 ## 位相
-- $θ \in [0, 1]$ について $|e^{iθ}|=1$ なので $|\psi'\rangle:=e^{iθ} |\psi\rangle$ の観測結果は $|\psi\rangle$ の観測結果と同じ分布
-- $|\psi\rangle$ と $|\psi'\rangle$ は物理的に区別がつかない: 位相変換に対して不変, $e^{iθ}$ を位相因子という
+- $θ \in [0, 1]$ について $|e^{iθ}|=1$ なので $|ψ'⟩:=e^{iθ} |ψ⟩$ の観測結果は $|ψ⟩$ の観測結果と同じ分布
+- $|ψ⟩$ と $|ψ'⟩$ は物理的に区別がつかない: 位相変換に対して不変, $e^{iθ}$ を位相因子という
 
 # 量子ゲート
 ## qubitの状態を変換する演算
-- 1 qubit $|\psi\rangle=(a,b)^T$ に対して $U \in U(2)$ を掛ける操作: $|\psi\rangle \mapsto U|\psi\rangle$ を量子ゲートという
-  - $U$ はユニタリ行列なので $|U|\psi\rangle|=||\psi\rangle|=1$ であり, $U|\psi\rangle$ もqubitの状態を表す
+- 1 qubit $|ψ⟩=(a,b)^T$ に対して $U \in U(2)$ を掛ける操作: $|ψ⟩ \mapsto U|ψ⟩$ を量子ゲートという
+  - $U$ はユニタリ行列なので $|U|ψ⟩|=||ψ⟩|=1$ であり, $U|ψ⟩$ もqubitの状態を表す
 - ユニタリ行列は可逆なので量子ゲートは可逆な変換しかできない
   - 例えば古典の AND ゲートは不可逆なので量子ゲートでは実現できない
   - 後述する複数のqubitを用いて $(x,y,z) \mapsto (x, y, z \oplus (x \land y))$ のような形で実現する
 
+## 複製不可能性定理 (no-cloning theorem)
+- 未知の量子状態の複製は不可能
+- ユニタリ行列の性質から導かれる
+  - 古典的な誤り訂正を適用できない
+  - 量子誤り訂正符号という異なる手法・理論がひつよう
+
 # 量子ゲートの例
+<!-- _class: image-right -->
+![w:250px](images/lec-qc-h.drawio.svg)
 ## 代表的な量子ゲート
 - X (NOT) ゲート: $X:=\begin{pmatrix}0 & 1 \\ 1 & 0\end{pmatrix}$
-  - $X|0\rangle = |1\rangle$, $X|1\rangle = |0\rangle$: 基底の反転
-- アダマールゲート: $H:=\frac{1}{\sqrt{2}}\begin{pmatrix}1 & 1 \\ 1 & -1\end{pmatrix}$
-  - $H|0\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$, $H|1\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$
-  - $|+\rangle := H|0\rangle$, $|-\rangle := H|1\rangle$ と表記することが多い
+  - $X|0⟩ = |1⟩=(1,0)^T$, $X|1⟩ = |0⟩=(0,1)^T$: 基底の反転
+- アダマールゲート: $H:=(1/\sqrt{2})\begin{pmatrix}1 & 1 \\ 1 & -1\end{pmatrix}$
+  - $|+⟩ :=H|0⟩ = (1/\sqrt{2}) (|0⟩ + |1⟩)=(1/\sqrt{2})(1,1)^T$
+  - $|-⟩ :=H|1⟩ = (1/\sqrt{2}) (|0⟩ - |1⟩)=(1/\sqrt{2})(1,-1)^T$
 - 位相回転: $R(θ):=\begin{pmatrix}1 & 0 \\ 0 & e^{iθ}\end{pmatrix}$
-  - $R(θ)|0\rangle = |0\rangle$, $R(θ)|1\rangle = e^{iθ}|1\rangle$
-  - $|1\rangle$ の位相を $θ$ だけ回転させる
+  - $R(θ)|0⟩ = |0⟩$, $R(θ)|1⟩ = e^{iθ}|1⟩$
+    - $|1⟩$ の位相を $θ$ だけ回転させる
   - $T:=R(π/4)$, $S:=R(π/2)$ と略記することが多い（$T^2=S$）
 
 # 異なる基底での観測
 ## 相互関係
-- $|+\rangle= \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$, $|-\rangle= \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$
-- $|0\rangle=\frac{1}{\sqrt{2}}(|+\rangle + |-\rangle)$, $|1\rangle=\frac{1}{\sqrt{2}}(|+\rangle - |-\rangle)$
+- $|+⟩= (1/\sqrt{2}) (|0⟩ + |1⟩)$, $|-⟩= (1/\sqrt{2}) (|0⟩ - |1⟩)$
+- $|0⟩=(1/\sqrt{2}) (|+⟩ + |-⟩)$, $|1⟩=(1/\sqrt{2}) (|+⟩ - |-⟩)$
 ## 基底を取り替えて観測する
-- $(|0\rangle, |1\rangle)$ 以外の基底で観測できる
-- $(|+\rangle, |-\rangle)$ も別の基底なので $|+\rangle, |-\rangle$ で観測してみる
-- $|0\rangle$ を $(|0\rangle, |1\rangle)$ に関して観測すると確率 $1$ で $|0\rangle$
-- $|0\rangle$ を $(|+\rangle, |-\rangle)$ に関して観測すると確率 $1/2$ で $|+\rangle$ か $|-\rangle$
+- $(|0⟩, |1⟩)$ 以外の基底でも観測できる
+- $(|+⟩, |-⟩)$ も別の基底なので $|+⟩, |-⟩$ で観測してみる
+- $|0⟩$ を $(|0⟩, |1⟩)$ に関して観測すると確率 $1$ で $|0⟩$
+- $|0⟩$ を $(|+⟩, |-⟩)$ に関して観測すると確率 $1/2$ で $|+⟩$ か $|-⟩$
 ![w:900px](images/lec-qc3.drawio.svg)
 
 # 複数個のqubit
 ## テンソル積
-- 2個の2次元ベクトルの基底を組み合わせて4次元ベクトル空間の基底を作る（合成系という）
+- 2個の2次元ベクトルの基底を組み合わせて4次元ベクトル空間の基底を作る（*合成系*という）
   - $(a,b)\otimes (c,d):=(ac, ad, bc, bd)$ （表記の都合で横ベクトルで表す）
-- 独立に準備された2個の1 qubit $|\psi_1\rangle$ と $|\psi_2\rangle$ がある状態を $|\psi_1\rangle \otimes |\psi_2\rangle$ と表す
+- 独立に準備された2個の1 qubit $|ψ_1⟩$ と $|ψ_2⟩$ がある状態を $|ψ_1⟩ \otimes |ψ_2⟩$ と表す
 - 複素4次元ベクトル空間 $\cal H$ の基底
-  - $|00\rangle:=|0\rangle \otimes |0\rangle = (1,0) \otimes (1,0)=(1,0,0,0)$
-  - $|01\rangle:=|0\rangle \otimes |1\rangle = (1,0) \otimes (0,1)=(0,1,0,0)$
-  - $|10\rangle:=|1\rangle \otimes |0\rangle = (0,1) \otimes (1,0)=(0,0,1,0)$
-  - $|11\rangle:=|1\rangle \otimes |1\rangle = (0,1) \otimes (0,1)=(0,0,0,1)$
-- 一般に $\cal H$ の元は $c_{00}|00\rangle + c_{01}|01\rangle + c_{10}|10\rangle + c_{11}|11\rangle$ ($c_{ij} \in ℂ$, $\sum |c_{ij}|^2=1$) の形
-  - この基底で観測したとき $|ij\rangle$ が得られる確率は $|c_{ij}|^2$
+  - $|00⟩:=|0⟩ \otimes |0⟩ = (1,0) \otimes (1,0)=(1,0,0,0)$
+  - $|01⟩:=|0⟩ \otimes |1⟩ = (1,0) \otimes (0,1)=(0,1,0,0)$
+  - $|10⟩:=|1⟩ \otimes |0⟩ = (0,1) \otimes (1,0)=(0,0,1,0)$
+  - $|11⟩:=|1⟩ \otimes |1⟩ = (0,1) \otimes (0,1)=(0,0,0,1)$
+- 一般に $\cal H$ の元は $c_{00}|00⟩ + c_{01}|01⟩ + c_{10}|10⟩ + c_{11}|11⟩$ ($c_{ij} \in ℂ$, $\sum |c_{ij}|^2=1$) の形
+  - この基底で観測したとき $|ij⟩$ が得られる確率は $|c_{ij}|^2$
 - $n$個のqubitの状態は $2^n$ 次元複素ベクトルとなる
-  - $|i_0 i_1 \cdots i_{n-1}\rangle$ を $i$ を2進数展開($i=\sum_k i_k 2^k$) したものとみなして $|i\rangle$ と略記する
+  - $|i_0 i_1 \cdots i_{n-1}⟩$ を $i$ を2進数展開($i=\sum_k i_k 2^k$) したものとみなして $|i⟩$ と略記する
 # 量子もつれ (Entanglement)
 ## 合成系の中でテンソル積で表現できない状態
 - テンソル積で表現できる例
-  - $\frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) \otimes |0\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)$
-  - $\frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) \otimes \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)=(|00\rangle + |01\rangle + |10\rangle + |11\rangle)/2$
+  - $(1/\sqrt{2})(|0⟩ + |1⟩) \otimes |0⟩ = (1/\sqrt{2})(|00⟩ + |10⟩)$
+  - $(1/\sqrt{2})(|0⟩ + |1⟩) \otimes (1/\sqrt{2})(|0⟩ + |1⟩)=(|00⟩ + |01⟩ + |10⟩ + |11⟩)/2$
 - テンソル積で表現できない例
-  - $\psi:=\frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$
-    - $\psi = \psi_1 \otimes \psi_2$ と表現できない（なぜ?）
-  - このとき $\psi$ は量子もつれの状態にあるという
-## 独立性
-- 1個目のqubitを観測して $|0\rangle$ が得られたら2個目も $|0\rangle$, $|1\rangle$ が得られたら2個目も $|1\rangle$
-- 1個目のqubitの状態が決まると2個目の状態も決まる（2個のqubitが独立ではない）
-  - 2個のqubitは離れた状態でも成り立つ（量子テレポーテーションの原理）
+  - $|ψ⟩:=(1/\sqrt{2})(|00⟩ + |11⟩)$
+    - $|ψ⟩ = |ψ_1⟩ \otimes |ψ_2⟩$ と表現できない
+      - $|ψ_1⟩ = a|0⟩ + b|1⟩$, $|ψ_2⟩ = c|0⟩ + d|1⟩$ とすると
+      $ac=1/\sqrt{2}$, $bd=1/\sqrt{2}$, $ad=0$, $bc=0$ となり矛盾
+ - このように状態が各qubitの状態のテンソル積で表現できないとき
+  $|ψ⟩$ は*量子もつれの状態*にあるという
+
+# 部分測定
+## 部分測定の例
+- $|ψ⟩=s |00⟩ + t |01⟩ + u |10⟩ + v |11⟩$ とする
+- 1個目のqubitについて測定して $|0⟩$ となるのは $s|00⟩$ か $t|01⟩$ のどちらかで確率は $|s|^2 + |t|^2$
+  - 測定後の状態は $|ψ'⟩=s|00⟩ + t|01⟩$ を正規化したもの
+    - ベクトル $v \neq 0$ の正規化とはノルムを1にすること: $v \mapsto v/|v|$
+  - $||ψ'⟩|^2=|s|^2 + |t|^2$ なので $|ψ'_0⟩:=|ψ'⟩/|ψ'|=(s|00⟩ + t|01⟩)/\sqrt{|s|^2 + |t|^2}$
+- 同様に $|1⟩$ となる確率は $|u|^2 + |v|^2$, 測定後は $|ψ'_1⟩:=(u|10⟩ + v|11⟩)/\sqrt{|u|^2 + |v|^2}$
+## テンソル積の場合
+- $|ψ_1⟩ = a|0⟩ + b|1⟩$, $|ψ_2⟩ = c|0⟩ + d|1⟩$ で $a,b,c,d>0$, $|ψ⟩ = |ψ_1⟩ \otimes |ψ_2⟩$ なら
+$s=ac$, $t=ad$, $u=bc$, $v=bd$ となり $|s|^2+|t|^2 = |a|^2(|c|^2 + |d|^2)=|a|^2$
+- 確率 $a^2$ で $|ψ'_0⟩=(ac|00⟩ + a d|01⟩)/a = |0⟩ \otimes |ψ_2⟩$
+- 確率 $b^2$ で $|ψ'_1⟩=(bc|10⟩ + b d|11⟩)/b = |1⟩ \otimes |ψ_2⟩$. 第2qubitはどちらも同じ（独立）
+
+# 部分測定後の独立性
+## 量子もつれの場合
+- $|ψ⟩=(1/\sqrt{2})(|00⟩ + |11⟩)$ の場合
+- 1個目のqubitを観測して $|0⟩$ が得られる確率は $1/2$, 測定後の状態は $|00⟩$
+- 1個目のqubitを観測して $|1⟩$ が得られる確率は $1/2$, 測定後の状態は $|11⟩$
+  - 1個目のqubitが $|0⟩$ ならば2個目も $|0⟩$, 1個目が $|1⟩$ なら2個目も $|1⟩$
+## 2個のqubitが独立でない
+- 1個目のqubitの状態が決まると2個目の状態も決まる
+  - 2個のqubitは離れた状態でも成り立つ
+  - 量子テレポーテーションや量子暗号（量子鍵配送）のキーとなる現象
 
 # CNOT (Controlled NOT) ゲート
 ## 2個のqubitに対する量子ゲート
-- $CNOT(a|00\rangle + b|01\rangle + c|10\rangle + d|11\rangle):=a|00\rangle + b|01\rangle + d|10\rangle + c|11\rangle$
+- $CNOT(a|00⟩ + b|01⟩ + c|10⟩ + d|11⟩):=a|00⟩ + b|01⟩ + d|10⟩ + c|11⟩$
   - 後ろ2個の基底の係数が入れ代わる
   ![w:400px](images/lec-cnot1.drawio.svg) ![w:600px](images/lec-cnot2.drawio.svg)
-  - 状態 $|x y\rangle$ ($x, y \in \Set{0,1}$) に対して $x=0$ のとき $y$ はそのまま, $x=1$ のとき $y$ は反転
+  - 状態 $|x y⟩$ ($x, y \in \Set{0,1}$) に対して $x=0$ のとき $y$ はそのまま, $x=1$ のとき $y$ は反転
   - $(x, y) \mapsto (x, x \oplus y)$ と表せる
-- $x= \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$, $y=|0\rangle$ とすると $x \otimes y = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)$
-  - $CNOT(x \otimes y)=(1/\sqrt{2})(|00\rangle + |11\rangle)$ となり量子もつれの状態になる
-- $H$, $T$, CNOT の組合せで任意の量子ゲートを近似できる（量子計算の普遍性）
+- $x= (1/\sqrt{2})(|0⟩ + |1⟩)$, $y=|0⟩$ とすると $x \otimes y = (1/\sqrt{2})(|00⟩ + |10⟩)$
+  - $CNOT(x \otimes y)=(1/\sqrt{2})(|00⟩ + |11⟩)$ となり量子もつれの状態になる
+- *量子計算の普遍性*: $H$, $T$, $CNOT$ の組合せで任意の量子ゲートを近似できる
   - これら（と $S=T^2$ も追加して）を使って量子回路を組み立てる
 
 # 2qubitに対するアダマールゲート
 ## $H \otimes H = H^{\otimes 2}$ と表記
 - $H=(1/\sqrt{2})\pmatrix{1 & 1 \\ 1 & -1}$ なので
-  - $H^{\otimes 2} |00\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)$
-  - $H^{\otimes 2} |01\rangle = \frac{1}{2}(|00\rangle - |01\rangle + |10\rangle - |11\rangle)$
-  - $H^{\otimes 2} |10\rangle = \frac{1}{2}(|00\rangle + |01\rangle - |10\rangle - |11\rangle)$
-  - $H^{\otimes 2} |11\rangle = \frac{1}{2}(|00\rangle - |01\rangle - |10\rangle + |11\rangle)$
-- $H^{\otimes 2} |i \rangle = \frac{1}{2} \sum_{j=0}^{3} (-1)^{i \cdot j} |j\rangle$ ($i=0,1,2,3$)
+  - $H^{\otimes 2} |00⟩ = \frac{1}{2}(|00⟩ + |01⟩ + |10⟩ + |11⟩)$
+  - $H^{\otimes 2} |01⟩ = \frac{1}{2}(|00⟩ - |01⟩ + |10⟩ - |11⟩)$
+  - $H^{\otimes 2} |10⟩ = \frac{1}{2}(|00⟩ + |01⟩ - |10⟩ - |11⟩)$
+  - $H^{\otimes 2} |11⟩ = \frac{1}{2}(|00⟩ - |01⟩ - |10⟩ + |11⟩)$
+- $H^{\otimes 2} |i ⟩ = \frac{1}{2} \sum_{j=0}^{3} (-1)^{i \cdot j} |j⟩$ ($i=0,1,2,3$)
   - $i \cdot j$ は $i, j$ を2進数展開したときの各桁の積の和（$\bmod{2}$）
   - 例えば $i=2=10_2$, $j=3=11_2$ のとき $i \cdot j = 1 \times 1 + 0 \times 1 = 1$
-- $H^{\otimes n} |i\rangle = (1/2^{n/2})\sum_{j=0}^{2^n-1} (-1)^{i \cdot j} |j\rangle$ ($i=0,1,\dots,2^n-1$)
+- $H^{\otimes n} |i⟩ = (1/2^{n/2})\sum_{j=0}^{2^n-1} (-1)^{i \cdot j} |j⟩$ ($i=0,1,\dots,2^n-1$)
 
 # 量子計算機における計算
 <!-- _class: image-right-center -->
 ![w:470px](images/lec-qc-algo.png)
 ## $n$ qubitの状態
 - $n$ qubitの状態は $2^n$ 通りのパターンが重なり合った状態
-  - $|\psi\rangle = \sum_{i=0}^{2^n-1} c_i |i\rangle$ ($c_i \in ℂ$, $\sum |c_i|^2=1$)
+  - $|ψ⟩ = \sum_{i=0}^{2^n-1} c_i |i⟩$ ($c_i \in ℂ$, $\sum |c_i|^2=1$)
 ## 量子計算機の演算処理
-- $|\psi\rangle$ に量子ゲート（ユニタリ行列）を順番に作用させる
+- $|ψ⟩$ に量子ゲート（ユニタリ行列）を順番に作用させる
   - 原理的に1回で最大 $2^n$ 個のパターンを処理可能
 - 最終的には観測しないと結果を得られない
-  - そのとき $|c_i|^2$ の確率で $|i\rangle$ に確定し, これが計算結果
-  - もし $|c_0| = \dots = |c_{2^n-1}|$ ならどの $|i\rangle$ が得られるか完全にランダム
+  - そのとき $|c_i|^2$ の確率で $|i⟩$ に確定し, これが計算結果
+  - もし $|c_0| = \dots = |c_{2^n-1}|$ ならどの $|i⟩$ が得られるか完全にランダム
 - 望ましい答えが観測されるように $|c_i|$ を大きくするのが量子アルゴリズムの肝
   - 古典計算機における分岐・ループ処理は存在しない
   - 基本的に10回ループする処理は10個の量子ゲートを並べる必要がる
@@ -211,16 +243,16 @@ $ab \neq 0$ のとき $|\psi\rangle$ は $|0\rangle, |1\rangle$ の混合状態�
 # 一般の関数に対する量子ゲート
 ## 補助ビット (ancilla) の導入
 - 関数 $f : \Set{0,1}^n \to \Set{0,1}$ に対して
-$U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rangle$ と定義する
+$U_f : |x⟩ \otimes |y⟩ \mapsto |x⟩ \otimes |y \oplus f(x)⟩$ と定義する
   - $x$: $n$ qubit, $y$: 1 qubit （$y$ が補助ビット）
 - このとき $U_f$ はユニタリ行列になる
-  - $U_f(U_f(|x\rangle \otimes |y\rangle)) = |x\rangle \otimes |y \oplus f(x) \oplus f(x)\rangle = |x\rangle \otimes |y\rangle$, つまり $U_f^{-1} = U_f$
+  - $U_f(U_f(|x⟩ \otimes |y⟩)) = |x⟩ \otimes |y \oplus f(x) \oplus f(x)⟩ = |x⟩ \otimes |y⟩$, つまり $U_f^{-1} = U_f$
 - 位相キックバック
-  - $|y\rangle:=|-\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$ とする
-    - $f(x)=0$ のとき $U_f(|x\rangle \otimes |-\rangle) = |x\rangle \otimes |-\rangle$
-    - $f(x)=1$ のとき $U_f(|x\rangle \otimes |-\rangle) = -|x\rangle \otimes |-\rangle$
-    - つまり $U_f(|x\rangle \otimes |-\rangle) = (-1)^{f(x)} |x\rangle \otimes |-\rangle$
-    $f(x)$ を位相部分に埋め込む演算 $U_f(|x\rangle)=(-1)^{f(x)}|x\rangle$ とみなす
+  - $|y⟩:=|-⟩ = (1/\sqrt{2})(|0⟩ - |1⟩)$ とする
+    - $f(x)=0$ のとき $U_f(|x⟩ \otimes |-⟩) = |x⟩ \otimes |-⟩$
+    - $f(x)=1$ のとき $U_f(|x⟩ \otimes |-⟩) = -|x⟩ \otimes |-⟩$
+    - つまり $U_f(|x⟩ \otimes |-⟩) = (-1)^{f(x)} |x⟩ \otimes |-⟩$
+    $f(x)$ を位相部分に埋め込む演算 $U_f(|x⟩)=(-1)^{f(x)}|x⟩$ とみなす
 
 # Groverのアルゴリズム
 ## $N$ 個のデータから特定の条件を満たすものを一つ探す
@@ -244,8 +276,8 @@ $U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rang
 # QFT (Quantum Fourier Transform)
 ## 量子フーリエ変換
 - 古典フーリエ変換の量子版
-- $n$ qubit の $|x\rangle = \sum_{j=0}^{N-1} x_j | j\rangle$, $N:=2^n$
-- QFTは $|j\rangle$ を $\frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} \exp(2 π i j k / N) |k\rangle$ に変換する（$|j\rangle$ という状態と位相の相互変換）
+- $n$ qubit の $|x⟩ = \sum_{j=0}^{N-1} x_j | j⟩$, $N:=2^n$
+- QFTは $|j⟩$ を $\frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} \exp(2 π i j k / N) |k⟩$ に変換する（$|j⟩$ という状態と位相の相互変換）
 
   - $O(n^2)$ 個の量子ゲート, $O(n^2)$ ステップで実現可能
 ## 古典FFT
@@ -257,34 +289,34 @@ $U_f : |x\rangle \otimes |y\rangle \mapsto |x\rangle \otimes |y \oplus f(x)\rang
 # 量子位相推定 QPE (Quantum Phase Estimation)
 ## ユニタリ行列 $U$ の固有値を求める
 - $U$ の固有値は絶対値が 1 なので $e^{2 π i θ}$ ($θ \in [0,1)$) と表せる
-- $U$ の固有ベクトル $|\psi\rangle$ が与えられたとき $U|\psi\rangle = e^{2 π i θ} |\psi \rangle$ となる $θ$ を $m$ 桁の精度で求める
+- $U$ の固有ベクトル $|ψ⟩$ が与えられたとき $U|ψ⟩ = e^{2 π i θ} |ψ ⟩$ となる $θ$ を $m$ 桁の精度で求める
 ## 大まかな手順
-- $|0^{\otimes m}\rangle$ にアダマールゲートを作用させて $(1/2^{m/2}) \sum_{k=0}^{2^m-1} |k\rangle$ を作る
-- $U^k$ を作用: $|k\rangle \mapsto \exp(2π i k θ)|k\rangle$
-  - 結果: $(1/2^{m/2}) \sum_{k=0}^{2^m-1} e^{2 π i k θ} |k\rangle \otimes |\psi\rangle$
-- 逆QFTを作用: $|k\rangle \mapsto (1/2^{m/2}) \sum_{j=0}^{2^m-1} \exp(-2 π i j k / 2^m) |j\rangle$
-  - 結果: $(1/2^m) \sum_{k,j} \exp(2 π i k (2^m θ - j)/2^m) |j\rangle \otimes |\psi\rangle$
+- $|0^{\otimes m}⟩$ にアダマールゲートを作用させて $(1/2^{m/2}) \sum_{k=0}^{2^m-1} |k⟩$ を作る
+- $U^k$ を作用: $|k⟩ \mapsto \exp(2π i k θ)|k⟩$
+  - 結果: $(1/2^{m/2}) \sum_{k=0}^{2^m-1} e^{2 π i k θ} |k⟩ \otimes |ψ⟩$
+- 逆QFTを作用: $|k⟩ \mapsto (1/2^{m/2}) \sum_{j=0}^{2^m-1} \exp(-2 π i j k / 2^m) |j⟩$
+  - 結果: $(1/2^m) \sum_{k,j} \exp(2 π i k (2^m θ - j)/2^m) |j⟩ \otimes |ψ⟩$
 - 測定:
-  - ある $j$ について $2^m θ=j$ なら $|j\rangle |\psi\rangle$ なので $j$ が求まる
-  - $θ \approx j/2^m$ なら40%程度の確率で $|j\rangle |\psi\rangle$ になる
+  - ある $j$ について $2^m θ=j$ なら $|j⟩ |ψ⟩$ なので $j$ が求まる
+  - $θ \approx j/2^m$ なら40%程度の確率で $|j⟩ |ψ⟩$ になる
 
 # QPEを用いた位数計算の概略
-## 演算 $U|x\rangle := |g x \bmod n\rangle$
-- このとき $U |j\rangle = \exp(2 π i j / r) |w_j\rangle$
-$|w_j\rangle := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i j k / r) |g^k \bmod n\rangle$ となることが知られている
+## 演算 $U|x⟩ := |g x \bmod n⟩$
+- このとき $U |j⟩ = \exp(2 π i j / r) |w_j⟩$
+$|w_j⟩ := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i j k / r) |g^k \bmod n⟩$ となることが知られている
 - 固有値に $j/r$ が含まれている
 - QPEにより $j/r$ の近似値が求まる
-  - $(1/\sqrt{r})\sum_j |w_j\rangle = |1\rangle$ なので $|1\rangle$ に対してQPEを適用しても位相が求まる
+  - $(1/\sqrt{r})\sum_j |w_j⟩ = |1⟩$ なので $|1⟩$ に対してQPEを適用しても位相が求まる
   - 連分数展開の技法を使って正確な値を求める
-- $U^{2^k}|x\rangle = |g^{2^k} x \bmod n\rangle$ なので $g^{2^k} x \bmod n$ を事前計算する
+- $U^{2^k}|x⟩ = |g^{2^k} x \bmod n⟩$ なので $g^{2^k} x \bmod n$ を事前計算する
 
 # 量子計算機 QCとECDLP
 ## ECDLPからHSPへの帰着
-- $S:=\langle P \rangle$ を $𝔽_p$ 上の楕円曲線の素数位数 $n$ の巡回群とする.
+- $S:=\langle P ⟩$ を $𝔽_p$ 上の楕円曲線の素数位数 $n$ の巡回群とする.
 ECDLP: $Q \in S$ に対して $Q=kP$ となる $k$ を見つける問題
-- $|0,0\rangle|0\rangle$ にアダマールゲートを作用させて $(1/n)\sum_{a,b}|a,b\rangle|0\rangle$ を作る
-- $U|a,b\rangle|0\rangle := |a,b\rangle|aP + bQ\rangle$ を作用させる
-  - 結果: $(1/n)\sum_{a,b}|a,b\rangle|aP + bQ\rangle$
+- $|0,0⟩|0⟩$ にアダマールゲートを作用させて $(1/n)\sum_{a,b}|a,b⟩|0⟩$ を作る
+- $U|a,b⟩|0⟩ := |a,b⟩|aP + bQ⟩$ を作用させる
+  - 結果: $(1/n)\sum_{a,b}|a,b⟩|aP + bQ⟩$
 - 逆QFTを作用させて測定してある点 $R$ が観測される
   - 結果 $(a,b)$, $(a',b') \in S_R:=\Set{(a,b)\mid aP + bQ = R}$
 - $O((\log p)^3)$ で解けることが知られている
