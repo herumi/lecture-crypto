@@ -39,8 +39,9 @@ _class: title
 - 暗号の安全性, 強秘匿性, 頑強性
 - MAC, 存在的偽造不可能
 - IND-CPA安全, IND-CCA2安全, Enc-then-Mac
-- ハッシュ関数, SHA-2, 伸長攻撃, SHA-3
+- ハッシュ関数, SHA-2, 伸長攻撃, SHA-3, XOF
 - AEAD, 拡大体
+- 軽量暗号, Ascon
 
 # 共通鍵暗号とは
 ## 「暗号鍵＝復号鍵＝秘密鍵」な暗号方式
@@ -170,7 +171,7 @@ $Dec(s, c)=m$
 - 平文と排他的論理和をとり暗号文とする
 
 # ChaCha20のPRF
-## 全体図![width:800px](images/lec-chacha20-2.drawio.svg)
+## 全体図![w:800px](images/lec-chacha20-2.png)
 - 1/4ラウンド関数 `QR(a,b,c,d)`: `a`,`b`,`c`,`d` は32bit整数
 - `rotLeft(x,n)` は `x` を左に `n` bit回転させる
 `x=[H:L]`, H:n bit, L:(32-n) bitのとき `rotLeft(x,n)=[L:H]`
@@ -586,11 +587,11 @@ Security Without Collision-Resistance", CRYPTO2006
 |関数の形|$H(m)$ | $\text{XOF}(m, \ell)$ | $\text{MAC}(s, m)$ | $\text{PRF}(s, m)$
 | 鍵 | なし | なし | あり | あり
 | 入力長 | 任意 | 任意 | 任意 | 通常任意<br>理論では固定
-| 出力長 | 固定 | 任意 | 固定$^{*1}$ | 通常固定<br>カウンタ併用で任意長
+| 出力長 | 固定 | 任意 | 固定$^{*}$ | 通常固定<br>カウンタ併用で任意長
 | 安全性 | 衝突困難 | 衝突困難 | 偽造困難 | ランダム関数と区別不可能
 
-- PRF $\subset$ MAC （逆は成り立たない: MACだからといってPRFとは限らない）
-- $^{*1}$: 後述のKMACは出力長任意のPRF（なのでMAC）
+- PRF $\subsetneq$ MAC （PRFはMACになるが, MACだからといってPRFとは限らない）
+- $^{*}$: 後述のKMACは任意出力長のPRF（なのでMAC）
 
 
 # SHA-3ベースのMAC
@@ -727,12 +728,10 @@ $=[a_7:(a_0+a_7):a_1:(a_2+a_7):(a_3+a_7):a_4:a_5:a_6]$ となる
 # 軽量暗号
 ## 安全性を保ちつつAES-CGMやSHA-2を越える性能が欲しい
 - 組み込み用ハードウェア（いわゆるIoT機器）などのリソースが限られた環境でも高性能
-## ASCON
+## Asconファミリー (AEAD, Hash, XOF)
 - 2023年NISTの軽量暗号コンペティションで選ばれた
-  - AEAD, ハッシュ関数, XOFを提供
-  - 多数の第三者による安全性評価
-  - 8~64bit CPU上での実装性能評価/2KiBからの小メモリ
-    - AES-GCM, SHA-2よりもコンパクトな回路規模
-    - 実行性能もトップに近い
-## その他の軽量暗号
-- [「暗号技術ガイドライン（軽量暗号）」掲載の暗号⽅式に関する安全性評価の動向調査](https://www.cryptrec.go.jp/exreport/cryptrec-ex-3101-2021.pdf), CRYPTREC 2022
+  - 8~64bit CPU, 2KiB~ MEMでの評価, AES-GCM, SHA-2よりもコンパクト, 速度もトップに近い
+  - 320bitの内部状態を攪拌するAscon-pを利用してAEAD, ハッシュ関数, XOFを構成
+    - 64bit IV, 128bit key, 128bit nonce（図は[NIST SP 800-232](https://csrc.nist.gov/pubs/sp/800/232/final), 2025/8より引用）
+![h:200px](images/lec-ascon-aead128.png) ![h:200px](images/lec-ascon-hash256.png)
+- その他の軽量暗号: [CRYPTRECによる安全性評価の動向調査](https://www.cryptrec.go.jp/exreport/cryptrec-ex-3101-2021.pdf), 2022
