@@ -565,18 +565,42 @@ $k \approx \sqrt{N}$ ならば $P_k \approx 1-e^{-1/2} \approx 0.4=40\%$
 Security Without Collision-Resistance", CRYPTO2006
   - 圧縮関数がPRFならHMACはPRFであることを示す
 
-# SHA-3ベースのMAC
+# XOF (eXtendable Output Function)
+## 可変長出力可能な関数
+- ランダム関数やハッシュ関数は固定長出力
+- XOFは任意の長さを指定できる: $XOF(m,l)$ はデータ $m$ に対して $l$ bit出力
+  - ハッシュ関数やブロック暗号を繰り返し呼び出して実現するのとは異なる
 ## SHAKE
-- SHA-3のスポンジ構造を利用した可変長出力可能な関数 XOF (eXtendable Output Function)
+- SHA-3のスポンジ構造を利用したXOF
   - cSHAKE256(X, L, N, S)
     - X: 入力データ
     - L: 出力データ長 (bit)
     - N: "KMAC"などの文字列, S: アプリ区別用文字列
+- 1600bitの内部状態をかき混ぜながら$(1600-c)$ bit出力ずつ出力
+  - $c$($c=256, 512$) bitは内部に残しておく（キャパシティ）
+
+# HASH, XOF, MAC, PRFの比較
+## 特徴の比較
+| 特性 | HASH | XOF | MAC | PRF
+|------|------|-----|-----|-----
+|関数の形|$H(m)$ | $\text{XOF}(m, \ell)$ | $\text{MAC}(s, m)$ | $\text{PRF}(s, m)$
+| 鍵 | なし | なし | あり | あり
+| 入力長 | 任意 | 任意 | 任意 | 通常任意<br>理論では固定
+| 出力長 | 固定 | 任意 | 固定$^{*1}$ | 通常固定<br>カウンタ併用で任意長
+| 安全性 | 衝突困難 | 衝突困難 | 偽造困難 | ランダム関数と区別不可能
+
+- PRF $\subset$ MAC （逆は成り立たない: MACだからといってPRFとは限らない）
+- $^{*1}$: 後述のKMACは出力長任意のPRF（なのでMAC）
+
+
+# SHA-3ベースのMAC
 ## KMAC
 - スポンジ構造には圧縮関数の構造が無いので伸長攻撃がない
 - ハッシュを2回して安全性を高めるのは冗長
-  - $KMAC(s, m)=cSHAKE256(s||m||256, 256, \texttt{"KMAC"}, \texttt{""})$ の形で安全
-  - 厳密には $s||m||256$ の部分はバイトエンコーディングなどが行われる
+  - $\text{KMAC}(s, m)=\text{cSHAKE128}(s||m||256, 256, \texttt{"KMAC"}, \texttt{""})$ の形で安全
+  - 厳密には $s||m||256$ の部分はpaddingやbyte encodingなどが行われる
+  - 長さは256, 512以外も選べる
+    - KDFとして使うときは1024bitなども
   - 詳細はNIST Special Publication 800-185参照
 
 # AEAD (Authenticated Encryption with Associated Data)
@@ -624,8 +648,8 @@ $a:=((a+ m_i)r) \bmod{p}$ で更新
 - 最後に128bitの認証タグ $t:=(a+s) \bmod{2^{128}}$ を出力
 
 # AEADの例2
-<!-- _class: image-right -->
-![w:700px](image.png)
+<!-- _class: image-right-center -->
+![w:700px](images/lec-aes-gcm.png)
 ## AES-GCM
 - [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf)
 - 暗号化: AES-CTR + MAC: GHASH
@@ -699,3 +723,16 @@ $=[a_7:(a_0+a_7):a_1:(a_2+a_7):(a_3+a_7):a_4:a_5:a_6]$ となる
 - $K={𝔽_2}^2$ の元 $(a,b)$, $(c, d)$ に対して乗算を $(a c, b d)$ と定義するのでは駄目なのか
 ## 8次拡大体
 - $K=𝔽_2[x]/(f(x))$ の多項式を $f(x)=x^8+x+1$ としては駄目なのか
+
+# 軽量暗号
+## 安全性を保ちつつAES-CGMやSHA-2を越える性能が欲しい
+- 組み込み用ハードウェア（いわゆるIoT機器）などのリソースが限られた環境でも高性能
+## ASCON
+- 2023年NISTの軽量暗号コンペティションで選ばれた
+  - AEAD, ハッシュ関数, XOFを提供
+  - 多数の第三者による安全性評価
+  - 8~64bit CPU上での実装性能評価/2KiBからの小メモリ
+    - AES-GCM, SHA-2よりもコンパクトな回路規模
+    - 実行性能もトップに近い
+## その他の軽量暗号
+- [「暗号技術ガイドライン（軽量暗号）」掲載の暗号⽅式に関する安全性評価の動向調査](https://www.cryptrec.go.jp/exreport/cryptrec-ex-3101-2021.pdf), CRYPTREC 2022
