@@ -14,17 +14,20 @@ headingDivider: 1
 <!--
 _class: title
 -->
-# 公開鍵暗号2<br>
-TLS1.3, FIDO2, ビットコイン
+# 公開鍵暗号2
 <br>
-光成滋生, 2025/10
+光成滋生
 <br>
+last update: 2025/10
 
 # 目次
 ## 用語一覧
 - TLS1.3, ハンドシェイク, 鍵導出アルゴリズム
 - FIDO2
 - 否認防止
+- タイムスタンプ
+- Merkle木
+- ブロックチェーン, ビットコイン, Ethereum
 
 # TLS1.3 (Transport Layer Security)
 ## 通信を安全に暗号化するプロトコル
