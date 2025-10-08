@@ -101,7 +101,7 @@ $x>3/ε$ とすればよい
 
 # 無視できる関数
 ## 十分小さいことを表す
-- $f:\mathbb{N} \to \mathbb{R}_{\ge 0}$ が無視できる (negligible) とは $\forall c > 0$, $\exists N \in \mathbb{N}$ s.t. $\forall n > N$, $f(n)<n^{-c}$.
+- $f:ℕ \to ℝ_{\ge 0}$ が無視できる (negligible) とは $\forall c > 0$, $\exists N \in ℕ$ s.t. $\forall n > N$, $f(n)<n^{-c}$.
   - $c>0$ をどんなに大きくとっても、それに対応して十分大きく $N$ を選べば、
   それより大きい $n>N$ について $f(n) < n^{-c}$ とできる
 - $f(n)$ はどんな多項式の逆数よりも速く小さくなる
