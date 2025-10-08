@@ -151,19 +151,19 @@ TLS1.3で標準的に使われている鍵共有手法
 - $a, b \in G$ に対して $f(a,b):=a b$, 1が単位元の可換群
 ## 2行2列の実数行列で逆行列を持つ行列の集合 $G:=GL_2(ℝ)$
 - $a, b \in G$ に対して $f(a,b):=a b$ （行列の積）,  単位行列が単位元の非可換な群
-## $p$ で割った余りで考える集合 $G:=\langle g \rangle := \Set{1, g^1, g^2, \ldots, g^{r-1}}$
+## $p$ で割った余りで考える集合 $G:=⟨g⟩ := \Set{1, g^1, g^2, \ldots, g^{r-1}}$
 - $a, b \in G$ に対して $f(a,b):=a b$, 1が単位元の可換群
 ## 楕円曲線の点の部分集合 $G:=\Set{0, P, \dots, (r-1)P}$: 可換群
 
 # 巡回群
 ## 群 $G$ が巡回群であるとは
-- $g \in G$ に対して $\langle g \rangle:= \Set{e, g, g^2, g^3, \ldots}$ を $g$ で生成される部分群（巡回群）という
-  - $\langle e \rangle = \Set{e}$.
-- $g^r=e$ となる $r$ が存在すれば $\langle g \rangle = \Set{e, g, g^2, \ldots, g^{r-1}}$ となり有限巡回群という
-  - $r$ を $\langle g \rangle$ の位数といい $r = |\langle g \rangle|$ と書く
+- $g \in G$ に対して $⟨g⟩:= \Set{e, g, g^2, g^3, \ldots}$ を $g$ で生成される部分群（巡回群）という
+  - $⟨e⟩ = \Set{e}$.
+- $g^r=e$ となる $r$ が存在すれば $⟨g⟩ = \Set{e, g, g^2, \ldots, g^{r-1}}$ となり有限巡回群という
+  - $r$ を $⟨g⟩$ の位数といい $r = |⟨g⟩|$ と書く
 - 巡回群は可換群である
-  - $a, b \in \langle g \rangle$ に対して $a=g^x$, $b=g^y$ と書けて $a b = g^{x+y} = g^{y+x} = b a$
-## 有限巡回群 $G=\langle g \rangle$ に関するDH鍵共有
+  - $a, b \in ⟨g⟩$ に対して $a=g^x$, $b=g^y$ と書けて $a b = g^{x+y} = g^{y+x} = b a$
+## 有限巡回群 $G=⟨g⟩$ に関するDH鍵共有
 - $x, y \in [1, r-1]$ をランダムに選んで $X=g^x$, $Y=g^y$ を交換し $g^{xy}$ を共有する
 - DH鍵共有とECDHの鍵共有は $f(a,b)$ を $a b$ と書くか $a + b$ と書くかの違いだけ
 - 実際論文によっては楕円曲線の演算を $g^a$ の形で書いてあるものもある（講義では $+$ を使う）
@@ -418,7 +418,7 @@ $Pr[Ver(vk, m, Sig(sk,m)))=1 \mid Gen(1^λ)=(sk,vk), m \underset{U}\leftarrow {\
 
 # ECDSA (Elliptic Curve Digital Signature Algorithm)
 ## 楕円曲線を用いた署名
-- $G:=\langle P \rangle=\Set{O, P, \dots, (r-1)P}$: 楕円曲線 $E(𝔽_p)$ の有限巡回群, $H$: ハッシュ関数
+- $G:=⟨P⟩=\Set{O, P, \dots, (r-1)P}$: 楕円曲線 $E(𝔽_p)$ の有限巡回群, $H$: ハッシュ関数
 - $Gen(1^λ)$: $s \underset{U}\leftarrow {𝔽_r}^*$ を署名鍵, $S := s P$ を検証鍵とする
 - $Sig(s, m)$: $k \underset{U}\leftarrow {𝔽_r}^*$ を選び $R := k P$ の $x$ 座標を $t$ として
 $σ:=(t, (H(m)+s t)/k \bmod{r})$ を署名とする
