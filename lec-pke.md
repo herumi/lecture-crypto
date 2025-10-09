@@ -80,7 +80,7 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
   - IND-CPA安全なPKEの暗号化はPPTアルゴリズムでなければならない
   - 便宜上, 暗号化に使った乱数 $r$ を明示的に $Enc(s,m;r)$ と書くことがある
 
-# 楕円ElGamal暗号
+# （楕円）ElGamal暗号
 ## 定義
 - KeyGen: 楕円曲線を用いて位数 $r$ の巡回群 $G=⟨P⟩=\Set{0,P,2 P, \dots, (r-1)P}$ を選ぶ
   - $s \underset{U}\leftarrow  [1,r-1]$: 秘密鍵, $Q = s P$: 公開鍵, ${\cal M} = G$
@@ -89,18 +89,27 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 ## 正当性
 - $Dec(s,Enc(Q,M;k))=(M+k Q)-s(k P) = M + k s P - s k P = M$
 
+# 加法準同型暗号
+## 暗号文の加算ができる暗号
+- 暗号文 $c_1=Enc(m_1), c_2=Enc(m_2)$ に対して $c_1 + c_2$ が定義できて $Dec(c_1 + c_2) = m_1 + m_2$ となっている暗号
+- 同じ平文の暗号文を同一視すれば $Enc(m_1) + Enc(m_2) = Enc(m_1 + m_2)$
+  - このような写像を準同型写像という
+  - $Enc(0)$ が暗号文空間の単位元, $Enc(-m)$ が $Enc(m)$ の逆元
+## ElGamal暗号は加法準同型暗号
+- $c_i:=Enc(Q,M_i;k_i)=(A_i,B_i)$ に対して $c_1+c_2:=(A_1+A_2,B_1+B_2)$ と定義
+- $c_1 + c_2 = ((k_1+k_2) P, (M_1+M_2) + (k_1+k_2) Q) = Enc(Q,M_1+M_2;k_1+k_2)$
 # 楕円ElGamal暗号はIND-CPA安全
 ## 安全性仮定の根拠は?
 - IND-CPAのゲームで敵対者 A は $c=Enc(Q,M_b;k)$ を受け取る
 自分で $M_i$ ($i=1,2$) の暗号文 $c_i:=Enc(Q,M_i;k_i)$ を作り比較する
-- $c$ と $c_i$ の成分ごとに引き算して $c - c_i = ((k-k_i) P, (M_b-M_i) + (k-k_i) Q)$ を得る
-- $b=i$ となる方は $(k-k_i)P$, $(k-k_i)Q=(k-k_i) sP$ である
+- $c - c_1$, $c - c_2$ はどちらかが0の暗号文なのでそれを判別できるか否かが焦点
+- $c'$ が 0 の暗号文かどうか判定できるか否かが焦点
+  - $Enc(Q;M;k)=(k P, M + k Q)$ なので2番目の成分が $k Q$ か $M + k Q$ かの違い
 ## DDH問題 (Decisional DH problem)
 - $G=⟨P⟩ \ni P, a P, b P, c P$ が与えられたとき $c = a b$ かを判定する問題
-- もし DH問題が解けるなら $P, aP, b P$ から $a b P$ を求めて $c P$ と比較すればDDHは解ける
-- DDH問題が難しいという仮定をDDH仮定という
+  - もし DH問題が解けるなら $P, aP, b P$ から $a b P$ を求めて $c P$ と比較すればDDHは解ける
 ## 楕円ElGamal暗号はDDH仮定の元でIND-CPA安全
-- $P$, $s P$, $(k-k_i) P$ が分かっているので残りが $(k-k_i)s P$ かどうか判定できない
+- $P$, $s P$, $k P$ が分かっているので残りが $k s P$ かそうでないか判定できない
 
 # IND-CCA(1/2)安全（再掲）
 <!-- _class: image-right -->
@@ -113,7 +122,23 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 - CCA2: $c$ を受け取った後もクエリ可能
 - 当てられないならIND-CCA(1/2)安全
 ## ElGamal暗号はIND-CCA2安全ではない
-- $\cal A$ は $c=Enc(Q,M)=(A,B):=(k P, M + k Q)$ から $c'=(A+P,B+Q)$ を作る
-- $c'\neq c$ なので挑戦者に復号してもらう: $Dec(c')=(B+Q)-s(A+P)=B-s A = M$
-- $M$ が分かるので当てられる
-- ElGamal暗号がDDH仮定の元でIND-CCA1安全かそうでないかは未解決
+- より一般に準同型暗号はIND-CCA2安全ではない
+  - $\cal A$ は $c=Enc(M)$ に対して $c'=c+Enc(0)$ を作ると $c'\neq c$ なので
+挑戦者に復号してもらうと準同型性から $Dec(c')=Dec(c)+0=M$ が分かる
+- 注意: ElGamal暗号がDDH仮定の元でIND-CCA1安全かそうでないかは未解決
+
+# RSA-OAEP (optimal asymmetric encryption padding)
+<!-- _class: image-right-center -->
+![w:500px](images/lec-rsa-oaep-enc.drawio.svg)
+## IND-CCA2安全なRSA暗号
+- ランダムオラクルモデルの元で安全性証明がある
+## $m$ の暗号化
+- H: SHA-2 (L=256/8 byte), k:=2048/8 byte
+MGF (Mask Generation Function): H(seed|counter)
+DB = H("") || 0...0 || 0x01 || m
+- dbMask = MGF(seed, |DB|): seedは乱数
+- maskedDB = DB ⊕ dbMask
+- seedMask = MGF(maskedDB, L)
+- maskedSeed = seed ⊕ seedMask
+- EM = 0x00 || maskedSeed || maskedDB
+- c = Enc(e, EM) = $EM^e \bmod{n}$（$m$ は $k - 2 L - 2=190$ byte 以下）
