@@ -214,6 +214,9 @@ def QR(a, b, c, d):
 ## SubBytes
 - 各8bitの値をindexとするテーブル引き
 - テーブル (S-Box) の値は固定
+  - $0$ 番目の $x_0$ が1ならS-Boxのテーブル
+  1番目の値 0x7c になる
+  - $i$ 番目は $\text{Table}[x_i]$ になる
 
 # ShiftRowとMixColumns
 ![bg right:50% vertical width:600px](images/lec-aes-shiftrows.png)
@@ -237,6 +240,8 @@ def QR(a, b, c, d):
 ## 32bitカラー画像を白黒2値化した無圧縮データをECBモードで暗号化
 ![w:500px](images/lec-compare-ecb.png)
 - 元の情報がある程度見えてしまう（極端な例）
+  - 128bit AESだと32bitが1ピクセル白黒なので横4ピクセルの白黒パターン16通りしかない
+  - 16通りのデータがランダムな暗号文に対応する色に置き換わる
 - 2020年Zoomの暗号化方式がECBモードを使っていたとしてニュースになる
   - （注意）動画などの圧縮データは分割されたブロックが同じ値になる確率は低い
 
@@ -378,6 +383,7 @@ $n$ bitセキュリティという
   - 適応的 (adaptive) CCAともいう
   - 試験中に先生に問題の類題の答えを聞ける状況
 ## IND-CCA(1/2)安全
+- INDは indistinguishability（識別不可能性）
 - CCA(1/2)に対して強秘匿な暗号
 
 # オラクル（oracle）
