@@ -142,3 +142,5 @@ DB = H("") || 0...0 || 0x01 || m
 - maskedSeed = seed ⊕ seedMask
 - EM = 0x00 || maskedSeed || maskedDB
 - c = Enc(e, EM) = $EM^e \bmod{n}$（$m$ は $k - 2 L - 2=190$ byte 以下）
+
+# PKEと前方秘匿性

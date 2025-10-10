@@ -20,6 +20,11 @@ _class: title
 <br>
 last update: 2025/10
 
+# 概要
+## 目的
+- 共通鍵暗号やMAC, AEADに必要な秘密鍵を共有する方法を学ぶ
+- 相手が本当の相手であることを検証するための署名やその応用, PKIを学ぶ
+
 # 目次
 ## 用語一覧
 - 公開鍵暗号, DH鍵共有, DLP, DHP
@@ -30,7 +35,7 @@ last update: 2025/10
 - 能動的な攻撃者, AitM攻撃
 - 署名, sEUF-CMA
 - ECDSA, RSASSA-PKCS1-v1_5, RSASSA-PSS
-- sshの公開鍵認証, PKI, FIDO
+- sshの公開鍵認証, PKI
 
 # DH (Diffie-Hellman) 鍵共有
 ## 盗聴者のいる通信経路で安全に通信する方法

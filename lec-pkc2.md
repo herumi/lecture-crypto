@@ -20,9 +20,16 @@ _class: title
 <br>
 last update: 2025/10
 
+# 概要
+## 目的
+- 現在のブラウザで標準的な暗号プロトコルを理解する
+- 署名の応用であるFIDO2, ビットコインやEthereumの仕組みを理解する
+
 # 目次
 ## 用語一覧
 - TLS1.3, ハンドシェイク, 鍵導出アルゴリズム
+- HTTP/3, QUIC
+- ECH, DNS, DoT, DoH
 - FIDO2
 - 否認防止
 - タイムスタンプ
@@ -40,16 +47,16 @@ last update: 2025/10
 - 新しい鍵導出アルゴリズム
 - 形式検証
 - AEAD
-- 前方秘匿性など
+- DNS, ECH
 
 # TLS1.3のハンドシェイク
 <!-- _class: image-right -->
 ![w:600px](images/lec-tls1.3.drawio.svg)
 ## 暗号化通信が始まるまでの流れ
 - クライアントからサーバへ接続開始 ClientHello
-  - KS :ECDH鍵共有情報, PSK: 事前鍵共有情報
+  - KS :ECDH鍵共有情報 ($a P$), PSK: 事前鍵共有情報
 - サーバからクライアントへ応答
-  - ServerHello: ECDH完了
+  - ServerHello: ECDH完了 ($b P$: $a b P$ を共有)
   - ECDH鍵共有完了でAEADによる暗号化通信開始
   - Certificate: サーバ証明書送信
   - CertificateVerify: 検証鍵でこれまでの通信に署名
@@ -60,7 +67,7 @@ last update: 2025/10
 # 鍵導出アルゴリズム
 ## HKDF (HMAC-based Key Derivation Function)
 - HMACを利用した鍵導出関数
-- 短いシードから秘密鍵に利用できる安全な擬似乱数を生成
+  - 短いシードから秘密鍵に利用できる安全な擬似乱数を生成
 - HKDF-Extract
   - salt : 秘密ではないランダムな値, x : DH鍵共有などの結果
   - $prk = HMAC(salt, x)$
@@ -74,7 +81,129 @@ last update: 2025/10
 
 # 鍵導出手順
 ## 詳細はRFC8446参照
-![w:700px](images/lec-tls-kdf.png)
+- ECDH鍵共有で得られた秘密情報からKDFを用いて複数の鍵を導出
+  - どれかの鍵が漏洩してもすぐさま他の鍵に影響がないように個別に鍵を生成する
+![w:650px](images/lec-tls-kdf.png)
+
+# HTTP/3とQUIC
+<!-- _class: image-right -->
+![w:450px](images/lec-http2-multiplex.png)
+![w:450px](images/lec-tcp-udp.png)
+## HTTP (Hypertext Transfer Protocol) の歴史
+- HTTP/1.1 (1997): テキストベース on TCP
+- HTTP/2 (2015) on TCP
+  - ストリームの多重化による並行処理
+  - バイナリベースによる通信量の削減
+  - HOLB (Head of Line blocking) 問題
+    - パケットがロストすると全体が止まる
+- QUIC (2012~2021) on UDP
+  - TCPの3-wayハンドシェイクを止めて
+  UDPによる高速接続
+  - Connection IDによるHOLBの解消
+  - コネクションマイグレーションによるハンドシェイクの削減
+    - 回線が変わっても通信の接続を維持
+
+# HTTP/3
+## HTTP/2の機能を引き継ぎQUIC上で動作 (2018)
+- QUICの上にTLSを載せると暗号化機能が重複
+- TLS1.3は暗号通信が確立するまで
+- QUICはそれ以降の通信（暗号化済み）を担当という役割分担![w:500px](images/lec-http3.png)
+
+# httpsで通信が始まるところに焦点
+## ClientHelloは暗号化されていない
+- `https://なんとかかんとか`
+  - DNSで名前解決（後述）してIPアドレスを取得してTLSが始まる
+- ClientHelloにはSNI (Server Name Indication) 拡張で接続先のドメイン名が書かれている
+  - サーバが複数の（サブ）ドメイン名を扱う場合
+    - CDN (Content Delivery Network) では異なるドメイン名が同じIPアドレスになる場合
+    - `<username>.example.com`のようなblogでユーザ名ごとに異なるサブドメイン
+- ClientHelloは盗聴される危険性
+  - SNIを見て接続先のドメイン名を特定される
+  - 中国の GW (Great Firewall) ではSNIを見て接続を遮断している
+  - ロシアも2021年ごろからSNIブロックを開始
+    ｰ 2022年3月から[HTTP/3をブロック](https://ooni.org/post/2022-russia-blocks-amid-ru-ua-conflict/)
+
+# ECH (Encrypted Client Hello)
+## ClientHelloを暗号化する仕組み（策定中）
+- ECHに対応していればClientHelloのSNIや暗号用パラメータなどが暗号化される
+- 暗号化するための鍵はどうするのか
+  - DNSのhttpsレコードにech=...というパラメータがありDNSの名前解決のときに取得
+  - これが $a P$ に相当する公開鍵（固定）
+  - クライアントは乱数 $b$ を使って $abP$ を計算し, TLSのハンドシェイクに近い形で暗号化
+```
+$ dig https cloudflare-ech.com
+
+; <<>> DiG 9.18.39-0ubuntu0.24.04.1-Ubuntu <<>> https cloudflare-ech.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 16690
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 3
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;cloudflare-ech.com.            IN      HTTPS
+
+;; ANSWER SECTION:
+cloudflare-ech.com.     131     IN      HTTPS   1 . alpn="h3,h2" ipv4hint=104.18.10.118,104.18.11.118 ech=AEX+DQBBigAgACDBSl4iHCZXblgikvu/41lOBxBOH5cPazCR3roH6u95OQAEAAEAAQASY2xvdWRmbGFyZS1lY2guY29tAAA= ipv6hint=2606:4700::6812:a76,2606:4700::6812:b76
+
+;; ADDITIONAL SECTION:
+cloudflare-ech.com.     131     IN      A       104.18.11.118
+cloudflare-ech.com.     131     IN      A       104.18.10.118
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)
+;; WHEN: Fri Oct 10 17:31:11 JST 2025
+;; MSG SIZE  rcvd: 227
+```
+
+
+# DNS (Domain Name System)
+## ドメイン名を名前解決してIPアドレスに変換する仕組み
+- ドメイン: URLの一部（cybozu.co.jpみたいなもの）
+- DNSサーバ: ドメイン名とIPアドレスの対応表を持つサーバ（権威サーバ）
+  - 名前解決は多段階で行われる
+- DNSキャッシュサーバ: DNSサーバの問い合わせを代理で行うサーバ
+  - ISPや企業内に設置されていることが多い
+- DNSリゾルバ: DNSサーバへの問い合わせ
+  - OSやブラウザに組み込まれている
+## 安全性の問題
+- 古いプロトコル (1983~1987): *平文通信*
+  - 盗聴・改竄の危険性
+  - DNSキャッシュポイズニング攻撃
+    - Kaminsky攻撃(2008): キャッシュサーバの中身を偽の情報で上書き
+<span class="any" style="right:0.5em;bottom:3em;">![w:600px](images/lec-dns1.png)</span>
+
+# DNSSec (DNS Security Extensions) と DoT/DoH
+<!-- _class: image-right -->
+![w:500px](images/lec-dot-doh.png)
+## DNSの安全性を高める仕組み
+- DNSSec: 権威サーバのレスポンスに署名を付与
+  - 検証することでキャッシュポイズニングを防止
+  - データ自体は平文
+
+## DoTとDoH
+- DNSクエリとレスポンスをTLSで暗号化
+- クライアントとキャッシュDNSサーバ間の通信を保護
+
+|プロトコル|ポート|設定単位|
+|---|---|---|
+|DoT (DNS over TLS)|853|システム (OS) 全体|
+|DoH (DNS over HTTPS)|443|アプリ（ブラウザ）ごと|
+
+- ブラウザのDNS設定を見ると状況が分かる
+
+# パブリックDNSサーバ
+## DoT, DoHに対応している主なパブリックDNSサーバ
+- Google Public DNS (8.8.8.8)
+- Cloudflare (1.1.1.1): CDNの大手. ECHを主導
+- Quad9 (9.9.9.9): スイスに拠点があるプライバシー重視の非営利団体
+
+## 頭の片隅に
+- DNSサーバには「いつどこにアクセスしにいくか」という情報が伝わる
+  - 上記DNSサーバはプライバシーポリシーを公開しているので各自で判断
+- 企業内ネットワーク内のローカルサーバはパブリックDNSサーバでは名前解決できない
+- 国ごとの事情（日本のISPは緊急避難として児童ポルノをブロックしてる）には対応しない
 
 # FIDO2 (Fast IDentity Online)
 ## 高速なオンラインID認証
@@ -126,11 +255,20 @@ last update: 2025/10
 - $(h_i, d_i, t_i)$ を公開する
 
 # タイムスタンプを用いた否認防止
+<!-- _class: image-right -->
+![w:450px](images/lec-timestamp2.png)
 ## $A$ は署名を失効させても否認できない
 - リンクトークン生成型タイムスタンプISO/IEC 18014-3
-- 署名情報は新聞などで広く周知
-![w:700px](images/lec-timestamp2.png)
-
+  - 署名情報は新聞などで広く周知（昔の話）
+- 署名ベースのタイムスタンプ: 繰り返し署名して延長可能
+## EUの電子署名規格 eIDAS, - 2024年 [eIDAS 2.0](https://www.european-digital-identity-regulation.com/)
+- electronic IDentification and Authentication Services
+- EUC間で統一された暗号技術
+  - その中でタイムスタンプも規定されている
+  - 適格トラストサービスプロバイダーQTSP(Qualified Trust Service Provider) が提供
+## 日本
+- 2021年総務大臣による時刻認証業務（タイムスタンプサービス）の認定制度開始, 2023年[認定](https://www.soumu.go.jp/menu_news/s-news/01cyber01_02000001_00157.html)
+- 時刻源はNICTの原子時計, 2025年3月現在セイコー, MIND, アマノなどの[6社](https://www.soumu.go.jp/main_sosiki/joho_tsusin/top/ninshou-law/timestamp.html)
 # Merkle木
 ## ハッシュ値を一本の鎖ではなく2分木で管理したもの
 ![w:700px](images/lec-merkle-tree.png)
