@@ -115,7 +115,7 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 <!-- _class: image-right -->
 ![w:500px](images/lec-cca2.png)
 ## 選択暗号文攻撃CCA
-- 攻撃者 $\cal A$ は好きな暗号文 $c_i (\neq c)$ を選び
+- 攻撃者 $\cal A$ は好きな暗号文 $c_i (≠ c)$ を選び
 対応する平文 $m'=Dec(c_i)$ を得られる状況
   - その時 $Dec(c)$ が $m_i$ のどちらか当てられるか?
 - CCA1: $c$ を受け取る前のみクエリ可能
@@ -123,9 +123,20 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 - 当てられないならIND-CCA(1/2)安全
 ## ElGamal暗号はIND-CCA2安全ではない
 - より一般に準同型暗号はIND-CCA2安全ではない
-  - $\cal A$ は $c=Enc(M)$ に対して $c'=c+Enc(0)$ を作ると $c'\neq c$ なので
+  - $\cal A$ は $c=Enc(M)$ に対して $c'=c+Enc(0)$ を作ると $c'≠ c$ なので
 挑戦者に復号してもらうと準同型性から $Dec(c')=Dec(c)+0=M$ が分かる
 - 注意: ElGamal暗号がDDH仮定の元でIND-CCA1安全かそうでないかは未解決
+
+# 頑強性 NM（non-malliability: 非改変性）と強秘匿性
+## 強秘匿性
+- 暗号文 $c=Enc(m)$ から $m$ のいかなる（サイズ以外の）情報も得られない
+## 頑強性
+- 暗号文 $c=Enc(m)$ から $m$ と関係のある別の暗号文 $c' ≠ c$ を作れない
+## PKEはCCA2攻撃の元で強秘匿性と頑強性は同値
+- IND-CCA2 ⇔ NM-CCA2
+- 一般には強秘匿性があっても、暗号文をいじれる場合があった（準同型暗号）
+- CCA2という強力な攻撃者のモデルを想定した場合、強秘匿性があれば非改変性も保証される
+- PKEではIND-CCA2安全が最も強い安全性保証
 
 # RSA-OAEP (optimal asymmetric encryption padding)
 <!-- _class: image-right-center -->
@@ -143,4 +154,47 @@ DB = H("") || 0...0 || 0x01 || m
 - EM = 0x00 || maskedSeed || maskedDB
 - c = Enc(e, EM) = $EM^e \bmod{n}$（$m$ は $k - 2 L - 2=190$ byte 以下）
 
+# ハイブリッド暗号
+## PKEと共通鍵暗号の組合せ
+- PKEは計算コストが高いので大量のデータの暗号化には不向き
+- 共通鍵暗号は高速
+- ハイブリッド暗号: PKEで共通鍵を共有し, その共通鍵で共通鍵暗号を使う
+## KEM/DEM フレームワーク
+- KEM (key encapsulation mechanism)
+  - $\text{KEM.Gen}(1^λ) \to (sk, pk)$: 公開鍵生成
+  - $\text{KEM.Enc}(pk) \to (K, C)$: 共通鍵 $K$ とその暗号文 $C$ を生成
+  - $\text{KEM.Dec}(sk, C) \to K \text{ or } \bot$: 共通鍵 $K$ を復号
+- DEM (data encapsulation mechanism)
+  - $\text{DEM.Enc}(K, m) \to c$: 共通鍵 $K$ で平文 $m$ を暗号化
+  - $\text{DEM.Dec}(K, c) \to m \text{ or } \bot$: 共通鍵 $K$ で暗号文 $c$ を復号
+
 # PKEと前方秘匿性
+<!-- _class: image-right -->
+![w:500px](images/lec-no-fs.drawio.svg)
+![w:500px](images/lec-fs.drawio.svg)
+## 前方秘匿性 (forward secrecy)
+- 秘密鍵が漏洩しても過去の通信内容が守られる性質
+## FSがない場合
+- 盗聴者は復号できなくても盗聴して暗号文の履歴を保持
+- 将来秘密鍵が漏洩すると全ての暗号文を復号できる
+## DH鍵共有によるFSの実現
+- 都度DH共有することで過去の履歴を保持されても安全
+- DH時の秘密情報は毎回破棄
+  - 漏洩しても影響はそれだけ
+- 注意：DH鍵共有自体が破られたら駄目
+
+# PRISMとTLSなどのFSへの移行
+<!-- _class: image-right-center -->
+![w:300px](images/lec-lavabit-key.png)
+## PRISM
+- 2013年アメリカ国家安全保障局NSAによる監視プログラムの存在がSnowdenにより暴露
+- インターネットの大部分の通信を監視
+- FBIがSnowdenを告訴
+  - Lavabit: Snowdenが利用していたメールサービス業者
+    - 裁判所がPKEの秘密鍵の提出を要求
+    - 読めないサイズのフォントで提出
+    - 最終的には電子データの提出/DH鍵共有を使っておけば良かった
+## TLS 1.3
+- PKEの利用を廃止してDH鍵共有に完全移行
+- 実はブラウザで使う限りPKEが使われる機会はほぼ無い
+- ECHのハイブリッドPKE（DH鍵共有の片側固定）はFSは満たさない
