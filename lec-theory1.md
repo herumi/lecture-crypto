@@ -186,6 +186,7 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 - $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
 - $Adv_{Exp}(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$.
+このとき暗号は強秘匿性を持つという
 
 # 疑似ランダム関数 PRF (Pseudo-Random Function)
 ## ランダム関数

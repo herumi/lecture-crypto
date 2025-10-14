@@ -239,6 +239,7 @@ Security Without Collision-Resistance", CRYPTO2006
 # AEAD (Authenticated Encryption with Associated Data)
 ## 認証付き暗号
 - 秘匿性と完全性の両方を同時に満たす暗号
+  - IND-CPA安全（秘匿性）＋ 暗号文の完全性 = IND-CCA2安全
 - 共通鍵暗号とMACの組み合わせで実現
   - 組み合わせ方法や実装によって安全でないこともあった
   - 最初から組み合わせることを前提とした設計が望ましい
