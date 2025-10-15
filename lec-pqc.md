@@ -144,6 +144,19 @@ $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
 - Decode: $r^T e + e_2 - s^T e_1$ は小さいので $\tilde{m}$ から係数を0 or 1で復元する
 - 安全性: Kyber PKEはMLWE仮定の元でIND-CPA安全
 
+# MLKEMの概要
+## Kyber PKEからIND-CCA2安全な鍵共有(KEM)を実現
+- 藤崎-岡本変換（の変種）をKEM単体に適用
+## 鍵共有
+- A: $(sk, pk)$ をKyber PKEで生成し $pk$ をBに送る
+- B: ランダムな $m$ を選び
+$c:=Enc(pk, m, H(m,pk))$ をAに送る
+  - $k:=\text{KDF}(m, pk, c)$: 共有鍵
+- A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m', H(m', pk)) = c$
+  - $c = c'$ なら $k:=\text{KDF}(m', pk, c)$: 共有鍵
+そうでなければ $\text{KDF}(\text{乱数}, pk, c)$ を利用
+## 注意
+- $c≠c'$ のとき乱数を返すのは鍵の情報 ($m$) を漏らさないようにするため
 # MLKEM768のパラメータと改善
 <!-- _class: image-right -->
 ![w:400px](images/lec-dgauss.drawio.svg)
