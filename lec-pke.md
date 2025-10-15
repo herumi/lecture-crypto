@@ -57,7 +57,7 @@ last update: 2025/10
 - 自分で選んだ平文 $m_1$, $m_2$ のどちらかの暗号文 $c$ をもらってもどちらの平文か当てられない
 ## 平文当てゲーム $\texttt{Exp}(λ)$: 実験 (experiment)
 1. 挑戦者 C (Challenger): $s =KeyGen(1^λ)$
-1. 敵対者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
+1. 攻撃者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して $b=b'$ ならAの勝ち
 <img src="images/lec-cpa-game.drawio.svg" width="400px" style="float:right;margin-top:-300px;margin-right:10px">
@@ -100,7 +100,7 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 - $c_1 + c_2 = ((k_1+k_2) P, (M_1+M_2) + (k_1+k_2) Q) = Enc(Q,M_1+M_2;k_1+k_2)$
 # 楕円ElGamal暗号はIND-CPA安全
 ## 安全性仮定の根拠は?
-- IND-CPAのゲームで敵対者 A は $c=Enc(Q,M_b;k)$ を受け取る
+- IND-CPAのゲームで攻撃者 A は $c=Enc(Q,M_b;k)$ を受け取る
 自分で $M_i$ ($i=1,2$) の暗号文 $c_i:=Enc(Q,M_i;k_i)$ を作り比較する
 - $c - c_1$, $c - c_2$ はどちらかが0の暗号文なのでそれを判別できるか否かが焦点
 - $c'$ が 0 の暗号文かどうか判定できるか否かが焦点
@@ -127,15 +127,15 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 挑戦者に復号してもらうと準同型性から $Dec(c')=Dec(c)+0=M$ が分かる
 - 注意: ElGamal暗号がDDH仮定の元でIND-CCA1安全かそうでないかは未解決
 
-# 頑強性 NM（non-malliability: 非改変性）と強秘匿性
+# 頑強性 NM（non-malliability）と強秘匿性
 ## 強秘匿性
 - 暗号文 $c=Enc(m)$ から $m$ のいかなる（サイズ以外の）情報も得られない
-## 頑強性
+## 頑強性（非展性とも）
 - 暗号文 $c=Enc(m)$ から $m$ と関係のある別の暗号文 $c' ≠ c$ を作れない
 ## PKEはCCA2攻撃の元で強秘匿性と頑強性は同値
 - IND-CCA2 ⇔ NM-CCA2
 - 一般には強秘匿性があっても、暗号文をいじれる場合があった（準同型暗号）
-- CCA2という強力な攻撃者のモデルを想定した場合、強秘匿性があれば非改変性も保証される
+- CCA2という強力な攻撃者のモデルを想定した場合、強秘匿性があれば頑強性も保証される
 - PKEではIND-CCA2安全が最も強い安全性保証
 
 # RSA-OAEP (optimal asymmetric encryption padding)

@@ -176,16 +176,17 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 - こんなときでも $m$ の情報が漏れないで欲しい
 
 # IND-CPA安全
-## 情報が漏れないとは
+## 情報が漏れない（強秘匿性）とは
 - 自分で選んだ平文 $m_1$, $m_2$ のどちらかの暗号文 $c$ をもらってもどちらの平文か当てられない
 ## 平文当てゲーム $\texttt{Exp}(λ)$: 実験 (experiment)
 1. 挑戦者 C (Challenger): $s =KeyGen(1^λ)$
-1. 敵対者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
+1. 攻撃者 A (Adversary): $m_1, m_2 \in {\cal M}$ を選ぶ
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して出力する
-- $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2<img src="images/lec-cpa-game.drawio.svg" width="450px" style="float:right;margin-top:-320px;margin-right:10px">
+- $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2
+<span class="any" style="right:0.5em;bottom:7em;">![w:400px](images/lec-cpa-game.drawio.svg)</span>
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
-- $Adv_{Exp}(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$.
+- $Adv(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$.
 このとき暗号は強秘匿性を持つという
 
 # 疑似ランダム関数 PRF (Pseudo-Random Function)
@@ -208,3 +209,17 @@ $\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \rig
 - $Enc(s,m)=(r,F_s(r) \oplus m)$ for $r \underset{U}{\leftarrow} \Set{0,1}^{in}$
 - $Dec(s,c)=F_s(r) \oplus c$
 としたとき$\Pi=(KeyGen,Enc,Dec)$ はIND-CPA安全な共通鍵暗号である
+
+# 頑強性 (non-malleability) の定義
+## 平文を制御できるような暗号文を作れない
+- $c=Enc(m)$ に対して $m$ と関係のある別の $m^*$ に対応する $c^*=Enc(m^*)$ を作れない
+- 攻撃者 ${\cal A}$ が作った暗号文 $c^*$ の復号結果を教えても元の $m$ の情報を得られない
+## 平文当てゲーム $\texttt{Exp}_b(λ)$
+- $k =KeyGen(1^λ)$, $(m_0,m_1) ← {\cal A}_1()$ # 平文を2個選ぶ
+- $c^* ← Enc(m_b)$ # 片方の暗号文をもらう
+- $(c_1,\dots,c_n) ← {\cal A}_2(c^*)$ # $c^*$ から何か正しい暗号文($c^*≠c_i$)を作る
+- $d_i:=Dec(c_i)$ # その暗号文の結果を教えてもらう
+- $b' ← {\cal A}_3(d_1,\dots,d_n)$, $p_b:=\Pr[b'=b]$ # その情報から $b$ を当てる
+## $m_b$ のどちらの暗号文をもらっても $b$ を当てる確率は変わらない
+- $\text{Adv}(λ):=|p_0 - p_1| < \texttt{negl}(λ)$ for $\forall$ PPT ${\cal A}=({\cal A_1,A_2,A_3})$ ならば頑強性を持つ
+  - 注意: 細かなパラメータは省略している: $k$ は共通鍵暗号, 公開鍵暗号に応じて適切に選ぶ
