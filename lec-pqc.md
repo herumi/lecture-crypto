@@ -79,11 +79,11 @@ SPHINCS+|署名|32B|7856B
 <!-- _class: image-right -->
 ![w:400px](images/lec-lwe.drawio.svg)
 - $M_{m,n}(𝔽_q)$ を縦 $m$, 横 $n$ の $m \times n$ 次行列全体の集合とする
-  - 行列や
 - $A \in M_{m,n}(𝔽_q)$ と縦（列）ベクトル $s \in {𝔽_q}^n$ を選ぶ
 $b:=A s+e \pmod{q}$ とし, $(A, b)$: givenのとき $s$ を求めよ
   - ここで $e$ は小さい整数（後述）からなる $m$ 次元縦ベクトル
   - $e=0$ なら（$m \ge n$ として）普通の連立方程式を解くだけ
+    - 注意: 表記の都合上, 行列やベクトルの縦横が他の書籍と転置しているかもしれない
 ## 仮定
 - 適切なパラメータに対してLWE問題は困難であることをLWE仮定という
 - （判定版）LWE仮定
@@ -92,15 +92,17 @@ $b:=A s+e \pmod{q}$ とし, $(A, b)$: givenのとき $s$ を求めよ
 
 # ノイズの分布
 <!-- _class: image-right -->
-## 連続ガウス分布
 ![w:400px](images/lec-gauss.drawio.svg)
+![w:400px](images/lec-dgauss.drawio.svg)
+## 連続ガウス分布
 - 平均0, 標準偏差 $σ$ のガウス分布
   - $P(x) = \frac{1}{\sqrt{2π}σ} \exp(-x^2/2σ^2)$
 ## 離散ガウス分布
 - 整数 $x$ が $\exp(-x^2/2σ^2)$ に比例する確率で分布する
   - $e$ は離散ガウス分布からサンプリングする
 - 厳密には通常の連続ガウス分布の結果を整数に丸めたものとは異なる
-- 扱いが困難なので実装時には適当なパラメータ $L$ を決めて $[-L, L]$ の範囲で生成する
+- 扱いが困難なので実装時には適当な境界パラメータ $L$ を決めて
+$[-L, L]$ の範囲で生成する（e.g., 二項分布）
 
 # Regev暗号
 ## 鍵生成
@@ -122,16 +124,80 @@ $b:=A s+e \pmod{q}$ とし, $(A, b)$: givenのとき $s$ を求めよ
   - MLKEM768では $q=3329$, $n=256$, $ν=256$, $ζ=17$
 - $\phi(x):=x^n+1$, $R:=ℤ[x]/(x^n+1)$, $R_q:=𝔽_q[x]/(x^n+1)$
 ## MLWE (Module LWE) 問題
-- $s \underset{U}\leftarrow {R_q}^k$ とノイズの分布 $χ$ を選ぶ（$s \cdot a$ は2個の $k$ 次元ベクトルの内積）
-MLWE分布: $A_{s,χ}:=\Set{(a,s \cdot a + e) \in {R_q}^k \times R_q \mid a \underset{U}\leftarrow {R_q}^k, e \leftarrow χ}$
+- $s \underset{U}\leftarrow {R_q}^k$ とノイズの分布 $χ$ を選ぶ（ベクトルの内積 $s \cdot a = s^T a = a^T s$ に注意）
+MLWE分布: $A_{s,χ}:=\Set{(a,s^T a + e) \in {R_q}^k \times R_q \mid a \underset{U}\leftarrow {R_q}^k, e \leftarrow χ}$
 
 ## MLWE仮定
 - MLWE分布と $(a,b) \underset{U}\leftarrow {R_q}^k \times R_q$ を区別するのが困難
-# MLKEM768
-## パラメータ
+
+# MLKEM768の概要
+## 鍵生成
+- $s \in {R_q}^k$, $A \in M_{k}(R_q)$, $e \in {R_q}^k$ を選び $b:=A s+e$ とする
+  - $sk:=s$ が秘密鍵で $pk:=(A, b)$ が公開鍵
+## 暗号化
+- Encode: 256bitの $m=\sum_i m_i 2^i$ から $\tilde{m}:=\sum_{i=0}^{255} m_i (q//2)x^i \in R_q$ を作る
+- 乱数 $r \in {R_q}^k$, $e_1 \in {R_q}^k$, $e_2 \in R_q$ を選び
+  $Enc(pk,m):=(u, v):=(A^T r + e_1, r^T b + e_2 + \tilde{m})$ が暗号文
+## 復号
+- $Dec(sk,(u,v)):=v - s^T u = r^T(A s + e) + e_2 + \tilde{m} - s^T(A^T r + e_1)$
+$= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
+- Decode: $r^T e + e_2 - s^T e_1$ は小さいので $\tilde{m}$ から係数を0 or 1で復元する
+
+# MLKEM768のパラメータと改善
+<!-- _class: image-right -->
+![w:400px](images/lec-dgauss.drawio.svg)
+## 主要パラメータ
 - $m = O(n \log q)$
-- q = 3329, n = 256, k = 3, η = 2
+- $n = 256$, $q = 3329 = 13n + 1$, $k = 3$, $η = 2$
 - $e$ は $n=4$, $p=1/2$ の二項分布（範囲は  $[-2, 2]$）を利用
+## 公開鍵サイズの削減
+- $A$ は $k^2$ 個の要素
+- SHAKE, SHA-3などからなるXOF, PRFを利用して256bitのseedから各種乱数を生成
+## 多項式乗算の高速化
+- $A s$ などの計算は素朴にやると $k^2$ 回の多項式の乗算が必要
+- FFTの類似物である NTT (Number Theoretic Transform) を利用して高速化
+- 多項式 $f(x)=\sum_i f_i x^i$, $g(x)=\sum_i g_i x^i$ の積 $h(x)=f(x) g(x)=\sum_i h_i x^i$
+$h_k = \sum_i f_i g_{k-i}$ を畳み込みという
+
+# FFT (Fast Fourier Transform) の概要
+## FFT変換と逆変換
+- $n$ を2のべき乗, $w:=e^{2 π \sqrt{-1}/n}$, $a=\Set{a_i}$ ($i=0,\dots, n-1$) とする
+- FFT: $A_j:=F(a)_j:=\sum_{i=0}^{n-1} a_i w^{i j}$, IFFT: $F^{-1}(A)_k:=(1/n)\sum_{j=0}^{n-1} A_j w^{-j k}$
+- $F^{-1}(F(a))_k = (1/n) \sum_{i,j} a_i w^{i j} w^{-k j} = (1/n)\sum_i a_i (\sum_j w^{j(i-k)})$
+- $\sum_j w^{j(i-k)} = n δ_{i k}$ より $F^{-1}(F(a))_k = a_k$
+## FFTの畳み込み
+- $b=\Set{b_s}$ として $C_j:= F(a)_j F(b)_j$ とすると
+ のとき $c_k:=F^{-1}(C)_k=(1/n) \sum_{j} F(a)_j F(b)_j  w^{-j k}=(1/n)\sum_{i,j,s} a_i w^{i j} b_s w^{s j} w^{-j k}$
+ $=(1/n)\sum_{i,s} a_i b_s (\sum_{j} w^{j(i+s-k)})$ # $k=i+s$ となる組合せで先に加算する
+ $=(1/n)\sum_{i,s} a_i b_s n δ_{k, i+s} =\sum_i a_i b_{k-i}$ （添え字は $\bmod{n}$ で計算）
+- つまりFFT変換して要素ごとに掛けて逆変換すれば畳み込みになる
+
+# FFTの高速化
+## 高速化のアイデア
+- $\Set{F_n(a)_j}$ の乗算は $n^2$ 回
+- $n=2^m$ なら $a$ を偶数番目と奇数番目に分けて計算
+- $F_n(a)_j = \sum_{i=0}^{n/2-1} a_{2i} w^{2 i j} + \sum_{i=0}^{n/2-1} a_{2 i + 1} w^{(2 i + 1) j}=F_{n/2}(a_{\text{even}})_j + w^j F_{n/2}(a_{\text{odd}})_j$
+- $F(a)_ {j + n/2} = F_{n/2}(a_{\text{even}})_j - w^j F_{n/2}(a_{\text{odd}})_j$
+  - これなら $2 \times \#(F_{n/2}) + n = 2 \times (n/2)^2 + n = n^2/2 + n$ 回
+  - もう$F_{n/2}$ も同様に分割すると $2 \times (n^2/8 + n/2) + n = n^2/4 + 2n$ 回
+  - これを繰り返すと約 $n m = n \log_2 n$ 回で計算できる
+## 多項式の乗算
+- $a(x)$, $b(x)$ の係数 $a_i$, $b_i$ についてFFTで $A_i$, $B_i$ を計算（$2 n \log(n)$ 回）
+- $C_i := A_i B_i$ （$n$ 回）
+- $c_i$ をIFFTで計算（$n \log(n)$ 回）
+
+# NTTへの応用
+## 整数 $𝔽_q$ の世界では $\exp(2π \sqrt{-1}/n)$ は使えない
+- 代わりに $𝔽_q$ の1の原始 $n$ 乗根 $ω$ を利用する
+## 巡回畳込みと負巡回畳み込み
+- 多項式の計算が $𝔽_q[x]/(x^n-1)$ の中だったら
+$c_k = \sum_{i=0}^k a_i b_{k-i} + \sum_{i=k+1}^{n-1} a_i b_{k-i+n} = \sum_i a_i b_{(k-i) \bmod{n}}$
+  - 添え字を $\bmod {n}$ で計算する巡回畳み込みになる
+- $𝔽_q[x]/(x^n+1)$ の中では 
+$c_k = \sum_{i=0}^k a_i b_{k-i} - \sum_{i=k+1}^{n-1} a_i b_{k-i+n}$: 負巡回畳み込みという
+## MLKEM768でのNTT
+- $ω=17$ とすると $ω$ は $𝔽_q$ ($q=3329$) における1の原始 $n=256$ 乗根
+  - $ω^i \neq 1$ for $i \in [1,n), ω^n=1$, $w^{n/2}=-1$
 
 # 同種写像
 ## 従来のECDH鍵共有
