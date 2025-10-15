@@ -43,31 +43,27 @@ _class: title
 
 # PQC標準化の状況
 ## 確定したもの
-- PKC/KEM : CRYSTALS-KYBER, [HQC](https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8545.pdf) (2025/3確定 2027年標準化予定)
-- 署名 : CRYSTALS-Dilithium, FALCON, SPHINCS+
+- PKC/KEM : CRYSTALS-KYBER（格子）, [HQC](https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8545.pdf) (符号: 2025/3確定 2027年標準化予定)
+- 署名 : CRYSTALS-Dilithium（格子）, FALCON（格子）, SPHINCS+（ハッシュ）
 
-# 主な暗号の種類
-## 格子暗号
-- CRYSTALS-KYBER(Kyber-768), FALCON
-## ハッシュ関数
-- SPHINCS+
-## 符号暗号
-- BIKE, Classic, McEliece, HQC
-## 同種写像
-- SIKE(PKC), SIDH(KEM) : 破れた / CSIDH, SQISign : 評価中, 現在有望と考えられている
-## 多変数多項式
+## その他の暗号の種類
+### 符号暗号
+- BIKE, Classic, McEliece
+### 同種写像
+- SIKE, SIDH: 破れた(2023), CSIDH, SQISign: 評価中, 現在有望と考えられている
+### 多変数多項式
 - 鍵サイズが大きい（公開鍵≧3MB, 秘密鍵≧400KB）
 
 # 主なアルゴリズムの鍵サイズ
 ## 一覧
 
-アルゴリズム|種類|公開鍵サイズ|暗号文・署名サイズ
----|---|---|---
-ECDH|KEM|32B|32B
-ECDSA|署名|32B|64B
-MLKEM768 (KYBER-768)|KEM|1184B|1088B
-Dilithium|署名|1952B|3309B
-SPHINCS+|署名|32B|7856B
+アルゴリズム|種類|公開鍵|秘密鍵|暗号文・署名
+---|---|---|---|---
+ECDH|KEM|32B|32B|32B
+ECDSA|署名|32B|64B|64B
+MLKEM768 (KYBER-768)|KEM|1184B|2400B| 1088B
+Dilithium|署名|1952B|4000B|3293B
+SPHINCS+|署名|32B|64B|7856B
 
 ## MLKEM768のブラウザ対応
 - 2024/初め: Chrome 124/Edge/FirefoxがKyber-768対応
@@ -141,27 +137,27 @@ MLWE分布: $A_{s,χ}:=\Set{(a,s^T a + e) \in {R_q}^k \times R_q \mid a \underse
 ## 復号と正当性
 - $Dec(sk,(u,v)):=v - s^T u = r^T(A s + e) + e_2 + \tilde{m} - s^T(A^T r + e_1)$
 $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
-- Decode: $r^T e + e_2 - s^T e_1$ は小さいので $\tilde{m}$ から係数を0 or 1で復元する
+- Decode: $r^T e + e_2 - s^T e_1$ は小さいので $q//2$ に近いか否かで $\tilde{m}$ から $m_i$ を0 or 1で復元
 - 安全性: Kyber PKEはMLWE仮定の元でIND-CPA安全
 
 # MLKEMの概要
-## Kyber PKEからIND-CCA2安全な鍵共有(KEM)を実現
+<!-- _class: image-right-center -->
+![w:400px](images/lec-mlkem.drawio.svg)
+## Kyber PKEからIND-CCA2安全な鍵共有(Kyber-KEM)を実現
 - 藤崎-岡本変換（の変種）をKEM単体に適用
 ## 鍵共有
 - A: $(sk, pk)$ をKyber PKEで生成し $pk$ をBに送る
 - B: ランダムな $m$ を選び
 $c:=Enc(pk, m, H(m,pk))$ をAに送る
   - $k:=\text{KDF}(m, pk, c)$: 共有鍵
-- A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m', H(m', pk)) = c$
+- A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m', H(m', pk))$
   - $c = c'$ なら $k:=\text{KDF}(m', pk, c)$: 共有鍵
 そうでなければ $\text{KDF}(\text{乱数}, pk, c)$ を利用
-## 注意
-- $c≠c'$ のとき乱数を返すのは鍵の情報 ($m$) を漏らさないようにするため
-# MLKEM768のパラメータと改善
+- 注意: $c≠c'$ のとき乱数を返すのは鍵の情報 ($m$) を漏らさないようにするため
+# MLKEM768 (Kyber-KEM) のパラメータと性能改善
 <!-- _class: image-right -->
 ![w:400px](images/lec-dgauss.drawio.svg)
 ## 主要パラメータ
-- $m = O(n \log q)$
 - $n = 256$, $q = 3329 = 13n + 1$, $k = 3$, $η = 2$
 - $e$ は $n=4$, $p=1/2$ の二項分布（範囲は  $[-2, 2]$）を利用
 ## 公開鍵サイズの削減
