@@ -44,12 +44,12 @@ last update: 2025/10
 # PKEの定義
 ## PPTアルゴリズムの組 $Π:(Keygen, Enc, Dec)$ がPKEであるとは
 - KeyGen: 鍵生成
-  - $KeyGen(1^λ) \to (pk, sk)$: $λ$: セキュリティパラメータ, $pk$: 公開鍵, $sk$: 秘密鍵
+  - $KeyGen(1^λ) → (pk, sk)$: $λ$: セキュリティパラメータ, $pk$: 公開鍵, $sk$: 秘密鍵
   - 平文空間 ${\cal M}$ も決まる
 - Enc: 平文 $m \in {\cal M}$ の暗号化
-  - $Enc(pk, m) \to c$
+  - $Enc(pk, m) → c$
 - Dec: 暗号文 $c$ の復号（Decは決定的アルゴリズム）
-  - $Dec(sk, c) \to m$
+  - $Dec(sk, c) → m$
 - 正当性: 任意の $m \in {\cal M}$ に対して $Dec(sk, Enc(pk, m)) = m$
 
 # PKEとIND-CPA安全
@@ -161,13 +161,26 @@ DB = H("") || 0...0 || 0x01 || m
 - ハイブリッド暗号: PKEで共通鍵を共有し, その共通鍵で共通鍵暗号を使う
 ## KEM/DEM フレームワーク
 - KEM (key encapsulation mechanism)
-  - $\text{KEM.Gen}(1^λ) \to (sk, pk)$: 公開鍵生成
-  - $\text{KEM.Enc}(pk) \to (K, C)$: 共通鍵 $K$ とその暗号文 $C$ を生成
-  - $\text{KEM.Dec}(sk, C) \to K \text{ or } \bot$: 共通鍵 $K$ を復号
+  - $\text{KEM.Gen}(1^λ) → (sk, pk)$: 公開鍵生成
+  - $\text{KEM.Enc}(pk) → (K, C)$: 共通鍵 $K$ とその暗号文 $C$ を生成
+  - $\text{KEM.Dec}(sk, C) → K \text{ or } \bot$: 共通鍵 $K$ を復号
 - DEM (data encapsulation mechanism)
-  - $\text{DEM.Enc}(K, m) \to c$: 共通鍵 $K$ で平文 $m$ を暗号化
-  - $\text{DEM.Dec}(K, c) \to m \text{ or } \bot$: 共通鍵 $K$ で暗号文 $c$ を復号
+  - $\text{DEM.Enc}(K, m) → c$: 共通鍵 $K$ で平文 $m$ を暗号化
+  - $\text{DEM.Dec}(K, c) → m \text{ or } \bot$: 共通鍵 $K$ で暗号文 $c$ を復号
 
+# FO（藤崎-岡本）変換
+## IND-CCA2安全なKEMの構成法
+- (Gen, Enc, Dec): PKE, (DEM.Enc, DEM.Dec): 共通鍵暗号, $H_1, H_2$: ハッシュ関数に対して
+- $\text{FO.Gen}(1^λ)$: $\text{PKE.Gen}(1^λ) → (pk, sk)$
+- $\text{FO.Enc}(pk, m)$: 乱数 $r$ を選び
+  $c:=(C_1,C_2):=(\text{PKE.Enc}(pk, r;H_2(m||r)), \text{DEM.Enc}(H_1(r), m))$
+- $\text{FO.Dec}(sk, (C_1,C_2)))$:
+$r:=\text{PKE.Dec}(sk, C_1)$, $m:=\text{DEM.Dec}(H_1(r), C_2)$
+$C_1=\text{PKE.Enc}(pk, r;H_2(m||r))$ なら $m$ を返す, そうでなければ $\bot$
+## 安全性
+- PKE: OW (One-Way)-CPA安全（暗号文から平文を得られない）+αの仮定
+- DEM: IND-OT (one-time) 安全（1回の使用だけなら安全）
+- OW-CPA安全なKEM + IND-OT安全なDEM → FOはランダムオラクルモデルでIND-CCA2安全
 # PKEと前方秘匿性
 <!-- _class: image-right -->
 ![w:500px](images/lec-no-fs.drawio.svg)

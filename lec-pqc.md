@@ -130,7 +130,7 @@ MLWE分布: $A_{s,χ}:=\Set{(a,s^T a + e) \in {R_q}^k \times R_q \mid a \underse
 ## MLWE仮定
 - MLWE分布と $(a,b) \underset{U}\leftarrow {R_q}^k \times R_q$ を区別するのが困難
 
-# MLKEM768の概要
+# Kyber PKEの概要
 ## 鍵生成
 - $s \in {R_q}^k$, $A \in M_{k}(R_q)$, $e \in {R_q}^k$ を選び $b:=A s+e$ とする
   - $sk:=s$ が秘密鍵で $pk:=(A, b)$ が公開鍵
@@ -138,10 +138,11 @@ MLWE分布: $A_{s,χ}:=\Set{(a,s^T a + e) \in {R_q}^k \times R_q \mid a \underse
 - Encode: 256bitの $m=\sum_i m_i 2^i$ から $\tilde{m}:=\sum_{i=0}^{255} m_i (q//2)x^i \in R_q$ を作る
 - 乱数 $r \in {R_q}^k$, $e_1 \in {R_q}^k$, $e_2 \in R_q$ を選び
   $Enc(pk,m):=(u, v):=(A^T r + e_1, r^T b + e_2 + \tilde{m})$ が暗号文
-## 復号
+## 復号と正当性
 - $Dec(sk,(u,v)):=v - s^T u = r^T(A s + e) + e_2 + \tilde{m} - s^T(A^T r + e_1)$
 $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
 - Decode: $r^T e + e_2 - s^T e_1$ は小さいので $\tilde{m}$ から係数を0 or 1で復元する
+- 安全性: Kyber PKEはMLWE仮定の元でIND-CPA安全
 
 # MLKEM768のパラメータと改善
 <!-- _class: image-right -->
@@ -199,15 +200,3 @@ $c_k = \sum_{i=0}^k a_i b_{k-i} - \sum_{i=k+1}^{n-1} a_i b_{k-i+n}$: 負巡回�
 - $ω=17$ とすると $ω$ は $𝔽_q$ ($q=3329$) における1の原始 $n=256$ 乗根
   - $ω^i \neq 1$ for $i \in [1,n), ω^n=1$, $w^{n/2}=-1$
 
-# 同種写像
-## 従来のECDH鍵共有
-- 楕円曲線の点 $P$ を固定
-- AとBがそれぞれ $aP$, $bP$ を計算して共通な値 $abP$ を求める
-## 同種写像
-- 楕円曲線 $E$ を別の楕円曲線 $E'$ に移す写像 $\phi : E \rightarrow E'$.
-- 複数の楕円曲線の間の同種写像を組み合わせて秘密鍵情報とする
-- 同種写像問題
-  - 与えらえた同種な楕円曲線 $E$, $E'$ の間の同種写像を具体的に求める
-## SIDH（2022年破られた）
-- $E_0$ から $E_A$, $E_B$ に移り、$E_{AB}$, $E_{BA}$ という楕円曲線を作る
-- そこからj不変量という値を計算して鍵共有（$j(E_{AB})=j(E_{BA}$）する

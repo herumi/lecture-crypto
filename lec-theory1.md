@@ -101,7 +101,7 @@ $x>3/ε$ とすればよい
 
 # 無視できる関数
 ## 十分小さいことを表す
-- $f:ℕ \to ℝ_{\ge 0}$ が無視できる (negligible) とは $\forall c > 0$, $\exists N \in ℕ$ s.t. $\forall n > N$, $f(n)<n^{-c}$.
+- $f:ℕ → ℝ_{\ge 0}$ が無視できる (negligible) とは $\forall c > 0$, $\exists N \in ℕ$ s.t. $\forall n > N$, $f(n)<n^{-c}$.
   - $c>0$ をどんなに大きくとっても、それに対応して十分大きく $N$ を選べば、
   それより大きい $n>N$ について $f(n) < n^{-c}$ とできる
 - $f(n)$ はどんな多項式の逆数よりも速く小さくなる
@@ -137,7 +137,7 @@ $x>3/ε$ とすればよい
 - 「見分けがつかない」を無視できる関数で表現する
 
 # 疑似乱数生成器 PRG の定義
-### $G:\Set{0,1}^n \to \Set{0,1}^{l(n)}$（$l(n) > n$ な多項式）がPRGであるとは次を満たすもの
+### $G:\Set{0,1}^n → \Set{0,1}^{l(n)}$（$l(n) > n$ な多項式）がPRGであるとは次を満たすもの
 - $\forall {\cal A}(x) \in \Set{0,1}$: PPT多項式について
 $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)} \right] - \Pr \left[{\cal A}(G(s))=1 \mid s \underset{U}{\leftarrow} \Set{0,1}^{n} \right]\right| < \texttt{negl}(n)$
 ### 意味
@@ -190,9 +190,9 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 
 # 疑似ランダム関数 PRF (Pseudo-Random Function)
 ## ランダム関数
-- $RF_{n,m}=\Set{f \mid f:\Set{0,1}^n \to \Set{0,1}^m}$: $n$ bitの入力から $m$ bitを出力する関数全体
+- $RF_{n,m}=\Set{f \mid f:\Set{0,1}^n → \Set{0,1}^m}$: $n$ bitの入力から $m$ bitを出力する関数全体
 $f \underset{U}{\leftarrow} RF_{n,m}$ をランダム関数という（$|RF_{n,m}|=({2^m})^{2^n}$）
-### $F:\Set{0,1}^n \times \Set{0,1}^{in} \to \Set{0,1}^{out}$: PT関数, $in$, $out$ は $n$ の多項式
+### $F:\Set{0,1}^n \times \Set{0,1}^{in} → \Set{0,1}^{out}$: PT関数, $in$, $out$ は $n$ の多項式
 - $s \in \Set{0,1}^n$, $F_s(x):=F(s,x)$ が PRF とは
 入力が疑似乱数なら1を返す $\forall$ PPT algo. ${\cal A}$,
 $\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \right] - \Pr \left[{\cal A}(f)=1 \mid f \underset{U}\leftarrow RF_{in,out}\right] \right| < \texttt{negl}(n)$
