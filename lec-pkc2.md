@@ -123,12 +123,16 @@ last update: 2025/10
   - ロシアも2021年ごろからSNIブロックを開始
     ｰ 2022年3月から[HTTP/3をブロック](https://ooni.org/post/2022-russia-blocks-amid-ru-ua-conflict/)
 
+# ClientHelloのキャプチャ例
+## https://herumi.github.io/lecture-crypto/
+![h:500px](images/lec-cap-sni.png)
+- name=herumi.github.io が平文で見えている
 # ECH (Encrypted Client Hello)
 ## ClientHelloを暗号化する仕組み（策定中）
 - ECHに対応していればClientHelloのSNIや暗号用パラメータなどが暗号化される
 - 暗号化するための鍵はどうするのか
   - DNSのhttpsレコードにech=...というパラメータがありDNSの名前解決のときに取得
-  - これが $a P$ に相当する公開鍵（固定）
+  - これが $a P$ に相当する公開鍵（固定）: HPKE (Hybrid Public Key Encryption) 
   - クライアントは乱数 $b$ を使って $abP$ を計算し, TLSのハンドシェイクに近い形で暗号化
 ```
 $ dig https cloudflare-ech.com
