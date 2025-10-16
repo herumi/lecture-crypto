@@ -18,11 +18,11 @@ _class: title
 <br>
 光成滋生
 <br>
+last update: 2025/10/16
 
 # 目次
 ## 用語一覧
-- MAC, 存在的偽造不可能
-- IND-CPA安全, IND-CCA2安全, Enc-then-Mac
+- MAC, 存在的偽造不可能, Enc-then-Mac
 - ハッシュ関数, SHA-2, 伸長攻撃, SHA-3, XOF
 - AEAD, 拡大体
 - 軽量暗号, Ascon
