@@ -1,5 +1,7 @@
 # 情報セキュリティ基礎講義
 
+- 資料は[Marp for VS Code](https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode)で作成
+
 1. [基礎知識](lec-info-sec.md)
 - 情報セキュリティ
 - 暗号とは・認証・古典暗号
