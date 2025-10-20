@@ -61,14 +61,14 @@ last update: 2025/10
 1. C: $b \in\Set{0,1}$ を選び $c=Enc(s,m_b)$ を A に送る
 1. A: $c$ から $b' \in \Set{0,1}$ を推測して $b=b'$ ならAの勝ち
 <img src="images/lec-cpa-game.drawio.svg" width="400px" style="float:right;margin-top:-300px;margin-right:10px">
-- IND-CPA安全とは $Adv_{Exp}(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$
+- IND-CPA安全とは $Adv_{Exp}(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $∀$ PPT Algo $Exp$
 ## 共通鍵暗号とPKEの違い
 - PKEでは任意の $m$ の暗号文を自分で作れる $c=Enc(pk,m)$ のでIND-CPA安全は必須条件
 
 # 安全ではないPKEの例
 ## RSA関数をそのまま使うRSA暗号（RSA$_0$ とここでは表記）
 - $KeyGen(1^λ)$: RSA関数の設定
-  - 素数 $p, q$ と $(e,d)$ を $e d \equiv 1 \pmod{(p-1)(q-1)}$ となるように選び $n:=p q$ とする
+  - 素数 $p, q$ と $(e,d)$ を $e d ≡ 1 \pmod{(p-1)(q-1)}$ となるように選び $n:=p q$ とする
   - $pk:=(n,e)$, $sk:=(p,q,d)$, ${\cal M}:=[0,n-1]$
 - $Enc(pk, m)$: $m \in {\cal M}$ に対して $c = m^e \bmod n$
 - $Dec(sk, c)$: $m = c^d \bmod n$

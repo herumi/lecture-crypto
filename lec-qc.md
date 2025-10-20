@@ -267,8 +267,8 @@ $U_f : |x⟩ \otimes |y⟩ \mapsto |x⟩ \otimes |y \oplus f(x)⟩$ と定義す
 # Shorのアルゴリズム
 ## $n=pq$ ($p$, $q$ は素数) を素因数分解するアルゴリズム
 - 位数計算問題: 与えられた $g \in [1, n-1]$ の位数を求める問題
-  - $g$ の位数: $g^r \equiv 1 \pmod{n}$ となる最小の正整数
-- 位数が見つかり $r$ が偶数ならば $(g^{r/2} - 1)(g^{r/2} + 1) \equiv 0 \pmod{n}$
+  - $g$ の位数: $g^r ≡ 1 \pmod{n}$ となる最小の正整数
+- 位数が見つかり $r$ が偶数ならば $(g^{r/2} - 1)(g^{r/2} + 1) ≡ 0 \pmod{n}$
   - このとき有意な確率で $g^{r/2}-1$ と $g^{r/2}+1$ のどちらかは $n$ の非自明な約数を持つ
   - 見つからなければ別の $g$ でやり直す
   - 最大公約数は古典計算機で高速に求められるので $p, q$ が得られる
@@ -327,11 +327,11 @@ $|w_j⟩ := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i k j / r) |g^k \bmod n⟩$
 # 確率の大きいところ
 ## $|j,k⟩$ が観測される確率
 - 全体の係数を無視すると、$v_{j,k}:=\sum_{(a,b)\in S_R} \exp(-2 π i (a j + b k)/n)$ の絶対値の2乗
-- $(a,b) \in S_R$ ならば$a P + b (x P) = c P$ より $a \equiv c - b x \pmod{n}$
-- $a j + b k \equiv (c - b x) j + b k = c j + b(k - x j) \pmod{n}$
-- $k - x j \equiv 0 \pmod{n}$ ならば $v_{j,k} = \sum_b \exp(-2 π i c j / n) = n \exp(-2 π i c j / n)$
+- $(a,b) \in S_R$ ならば$a P + b (x P) = c P$ より $a ≡ c - b x \pmod{n}$
+- $a j + b k ≡ (c - b x) j + b k = c j + b(k - x j) \pmod{n}$
+- $k - x j ≡ 0 \pmod{n}$ ならば $v_{j,k} = \sum_b \exp(-2 π i c j / n) = n \exp(-2 π i c j / n)$
   - 位相が揃って確率が最大化. それ以外は打ち消しあって小さくなる
-  - つまり $k \equiv x j \pmod{n}$ となる $k,j$ が選ばれる確率が高い
+  - つまり $k ≡ x j \pmod{n}$ となる $k,j$ が選ばれる確率が高い
   - 複数回実行して $x$ を求める
 - 全体で $O((\log p)^3)$ で解けることが知られている
 - ビット数が少ない分, 原理的に素因数分解よりも効率よく求められる
@@ -346,7 +346,7 @@ $|w_j⟩ := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i k j / r) |g^k \bmod n⟩$
 - 2001 IBM : 15 = 3x5
 - 2012 [Josephson phase qubi](https://arxiv.org/abs/1202.5707) : 21 = 3x7
 - 2019 IBM : 35を素因数分解しようとしたが失敗
-- (DLP) 2020 [NICT](https://www.nict.go.jp/press/2020/12/09-1.html) : $2^x\equiv 1 \pmod{2}$ は解けたが $4^x \equiv 2 \pmod{7}$ は失敗
+- (DLP) 2020 [NICT](https://www.nict.go.jp/press/2020/12/09-1.html) : $2^x≡ 1 \pmod{2}$ は解けたが $4^x ≡ 2 \pmod{7}$ は失敗
 - ただし解けた素因数分解は素因数の情報を使ってる（[CRYPTREC](https://www.cryptrec.go.jp/exreport/cryptrec-ex-3005-2020.pdf) : それはありなのか）
 - もっと大きい素因数分解に成功したものもあるがそれも全数探索 or 素数の性質を使ってる
 

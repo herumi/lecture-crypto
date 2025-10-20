@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/10/16
+last update: 2025/10/20
 
 # 概要
 ## 目的
@@ -38,29 +38,29 @@ last update: 2025/10/16
 - $n$ が十分大きい
 - 平文の情報がもれない
 ## 無限大をどう扱うか
-- $f(x)$ が $x→\infty$ のとき $a$ に収束するとは
-- $f(x)=2+3/x$ のとき $x→\infty$ で $f(x)→2$
+- $f(x)$ が $x→∞$ のとき $a$ に収束するとは
+- $f(x)=2+3/x$ のとき $x→∞$ で $f(x)→2$
   - $f(10)=2.3$, $f(1000)=2.003$, $f(100000000)=2.00000003$
   - 「$x$ を大きくすれば2に近づく」ではなく
   「収束先 $a$ が2でなければ $x$ を大きくすると $a$ よりも2に近くできる」と定義する
 
 # 収束の定義
 ## 記法
-- $\exists a$～: 存在記号: 「～となる $a$ が存在して...」
-- $\forall a$～: 全称記号: 「～となる全ての $a$ に対して...」
+- $∃a$～: 存在記号: 「～となる $a$ が存在して...」
+- $∀a$～: 全称記号: 「～となる全ての $a$ に対して...」
 - s.t.～: such that: 「~となるような...」
 ## 定義
-- $f(x)$ が $x→\infty$ のとき $a$ に収束するとは
-$\forall ε>0$, $\exists N>0$ s.t. $\forall x>N$, $|f(x)-a|<ε$.
+- $f(x)$ が $x→∞$ のとき $a$ に収束するとは
+$∀ε>0$, $∃N>0$ s.t. $∀x>N$, $|f(x)-a|<ε$.
 - 読み方: どんな（小さな） $ε>0$ に対しても、それに対応して
   「$x>N$ ならば $|f(x)-a|<ε$ となる」ような $N>0$ を選べる
 - どんなに小さい（0でない）誤差 $ε$ を持ってきても、十分大きな $N$ を選ぶと
 それより大きい $x$ は $|f(x)-a|<ε$ とできる
-- 順序が大事: 「$\exists N > 0, \forall ε > 0 s.t. \forall x > N, |f(x) - a| < ε$」ではない
+- 順序が大事: 「$∃N > 0 s.t. ∀ε > 0, ∀x > N, |f(x) - a| < ε$」ではない
   - 問: これだとどうなるか?
 
 # 具体例
-## $f(x)=2+3/x → 2$ for $x→\infty$
+## $f(x)=2+3/x → 2$ for $x→∞$
 - $a=2$
 - $ε>0$ を選ぶ. $|f(x)-a|=|2+3/x-a|=|3/x|<ε$ となるためには
 $x>3/ε$ とすればよい
@@ -70,11 +70,11 @@ $x>3/ε$ とすればよい
 - $N=3/ε=3000000$ とすれば $x>N$ ならば $|f(x)-a|<ε$ である
 
 ## 問題
-- $f(x)=3+4/x^2$ のとき $x→\infty$ で $f(x)→3$ を示せ
+- $f(x)=3+4/x^2$ のとき $x→∞$ で $f(x)→3$ を示せ
 
 # O記法の定義
 ## 定義
-- $f(n)=O(g(n))$ とは $\exists c>0$, $\exists N>0$ s.t. $\forall n > N$, $|f(n)/g(n)| \le c$.
+- $f(n)=O(g(n))$ とは $∃c>0$, $∃N>0$ s.t. $∀n > N$, $|f(n)/g(n)| \le c$.
 ## 読み方
   - ある $c>0$ が存在し、「$n > N$ となる全ての $n$ に対して $|f(n)/g(n)|\le c$ が成り立つ」
   ような $N>0$ が存在する
@@ -96,14 +96,14 @@ $x>3/ε$ とすればよい
 
 # 問題
 ## 簡単
-1. $f(n)$ が $n → \infty$ で収束しないが $O(1)$ である例を示せ
+1. $f(n)$ が $n → ∞$ で収束しないが $O(1)$ である例を示せ
 ## 中級
 2. どんな $k>0$ についても $e^n=O(n^k)$ とはならないことを示せ
-- $e^n=\sum_{i=0}^{\infty} \frac{n^i}{i!}$ であることを利用してよい
+- $e^n=\sum_{i=0}^{∞} \frac{n^i}{i!}$ であることを利用してよい
 
 # 無視できる関数
 ## 十分小さいことを表す
-- $f:ℕ → ℝ_{\ge 0}$ が無視できる (negligible) とは $\forall c > 0$, $\exists N \in ℕ$ s.t. $\forall n > N$, $f(n)<n^{-c}$.
+- $f:ℕ → ℝ_{\ge 0}$ が無視できる (negligible) とは $∀ c > 0$, $∃ N \in ℕ$ s.t. $∀ n > N$, $f(n)<n^{-c}$.
   - $c>0$ をどんなに大きくとっても、それに対応して十分大きく $N$ を選べば、
   それより大きい $n>N$ について $f(n) < n^{-c}$ とできる
 - $f(n)$ はどんな多項式の逆数よりも速く小さくなる
@@ -140,7 +140,7 @@ $x>3/ε$ とすればよい
 
 # 疑似乱数生成器 PRG の定義
 ### $G:\Set{0,1}^n → \Set{0,1}^{l(n)}$（$l(n) > n$ な多項式）がPRGであるとは次を満たすもの
-- $\forall {\cal A}(x) \in \Set{0,1}$: PPT多項式について
+- $∀ {\cal A}(x) \in \Set{0,1}$: PPT多項式について
 $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)} \right] - \Pr \left[{\cal A}(G(s))=1 \mid s \underset{U}{\leftarrow} \Set{0,1}^{n} \right]\right| < \texttt{negl}(n)$
 ### 意味
 - ${\cal A}(x)$ は $x$ が乱数と判定すれば1, そうでなければ0を返す攻撃者（判定者）
@@ -160,7 +160,7 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 - $KeyGen(1^λ)=s \underset{R}{\leftarrow} {\cal K}$: 鍵生成（${\cal K}$ からランダムサンプリング）
 - $Enc: {\cal K} \times {\cal M} \ni (s,m) \mapsto c \in {\cal C}$: （確率的）暗号化アルゴリズム
 - $Dec: {\cal K} \times {\cal C} \ni (s,c) \mapsto m \in {\cal M}$: （決定的）復号アルゴリズム
-で、$\forall s \in {\cal K}, \forall m \in {\cal M}$ について $Dec(s,Enc(s,m))=m$ を満たす
+で、$∀ s \in {\cal K}, ∀ m \in {\cal M}$ について $Dec(s,Enc(s,m))=m$ を満たす
 
 # 攻撃の種類
 ![bg right:35% width:440px](images/lec-cpa-example.drawio.svg)
@@ -188,7 +188,7 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 - $b=b'$ なら A の勝ち(1): 適当に答えても当たる確率は1/2
 <span class="any" style="right:0.5em;bottom:7em;">![w:400px](images/lec-cpa-game.drawio.svg)</span>
 ## Aの優位度 (Advantage) が無視できる＝情報が漏れてない＝IND-CPA安全
-- $Adv(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $\forall$ PPT Algo $Exp$.
+- $Adv(λ):=\left| \Pr \left[Exp(λ)=1\right] - \frac{1}{2} \right|<\texttt{negl}(λ)$ for $∀$ PPT Algo $Exp$.
 このとき暗号は強秘匿性を持つという
 
 # 疑似ランダム関数 PRF (Pseudo-Random Function)
@@ -197,7 +197,7 @@ $\left| \Pr \left[{\cal A}(r)=1 \mid r \underset{U}{\leftarrow} \Set{0,1}^{l(n)}
 $f \underset{U}{\leftarrow} RF_{n,m}$ をランダム関数という（$|RF_{n,m}|=({2^m})^{2^n}$）
 ### $F:\Set{0,1}^n \times \Set{0,1}^{in} → \Set{0,1}^{out}$: PT関数, $in$, $out$ は $n$ の多項式
 - $s \in \Set{0,1}^n$, $F_s(x):=F(s,x)$ が PRF とは
-入力が疑似乱数なら1を返す $\forall$ PPT algo. ${\cal A}$,
+入力が疑似乱数なら1を返す $∀$ PPT algo. ${\cal A}$,
 $\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \right] - \Pr \left[{\cal A}(f)=1 \mid f \underset{U}\leftarrow RF_{in,out}\right] \right| < \texttt{negl}(n)$
   となることをいう
 - ここで ${\cal A}(F_s)$ は ${\cal A}$ が必要なだけ好きな $x$ を選んで $F_s(x)$ の結果を得られることを意味する
@@ -223,5 +223,5 @@ $\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \rig
 - $d_i:=Dec(c_i)$ # その暗号文の結果を教えてもらう
 - $b' ← {\cal A}_3(d_1,\dots,d_n)$, $p_b:=\Pr[b'=b]$ # その情報から $b$ を当てる
 ## $m_b$ のどちらの暗号文をもらっても $b$ を当てる確率は変わらない
-- $\text{Adv}(λ):=|p_0 - p_1| < \texttt{negl}(λ)$ for $\forall$ PPT ${\cal A}=({\cal A_1,A_2,A_3})$ ならば頑強性を持つ
+- $\text{Adv}(λ):=|p_0 - p_1| < \texttt{negl}(λ)$ for $∀$ PPT ${\cal A}=({\cal A_1,A_2,A_3})$ ならば頑強性を持つ
   - 注意: 細かなパラメータは省略している: $k$ は共通鍵暗号, 公開鍵暗号に応じて適切に選ぶ
