@@ -117,7 +117,7 @@ $ab ≠ 0$ のとき $|ψ⟩$ は $|0⟩, |1⟩$ の混合状態という
   - $U$ はユニタリ行列なので $|U|ψ⟩|=||ψ⟩|=1$ であり, $U|ψ⟩$ もqubitの状態を表す
 - ユニタリ行列は可逆なので量子ゲートは可逆な変換しかできない
   - 例えば古典の AND ゲートは不可逆なので量子ゲートでは実現できない
-  - 後述する複数のqubitを用いて $(x,y,z) \mapsto (x, y, z \oplus (x \land y))$ のような形で実現する
+  - 後述する複数のqubitを用いて $(x,y,z) \mapsto (x, y, z ⊕ (x \land y))$ のような形で実現する
 
 ## 複製不可能性定理 (no-cloning theorem)
 - 未知の量子状態の複製は不可能
@@ -208,7 +208,7 @@ $s=ac$, $t=ad$, $u=bc$, $v=bd$ となり $|s|^2+|t|^2 = |a|^2(|c|^2 + |d|^2)=|a|
   - 後ろ2個の基底の係数が入れ代わる
   ![w:400px](images/lec-cnot1.drawio.svg) ![w:600px](images/lec-cnot2.drawio.svg)
   - 状態 $|x y⟩$ ($x, y \in \Set{0,1}$) に対して $x=0$ のとき $y$ はそのまま, $x=1$ のとき $y$ は反転
-  - $(x, y) \mapsto (x, x \oplus y)$ と表せる
+  - $(x, y) \mapsto (x, x ⊕ y)$ と表せる
 - $x= (1/\sqrt{2})(|0⟩ + |1⟩)$, $y=|0⟩$ とすると $x \otimes y = (1/\sqrt{2})(|00⟩ + |10⟩)$
   - $CNOT(x \otimes y)=(1/\sqrt{2})(|00⟩ + |11⟩)$ となり量子もつれの状態になる
 - *量子計算の普遍性*: $H$, $T$, $CNOT$ の組合せで任意の量子ゲートを近似できる
@@ -245,10 +245,10 @@ $s=ac$, $t=ad$, $u=bc$, $v=bd$ となり $|s|^2+|t|^2 = |a|^2(|c|^2 + |d|^2)=|a|
 # 一般の関数に対する量子ゲート
 ## 補助ビット (ancilla) の導入
 - 関数 $f : \Set{0,1}^n → \Set{0,1}$ に対して
-$U_f : |x⟩ \otimes |y⟩ \mapsto |x⟩ \otimes |y \oplus f(x)⟩$ と定義する
+$U_f : |x⟩ \otimes |y⟩ \mapsto |x⟩ \otimes |y ⊕ f(x)⟩$ と定義する
   - $x$: $n$ qubit, $y$: 1 qubit （$y$ が補助ビット）
 - このとき $U_f$ はユニタリ行列になる
-  - $U_f(U_f(|x⟩ \otimes |y⟩)) = |x⟩ \otimes |y \oplus f(x) \oplus f(x)⟩ = |x⟩ \otimes |y⟩$, つまり $U_f^{-1} = U_f$
+  - $U_f(U_f(|x⟩ \otimes |y⟩)) = |x⟩ \otimes |y ⊕ f(x) ⊕ f(x)⟩ = |x⟩ \otimes |y⟩$, つまり $U_f^{-1} = U_f$
 - 位相キックバック
   - $|y⟩:=|-⟩ = (1/\sqrt{2})(|0⟩ - |1⟩)$ とする
     - $f(x)=0$ のとき $U_f(|x⟩ \otimes |-⟩) = |x⟩ \otimes |-⟩$

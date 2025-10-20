@@ -208,8 +208,8 @@ $\left| \Pr \left[{\cal A}(F_s)=1 \mid s \underset{U}\leftarrow \Set{0,1}^n \rig
 ## 記号の準備
 - $F$: PRF, ${\cal K}=\Set{0,1}^n$, ${\cal M}=\Set{0,1}^{out}$, ${\cal C}=\Set{0,1}^{in} \times \Set{0,1}^{out}$
 - $KeyGen(1^n)=s \underset{U}{\leftarrow} \Set{0,1}^n$
-- $Enc(s,m)=(r,F_s(r) \oplus m)$ for $r \underset{U}{\leftarrow} \Set{0,1}^{in}$
-- $Dec(s,c)=F_s(r) \oplus c$
+- $Enc(s,m)=(r,F_s(r) ⊕ m)$ for $r \underset{U}{\leftarrow} \Set{0,1}^{in}$
+- $Dec(s,c)=F_s(r) ⊕ c$
 としたとき$\Pi=(KeyGen,Enc,Dec)$ はIND-CPA安全な共通鍵暗号である
 
 # 頑強性 (non-malleability) の定義
