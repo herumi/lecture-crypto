@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/10/20
+last update: 2025/10/23
 
 # 目次
 ## 用語一覧
@@ -284,9 +284,8 @@ $a:=((a+ m_i)r) \bmod{p}$ で更新
 # AEADの例2
 <!-- _class: image-right-center -->
 ![w:700px](images/lec-aes-gcm.png)
-## AES-GCM
-- [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf)
-- 暗号化: AES-CTR + MAC: GHASH
+## AES-GCM: [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf)
+- 暗号化: AES-CTR(ナンス96bit + カウンタ32bit), MAC: GHASH
 ## GHASH
 - $p(x):=x^{128}+x^7+x^2+x+1$
 - $𝔽_{2^{128}}:=𝔽_2[x]/(p(x))$
