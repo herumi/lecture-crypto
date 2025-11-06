@@ -163,10 +163,10 @@ DB = H("") || 0...0 || 0x01 || m
 - KEM (key encapsulation mechanism)
   - $\text{KEM.Gen}(1^λ) → (sk, pk)$: 公開鍵生成
   - $\text{KEM.Enc}(pk) → (K, C)$: 共通鍵 $K$ とその暗号文 $C$ を生成
-  - $\text{KEM.Dec}(sk, C) → K \text{ or } \bot$: 共通鍵 $K$ を復号
+  - $\text{KEM.Dec}(sk, C) → K \text{ or } ⊥$: 共通鍵 $K$ を復号
 - DEM (data encapsulation mechanism)
   - $\text{DEM.Enc}(K, m) → c$: 共通鍵 $K$ で平文 $m$ を暗号化
-  - $\text{DEM.Dec}(K, c) → m \text{ or } \bot$: 共通鍵 $K$ で暗号文 $c$ を復号
+  - $\text{DEM.Dec}(K, c) → m \text{ or } ⊥$: 共通鍵 $K$ で暗号文 $c$ を復号
 
 # FO（藤崎-岡本）変換
 ## IND-CCA2安全なKEMの構成法
@@ -176,7 +176,7 @@ DB = H("") || 0...0 || 0x01 || m
   $c:=(C_1,C_2):=(\text{PKE.Enc}(pk, r;H_2(m\|r)), \text{DEM.Enc}(H_1(r), m))$
 - $\text{FO.Dec}(sk, (C_1,C_2)))$:
 $r:=\text{PKE.Dec}(sk, C_1)$, $m:=\text{DEM.Dec}(H_1(r), C_2)$
-$C_1=\text{PKE.Enc}(pk, r;H_2(m\|r))$ なら $m$ を返す, そうでなければ $\bot$
+$C_1=\text{PKE.Enc}(pk, r;H_2(m\|r))$ なら $m$ を返す, そうでなければ $⊥$
 ## 安全性
 - PKE: OW (One-Way)-CPA安全（暗号文から平文を得られない）+αの仮定
 - DEM: IND-OT (one-time) 安全（1回の使用だけなら安全）

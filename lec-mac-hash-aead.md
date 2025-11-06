@@ -61,7 +61,7 @@ MAC値（タグともいう）$t$ を出力
 1. KeyGen: $s_1$ を暗号化用の秘密鍵, $s_2$ をMAC用の秘密鍵とする
 2. Enc: $m$ に対して $c=Enc(s_1,m)$, $t=Mac(s_2,c)$ を計算して $(c, t)$ を送る
 3. Dec: $(c, t)$ に対して $Verify(s_2, c, t)=1$ ならば $m=Dec(s_1,c)$ を返す
-そうでなければ失敗・停止（$\bot$ (bot) を返すともいう）
+そうでなければ失敗・停止（$⊥$ (bot) を返すともいう）
 ## 安全性に関する定理
 - EncがIND-CPA安全, MACが存在的偽造不可能ならばEnc-then-MacはIND-CCA2安全
   - R. Canetti & H. Krawczyk, ["Analysis of Key-Exchange Protocols and Their Use for Building Secure Channels"](https://link.springer.com/chapter/10.1007/3-540-44987-6_28), Eurocrypt 2001
@@ -262,7 +262,7 @@ AEAD|ある|ある
 - 出力: 暗号文: $c$, 認証タグ: $t$
 ## 復号
 - 入力: ナンス: $n$, 関連データ: $d$, 暗号文: $c$, 認証タグ $t$, 秘密鍵: $s$
-- 出力: $t$ が正しいときのみ平文 $m$. それ以外は停止 $\bot$
+- 出力: $t$ が正しいときのみ平文 $m$. それ以外は停止 $⊥$
 ## 安全性
 - 共通鍵暗号の安全性とMACの安全性の両方を併せ持つ
 
