@@ -18,11 +18,11 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/10
+last update: 2025/11/06
 
 # 目次
 ## 用語一覧
-- 公開鍵暗号
+- 公開鍵暗号, PKE, PKC, IND-CPA安全, IND-CCA安全, 頑強性, 強秘匿性, RSA-OAEP, ハイブリッド暗号, FO変換, 前方秘匿性
 
 # 公開鍵暗号
 ## PKEとPKC
