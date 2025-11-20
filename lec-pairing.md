@@ -24,6 +24,7 @@ last update: 2025/11/04
 ## 目的
 - ペアリングの性質, BLS署名の理解
 - 秘密分散
+- DKG
 
 # ペアリング
 ## type-1ペアリング (Weil pairing)
