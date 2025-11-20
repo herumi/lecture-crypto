@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/11/13
+last update: 2025/11/20
 
 # 概要
 ## 目的
@@ -596,7 +596,7 @@ $y_3=(y_1 y_2 + x_1 x_2)/(1 - d x_1 x_2 y_1 y_2)$
 - 1977年公開. ただし1970年代初頭にCocksたちが先に考えていた（CESGの発表）
 ## RSA関数の生成
 - RSAの落とし戸つき一方向性関数 (trapdoor one-way function): $f_e$
-  - $p$, $q$ を素数, $n:=p q$, 整数 $a$ に対して $f_a(x):=x^a \bmod{n}$ とする
+  - $p$, $q$ を素数 ($p≠q$), $n:=p q$, 整数 $a$ に対して $f_a(x):=x^a \bmod{n}$ とする
   - $d, e ∈ [1, n-1]$ を $d e ≡ 1 \pmod{(p-1)(q-1)}$ となる整数とする
     - $e=65537$ とすることが多い
   - $f_e(x)=x^e \bmod{n}$ をRSAの落とし戸つき一方向性関数という
