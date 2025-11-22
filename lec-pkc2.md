@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/10/23
+last update: 2025/11/22
 
 # 概要
 ## 目的
@@ -210,6 +210,7 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 - 国ごとの事情（日本のISPは緊急避難として児童ポルノをブロック）には自発的には対応しない
   - 大規模なpublic DNSサーバはBGPのanycastにより複数拠点のノードが同一IPを共有
   - 技術的には地域別のブロックは可能だが裁判所命令を除き原則として行われていない
+  - [IIJ Public DNSサービス](https://www.iij.ad.jp/en/dns/)は国内向けにブロッキング対応
 
 # FIDO2 (Fast IDentity Online)
 ## 高速なオンラインID認証
