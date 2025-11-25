@@ -146,6 +146,7 @@ $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
 ![w:400px](images/lec-mlkem.drawio.svg)
 ## Kyber PKEからIND-CCA2安全な鍵共有(Kyber-KEM)を実現
 - 藤崎-岡本変換（の変種）をKEM単体に適用
+  - 公開鍵を毎回使い捨てることでDH鍵共有と同じ通信回数
 ## 鍵共有
 - A: $(sk, pk)$ をKyber PKEで生成し $pk$ をBに送る
 - B: ランダムな $m$ を選び

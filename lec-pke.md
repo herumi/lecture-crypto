@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/11/06
+last update: 2025/11/25
 
 # 目次
 ## 用語一覧
@@ -52,6 +52,22 @@ last update: 2025/11/06
   - $Dec(sk, c) → m$
 - 正当性: 任意の $m \in {\cal M}$ に対して $Dec(sk, Enc(pk, m)) = m$
 
+# PKEの特徴
+<!-- _class: image-right -->
+![w:400px](images/lec-pke-key.drawio.svg)
+![w:500px](images/lec-pke-aitm.drawio.svg)
+## 鍵管理
+- 共通鍵暗号の場合, $n$ 人の間で個別の二者間通信するには
+全体で $n(n-1)/2$ 個の鍵が必要
+  - 各自は $n-1$ 個
+- PKEの場合, 各人が一つの公開鍵と秘密鍵を持てばよい
+  - 各自は $n-1$ 個の公開鍵なので管理しやすい
+  （秘匿する必要がない）
+## AitM攻撃対策はDH鍵共有と同様必要
+- AとBの間に入ったCがA, Bの公開鍵$pk_A, pk_B$の
+代わりに$pk_C$ を渡す
+- Bは $pk_C$ で暗号化して送信, Cは復号して内容を知り, $pk_A$ で暗号化してAに送信
+- 署名などによりAと $pk_A$ の対応を保証する必要がある
 # PKEとIND-CPA安全
 ## IND-CPA安全 （再掲）
 - 自分で選んだ平文 $m_1$, $m_2$ のどちらかの暗号文 $c$ をもらってもどちらの平文か当てられない
