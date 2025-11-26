@@ -30,6 +30,7 @@ last update: 2025/11/06
 - 本人確認
 - マイナンバーカード
 - 選択的開示可能署名
+- SD-JWT, BBS署名, グループ署名
 
 # 本人確認ガイドライン
 ## 本人確認 ＝ 身元確認 ＋ 当人認証
@@ -173,8 +174,8 @@ last update: 2025/11/06
 - 3rd party cookieのようなもの
 - プライバシーを保つにはunlinkabilityが重要
 
-# BBS署名
-## Boneh, Boyen, Shacham, "[Short Group Signatures](https://link.springer.com/chapter/10.1007/978-3-540-28628-8_3)", CRYPTO'04
+# ペアリングベースの署名
+## ドラフト
 - Revisiting BBS Signatures, EUROCRYPT'23
   - [draft-irtf-cfrg-bbs-signatures](https://datatracker.ietf.org/doc/draft-irtf-cfrg-bbs-signatures/)
 ## フロー
@@ -185,9 +186,15 @@ last update: 2025/11/06
 ## SD-JWTに対する利点
 - 同じ開示情報に対するprfでも毎回異なるのでunlinkabilityが高い
 
+# BBS署名のPoC
+## ブラウザで動作する[デモ](https://github.com/herumi/misc/tree/main/bbs)
+- C++/LLVMで実装したものをWasm用にコンパイルしてNode.jsモジュール化
+  - TypeScriptで利用してブラウザで動かす
+- 細かいデータフォーマットなどは仕様に従ってないプロトタイプ実装
+
 # グループ署名
-## 基本アルゴリズム
-- メンバーが自身の身元を明かさずに署名する[傘連判状](https://www.city.ikoma.lg.jp/html/dm/bun/shosai/)のようなもの
+## メンバーが自身の身元を明かさずに署名できる[傘連判状](https://www.city.ikoma.lg.jp/html/dm/bun/shosai/)のようなもの
+### 基本アルゴリズム
 - $\text{GKg}(1^λ)→(gpk, ik, ok)$: グループ鍵を生成
   - $gpk$: グループ署名鍵 (group public key)
   - $ik$: 発行者秘密鍵 (issuer key), $ok$: 開示鍵 (opening key)
@@ -195,17 +202,17 @@ last update: 2025/11/06
 - $\text{Sign}(gpk, gsk_i, m)→σ$: メンバーがメッセージ $m$ に署名
 - $\text{Verify}(gpk, m, σ)→\Set{0,1}$: 署名の検証
 - $\text{Open}(gpk, ok, m, σ)→\Set{i, ⊥}$: 発行者が署名者の身元を開示
-## グループ署名特有の要件
+### グループ署名特有の要件
 - 匿名性: 発行者以外は署名者が誰か分からない
 - 追跡可能性: 発行者は署名者を特定できる
 
-# BBS署名オリジナルのコアアイデア
-## ペアリングベース
+# BBS署名の原型
+## Boneh, Boyen, Shacham, "[Short Group Signatures](https://link.springer.com/chapter/10.1007/978-3-540-28628-8_3)", CRYPTO'04
 - $G_1=⟨g_1⟩$, $G_2=⟨g_2⟩$: 位数 $r$ の加法巡回群
  $e:G_1×G_2→G_T=⟨g_T⟩$: ペアリング
 - アルゴリズム概要
   - 発行者は $γ$ を生成しグループの鍵生成をした後 $γ$ を破棄する
-  - グループの公開鍵 $gpk$ ($w=γ g_2$を含む), 追跡用秘密鍵: $gmsk$
+  - グループの公開鍵 $gpk$ （$w=γ g_2$を含む）, 追跡用秘密鍵: $gmsk$
   - 各ユーザの秘密鍵 $gsk_i$ $(x_i,\frac{1}{γ+x_i}g_1)$
   - 署名: sign($gpk$, $gsk_i$, メッセージ $m$) から署名 $σ$ を作る
   - 検証: verify($gpk$, $m$, $σ$) で正しいか確認
@@ -213,9 +220,14 @@ last update: 2025/11/06
 ## 応用
 - 複数メッセージに対応し($\sum_i m_i h_i$)、その一部の秘匿をゼロ知識証明ZKPを使って実現
 
-# BBS署名の実装デモ
-## ブラウザで動作するデモ
-- [github/herumi/bbs](https://github.com/herumi/misc/tree/main/bbs)
-- C++/LLVMで実装したものをWasm用にコンパイルしてNode.jsモジュール化
-  - TypeScriptで利用してブラウザで動かす
-- 細かいデータフォーマットなどは仕様に従ってないプロトタイプ実装
+# 安全性の根拠
+## q-SDH (Strong Diffie-Hellman) 仮定
+- $P, x P, x^2 P, ..., x^q P∈G$ から, ある$c$ に対する $(c, e(P,P)^{1/(x+c)})$ を求めるのが困難
+- 原型は私たちの2001年の放送型暗号の提案に基づく安全性仮定
+  - $\Set{\frac{1}{x+a_1}g, \cdots,\frac{1}{x+a_n}g}$ から $\frac{1}{x+a}g$ ($a \not\in \Set{a_1,\dots,a_n}$) を求める問題A
+  - $\Set{P, x P, \cdots , x^q P}$ から $(1/x)P$ や $x^{q+1} P$ を求める問題Bと同値であることを示す
+  - 特に $\Set{P, x P}$ から $x^2 P$ を求める問題はDHP問題と同値なので, 問題A, Bも困難と予想
+- BBS署名の論文![w:900px](images/lec-q-sdh.png)
+
+## 問題
+- $P, x P, y P$ から $x y P$ を求める困難さと $P,x P$ から $x^2 P$ を求める困難さは同程度であることを示せ
