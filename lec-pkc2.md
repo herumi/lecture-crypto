@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/11/25
+last update: 2025/11/29
 
 # 概要
 ## 目的
@@ -199,8 +199,8 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 
 # パブリックDNSサーバ
 ## DoT, DoHに対応している主なパブリックDNSサーバ
-- Google Public DNS (8.8.8.8)
-- Cloudflare (1.1.1.1): CDNの大手. ECHを主導
+- Google Public DNS (8.8.8.8): https://dns.google/ （Google Trust Servicesが運営）
+- Cloudflare (1.1.1.1): https://one.one.one.one/ （CDNの大手. ECHを主導）
 - Quad9 (9.9.9.9): スイスに拠点があるプライバシー重視の非営利団体
 
 ## 頭の片隅に
@@ -276,6 +276,7 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 ## 日本
 - 2021年総務大臣による時刻認証業務（タイムスタンプサービス）の認定制度開始, 2023年[認定](https://www.soumu.go.jp/menu_news/s-news/01cyber01_02000001_00157.html)
 - 時刻源はNICTの原子時計, 2025年3月現在セイコー, MIND, アマノなどの[6社](https://www.soumu.go.jp/main_sosiki/joho_tsusin/top/ninshou-law/timestamp.html)
+
 # Merkle木
 ## ハッシュ値を一本の鎖ではなく2分木で管理したもの
 ![w:700px](images/lec-merkle-tree.png)
