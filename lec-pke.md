@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/11/25
+last update: 2025/12/04
 
 # 目次
 ## 用語一覧
@@ -185,7 +185,7 @@ DB = H("") || 0...0 || 0x01 || m
   - $\text{DEM.Dec}(K, c) → m \text{ or } ⊥$: 共通鍵 $K$ で暗号文 $c$ を復号
 
 # FO（藤崎-岡本）変換
-## IND-CCA2安全なKEMの構成法
+## IND-CCA2安全なKEM-DEMの構成法
 - (Gen, Enc, Dec): PKE, (DEM.Enc, DEM.Dec): 共通鍵暗号, $H_1, H_2$: ハッシュ関数に対して
 - $\text{FO.Gen}(1^λ)$: $\text{PKE.Gen}(1^λ) → (pk, sk)$
 - $\text{FO.Enc}(pk, m)$: 乱数 $r$ を選び
