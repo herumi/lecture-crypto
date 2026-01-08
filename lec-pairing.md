@@ -152,6 +152,18 @@ $x・y=∑_{i=1}^n x_i y_i$ を暗号文のまま計算可能になる
 - データ解析者は秘密鍵で復号し $X, Y, Z$ を得る
 - [L2HEによる暗号文のままクロス集計デモ](https://herumi.github.io/she-wasm/browser/cross-demo-ja.html)
 
+# 主流の準同型暗号
+## 格子暗号
+- 複数回乗算が可能な準同型暗号
+  - 一般的に上限が増えるほど暗号文サイズが増える
+- 完全準同型暗号
+  - 乗算回数に制限がない暗号
+  - 演算を繰り返すとノイズが増える
+  - ブートストラップなどの手法でノイズを減らす
+  - 様々な手法が提案されている
+- 今回は講義対象外
+  - [CKKSの解説記事](https://zenn.dev/herumi/articles/ckks-ring-iso)
+
 # BLS署名
 ## CBDH仮定の元で安全な署名
 - Boneh, Lynn, Shacham (2001)
