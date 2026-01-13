@@ -23,7 +23,8 @@ last update: 2025/11/06
 # 概要
 ## 目的
 - マイナンバーカードの仕組みと課題を理解する
--  SD-JWTやBBS署名などの選択開示署名の概念を理解する
+- SD-JWTやBBS署名などの選択開示署名の概念を理解する
+- ZKP
 
 # 目次
 ## 用語一覧
@@ -53,7 +54,7 @@ last update: 2025/11/06
   - 「基本4情報（氏名・住所・生年月日・性別）＋個人の検証鍵」にCAが署名したもの
   - マイナンバーカードは証明書を耐タンパー性のハードウェアに格納
   - いろいろなシーンで使ってほしい by デジタル庁
-  - 利用者証明用電子証明書には基本4情報は含まれない
+  - 利用者証明用電子証明書（本人の認証用）には基本4情報は含まれない
 ## 利用時の手順
 1. なんらかの文書に署名鍵で署名する（要 署名用電子証明書のパスワード）
 2. 「文書 + 署名 + 署名用電子証明書」を相手に送る
@@ -119,8 +120,8 @@ last update: 2025/11/06
 ## 基本4情報（に限らないが）の一部のみを開示して確認できる暗号技術
 - W3Cの[VC : Verifiable Credentials （検証可能な認証情報）](https://www.w3.org/TR/vc-data-model-2.0/)などで規格策定中
   - 大きく二種類の方法
-    - ハッシュ関数ベースのもの (SD-JWT)
-    - ペアリング暗号ベースのもの (BBS署名)
+    - ハッシュ関数ベースのもの（SD-JWT）
+    - ペアリング暗号ベースのもの（BBS署名）
 ## メリットとデメリット
 
 項目|SD-JWT|BBS署名
@@ -137,7 +138,7 @@ last update: 2025/11/06
 - JWE (JSON Web Encryption) : 暗号化に関する規格
 - JWK (JSON Web Key) : 鍵に関する規格
 - JWA (JSON Web Algorithms) : アルゴリズムに関する規格
-- JWT (JSON Web Token) : クレーム（値）に関する規格
+- JWT (JSON Web Token) : クレーム（値）に関する規格（「ジョット」と発音）
 - [SD-JWT (Selective Disclosure for JWTs)](https://datatracker.ietf.org/doc/draft-ietf-oauth-selective-disclosure-jwt/)
   - JWTで選択的開示を実現するための規格
 - CBOR (Concise Binary Object Representation) : JSONのバイナリ版
@@ -231,3 +232,47 @@ last update: 2025/11/06
 
 ## 問題
 - $P, x P, y P$ から $x y P$ を求める困難さと $P,x P$ から $x^2 P$ を求める困難さは同程度であることを示せ
+
+# ゼロ知識証明ZKP (Zero-Knowledge Proof)
+## ざっくりとした用語解説
+- 主張 (statement) $x$
+- 証拠 (witness) $w$
+- 関係 (relation) $R$: $w$ が $x$ の正しさ証拠であることを判定する手続き
+- ZKP: 証明者 $𝒫$ が検証者 $𝒱$ に, ある主張 $x$ の正しさを $w$ を教えずに納得させる対話
+
+## 例
+- 楕円曲線の点 $P$ において, 秘密鍵 $s$ と公開鍵 $Q=sP$ の関係
+- 主張:「$P$, $Q$ に対する秘密鍵を知っている」
+- 証拠:「$s$」
+- 関係:「$Q=sP$ となること」
+- ZKP: $s$ を教えずに自分が $s$ を知っていることを相手に納得してもらう
+
+# ZKPの求められる性質
+## 完全性 (completeness)
+- 主張が正しいなら $𝒱$ は（ほぼ）1の確率で受理する
+## 健全性 (soundness)
+- 正しくないなら $𝒱$ はどんな $𝒫^*$ も騙せない（無視できる確率でしか受理しない）
+## ゼロ知識性 (zero-knowledge)
+- $𝒱$ は主張が正しいこと以外の $w$ に関する新しい知識を得ない
+
+## 署名との関係
+- 「秘密鍵を知っている」という主張に対するZKPを以下のようにすると署名になる
+  - メッセージに結びつける
+  - 非対話化して後で検証できるようにしたもの
+
+# 詳しい定義
+## NP (Nondeterministic Polynomial time) 言語
+- $R$: 2変数確率的多項式時間アルゴリズム
+- $L=\Set{x∈\Set{0,1}^* \mid ∃w∈\Set{0,1}^{p(|x|)}  \text{ s.t. } R(x,w)=1}$ をNP言語という
+  - $x∈L$ を主張, $w$ を証拠という
+  - $p(|x|)$ は $x$ の長さに関する多項式
+## ゼロ知識性
+- 任意のPPT検証者 $\mathcal{V}^*$ に対して、PPTシミュレータ $S$ が存在し、
+$x \in L$ のとき以下の二つの分布が計算量的識別不可能:
+
+$$\{\mathsf{View}_{\mathcal{V}^*}[\langle \mathcal{P}(w), \mathcal{V}^* \rangle(x)]\}_{x \in L} 
+\approx_c \{S(x, 1^{|x|})\}_{x \in L}$$
+
+- $\mathsf{View}_{\mathcal{V}^*}$: $\mathcal{V}^*$ の視点（地震の乱数・受信メッセージのみ観測）
+- $S$: $w$ を知らずに $x$ のみから実行記録(transcript)を模倣
+- $\approx_c$: 計算量的識別不可能（どんな効率的判別器も negligible な優位性しか持たない）
