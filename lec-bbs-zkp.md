@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/01/14
+last update: 2026/01/15
 
 # 概要
 ## 目的
@@ -282,7 +282,7 @@ $$\{\mathsf{View}_{𝒱^*}[\langle 𝒫(w), 𝒱^* \rangle(x)]\}_{x \in L}
 - （前回の講義で）クラウド上の暗号文の処理結果 $c$ を解析者に渡して復号してもらう場面
   - 解析者は暗号文 $c=Enc(m)$ に対して正しい $m$ を返してくれたのか?
   - $Dec(c)=m$ であることを「秘密鍵を教えずに」証明する
-## ビットコインのお金の流れを秘匿する
+## ビットコインのお金の流れを秘匿する(2016, Zcashなど)
   - A, Bから送金されてC, Dに送られたことは公開される
 <span class="any" style="right:1em">![w:300px](images/cash-flow.drawio.svg)</span>
   - いくら送ったかを隠したい
@@ -355,3 +355,14 @@ $𝒱$ は $Ver(x,a,c,z)$ で検証する
 ### Schnorr署名
 - メッセージ $m$ に対する署名: $c:=H(P,Q,a,m)$ として生成した証明 $(a,z)$ を署名 $σ$ とする
 - 検証: $c=H(P,Q,a,m)$ を計算して $z P = a + c Q$ をチェック
+
+# キーワード
+## 証明(proof)と議論(argument)
+- 証明: 証明者・検証者共に計算量の制限が無い
+- 議論: 証明者・検証者共に計算量が確率的多項式時間アルゴリズムに制限される
+## 証明(proof)と知識の証明(proof of knowledge)
+- 証明: 主張 $x$ が正しいことを示す（$R(x,w)=1$ となる $w$ の存在を示す）
+- 知識の証明: 証明者がその証拠 $w$ を知っていることを示す
+## zk-SNARK
+- Zero-Knowledge Succinct Non-interactive ARguments of Knowledge
+- 非対話的で簡潔な知識の議論
