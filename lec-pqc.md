@@ -16,7 +16,7 @@ _class: title
 -->
 # 耐量子計算機暗号
 <br>
-光成滋生, 2025/12/05
+光成滋生, 2026/04/14
 
 # 概要
 ## 量子計算機による暗号解読
@@ -109,7 +109,7 @@ $[-L, L]$ の範囲で生成する（e.g., 二項分布）
 - $r \underset{U}\leftarrow \Set{0,1}^m$ を選び $c:=(A^T r, b^T r + (q//2)ᗰ)$ が暗号文 ($q//2:=\texttt{floor}(q/2)$)
 ## $c=(u, v)$ の復号
 - $ᗰ:=[v-s^T u]_q$ が 0 に近ければ $ᗰ=0$, そうでなければ $ᗰ=1$
-  - ここで $[a]_q$ は $a \in [0, q-1]$ を $a \le q//2$ なら $a$, それ以外は $a-q//2$ とする
+  - ここで $[a]_q$ は $a \in [0, q-1]$ を $a \le q//2$ なら $a$, その他は $a-q$ とする($|[a]_q|≦q//2$)
 ## 正当性
 - $ᗰ=(As+e)^T r+(q//2)ᗰ-s^T A^T r =e^T r + (q//2)ᗰ \approx (q//2)ᗰ$
   - $e^T r ≪ (q//2)$ なら正しく復号できる
@@ -134,7 +134,7 @@ MLWE分布: $A_{s,χ}:=\Set{(a,s^T a + e) \in {R_q}^k \times R_q \mid a \underse
 ## 暗号化
 - Encode: 256bitの $m=\sum_i m_i 2^i$ から $\tilde{m}:=\sum_{i=0}^{255} m_i (q//2)x^i \in R_q$ を作る
 - 乱数 $r \in {R_q}^k$, $e_1 \in {R_q}^k$, $e_2 \in R_q$ を選び
-  $Enc(pk,m):=(u, v):=(A^T r + e_1, r^T b + e_2 + \tilde{m})$ が暗号文
+  $Enc(pk,m;r):=(u, v):=(A^T r + e_1, r^T b + e_2 + \tilde{m})$ が暗号文
 ## 復号と正当性
 - $Dec(sk,(u,v)):=v - s^T u = r^T(A s + e) + e_2 + \tilde{m} - s^T(A^T r + e_1)$
 $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
@@ -149,8 +149,8 @@ $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
   - 公開鍵を毎回使い捨てることでDH鍵共有と同じ通信回数
 ## 鍵共有
 - A: $(sk, pk)$ をKyber PKEで生成し $pk$ をBに送る
-- B: ランダムな $m$ を選び
-$c:=Enc(pk, m, H(m,pk))$ をAに送る
+- B: ランダムな $M$ を選び $m:=H(M)$として
+$c:=Enc(pk, m;H(m, pk))$ をAに送る
   - $k:=\text{KDF}(m, pk, c)$: 共有鍵
 - A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m', H(m', pk))$
   - $c = c'$ なら $k:=\text{KDF}(m', pk, c)$: 共有鍵
@@ -190,14 +190,14 @@ $F_n^{-1}(a):= \overline{U}^T A = (1/\sqrt{n})(\sum_i A_i w^{-i j})_j$ を逆DFT
 - $m=n/2$, $n$ 次元の $w$ を $w_n$ とすると $(w_n)^2 = w_m$
 - $(\sqrt{n})A_j=\sum_{i=0}^{n-1} a_i {w_n}^{i j} = \sum_{i=0}^{m-1} a_{2 i} {w_n}^{2 i j} + \sum_{i=0}^{m-1} a_{2 i + 1} {w_n}^{(2 i + 1) j}$
 $= \sum_{i=0}^{m-1} a_{2 i} {w_m}^{i j} + {w_n}^j \sum_{i=0}^{m-1} a_{2 i + 1} {w_m}^{i j}$
-- $j=0, 1, \dots, m-1$ のとき $\sqrt{2} A_j=F_m(a_{\text{even}})_j + {w_n}^j F_m(a_{\text{odd}})_j$
+- $j=0, 1, \dots, m-1$ のとき $\sqrt{n} A_j=F_m(a_{\text{even}})_j + {w_n}^j F_m(a_{\text{odd}})_j$
 - $j=m, m+1, \dots, n-1$ のとき ${w_m}^j = {w_m}^{j-m}$, ${w_n}^j = -{w_n}^{j-m}$ より
-$\sqrt{2} A_j=F_m(a_{\text{even}})_{j-m} - {w_n}^{j-m} F_m(a_{\text{odd}})_{j-m}$
+$\sqrt{n} A_j=F_m(a_{\text{even}})_{j-m} - {w_n}^{j-m} F_m(a_{\text{odd}})_{j-m}$
 - $F_m(a_{\text{even}})$, $F_m(a_{\text{odd}})$ が求まれば $F_n(a)$ が求まる
   - 演算量は $F_m(a)$ 2回と ${w_n}^{j-m}$ の積 $n$ 回で $2 n^2/4 + n = n^2/2 + n$ 回
 ## 再帰的に分解
 - もう一度分割すると $2 ((n/2)^2/2 + (n/2))+n = n^2/4 + 2 n$ 回
-- これを繰り返すと約 $n \log_2 n$ 回で計算できる: FFTという
+- これを繰り返すと約 $n \log_2 n$ 回で計算できる ⇒ FFTという
 
 # FFTを用いた多項式の乗算の高速化
 ## 多項式の係数の畳み込み
