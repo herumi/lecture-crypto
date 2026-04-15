@@ -187,12 +187,12 @@ $F_n^{-1}(a):= \overline{U}^T A = (1/\sqrt{n})(\sum_i A_i w^{-i j})_j$ を逆DFT
 
 # 計算の分解
 ## 添え字の偶数・奇数に分ける
-- $m=n/2$, $n$ 次元の $w$ を $w_n$ とすると $(w_n)^2 = w_m$
+- $m=n/2$, $n$ 次元の $w$ を $w_n$ とすると $(w_n)^2 = w_m$, $\sqrt{n/m}=\sqrt{2}$より
 - $(\sqrt{n})A_j=\sum_{i=0}^{n-1} a_i {w_n}^{i j} = \sum_{i=0}^{m-1} a_{2 i} {w_n}^{2 i j} + \sum_{i=0}^{m-1} a_{2 i + 1} {w_n}^{(2 i + 1) j}$
 $= \sum_{i=0}^{m-1} a_{2 i} {w_m}^{i j} + {w_n}^j \sum_{i=0}^{m-1} a_{2 i + 1} {w_m}^{i j}$
-- $j=0, 1, \dots, m-1$ のとき $\sqrt{n} A_j=F_m(a_{\text{even}})_j + {w_n}^j F_m(a_{\text{odd}})_j$
+- $j=0, 1, \dots, m-1$ のとき $\sqrt{2} A_j=F_m(a_{\text{even}})_j + {w_n}^j F_m(a_{\text{odd}})_j$
 - $j=m, m+1, \dots, n-1$ のとき ${w_m}^j = {w_m}^{j-m}$, ${w_n}^j = -{w_n}^{j-m}$ より
-$\sqrt{n} A_j=F_m(a_{\text{even}})_{j-m} - {w_n}^{j-m} F_m(a_{\text{odd}})_{j-m}$
+$\sqrt{2} A_j=F_m(a_{\text{even}})_{j-m} - {w_n}^{j-m} F_m(a_{\text{odd}})_{j-m}$
 - $F_m(a_{\text{even}})$, $F_m(a_{\text{odd}})$ が求まれば $F_n(a)$ が求まる
   - 演算量は $F_m(a)$ 2回と ${w_n}^{j-m}$ の積 $n$ 回で $2 n^2/4 + n = n^2/2 + n$ 回
 ## 再帰的に分解
