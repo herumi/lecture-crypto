@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/12/11
+last update: 2026/04/20
 
 # 概要
 ## 古典計算機
