@@ -55,18 +55,34 @@ last update: 2026/04/20
 
 # 量子計算機の実装例
 ## 超伝導方式
-- Google: 2019年 53 qubit, 2024年 105 qubit
-- [IBMのロードマップ](https://www.ibm.com/quantum/technology#roadmap): 2021年 127 qubit, 2022年 433 qubit, 2023年 1121 qubit Condor
-- 大阪大学: 2023年 [64 quibit](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1), 富士通と理研: 2025年 [256 qubit](https://pr.fujitsu.com/jp/news/2025/04/22.html)
+- Google: 53qubit(2019)→105qubit(2024)
+- [IBM](https://www.ibm.com/quantum/technology#roadmap): 433qubit(2022)→1121qubit(2023/エラー率高)→156qubit(2024/エラー率改善)
+- [大阪大学](https://resou.osaka-u.ac.jp/ja/research/2023/20231220_1): 64quibit(2023), [富士通/理研](https://pr.fujitsu.com/jp/news/2025/04/22.html): 256qubit(2025)
 ## イオントラップ方式
-- 2023/6: [IonQが29 quibit](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq), 2025: Quantinuum 56 qubit
-- 2025/6: [1qubitで1/670万のエラー率](https://qiqb.osaka-u.ac.jp/newstopics/pr20250623)
+- [IonQ](https://ionq.com/posts/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq): 29quibit(2023), [Quantinuum](https://quantinuum.co.jp/n20240607/): 56qubit(2024), [大阪大学/オックスフォード](https://qiqb.osaka-u.ac.jp/newstopics/pr20250623): 1qubitで1/670万のエラー率(2025), 2qubitなら1/2000
 
 ## 中性原子方式
-- 2023/10: Atom Computing [1180 quibit](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/)
-- 2025/9: [6100 qubit, 0.02%のエラー率](https://www.caltech.edu/about/news/caltech-team-sets-record-with-6100-qubit-array)
+- [Atom Computing](https://atom-computing.com/quantum-startup-atom-computing-first-to-exceed-1000-qubits/): 1180 quibit(2023), [Caltech研](https://www.caltech.edu/about/news/caltech-team-sets-record-with-6100-qubit-array): 6100 qubit(2025), 1qubitで0.02%のエラー率, コヒーレンス時間13秒
+- その他: 光, [Xanadu](https://www.xanadu.ai/press/xanadu-introduces-aurora-worlds-first-scalable-networked-and-modular-quantum-computer): 12qubit, 13kmの光ファイバー, 常温
 
-- その他: 電子, 光, マイクロ波 etc.
+# 方式別の特徴比較
+## 光方式の特徴
+- 光以外は主にゲート型, 光は直接相互作用しないため決定論的2qubitが困難
+- 沢山の光子からなる大規模エンタングルメント状態を確率的に生成して利用する
+測定ベース量子計算MBQC(Measurement-Based QC)が主流
+
+||超伝導 | イオントラップ | 中性原子 | 光
+|-|-|-|-|-
+|ゲート速度 | *速い(~ns)* | 遅い(~100μs) | 中(~μs) | 成功時は高速
+|コヒーレンス時間 | 短い(~100μs) | *長い(秒-分)* | *長い(秒)* | 長いが損失が課題
+|エラー| 制御誤差(~0.1%) | *レーザー揺らぎ* | 2qubitで高 | 光損失
+|集積度(qubit) | *高(~1000:実験)* | 低(~100) | *高(~1000:実験)* | 低
+|接続度|低（近接）|*高（全対全）*|中（再配置）|長距離
+|動作温度 | ~15mK | ~mK | ~μK | *常温*
+|周辺装置 | 極低温 | *常温* | *常温* | *常温*
+
+
+
 
 # 量子計算機に必要な線形代数の復習
 ## 行列
@@ -266,7 +282,7 @@ $\overset{CNOT(1→2)}=(y, (x ⊕ y) ⊕ y)=(y,x)$
     - 制御ビットが$|1⟩$のときCNOTが発火して$AXBXC=U$となり$U|φ⟩$となる
     ![w:800px](images/lec-c-u.drawio.svg)
 
-- 一般のqubitの制御ユニタリ変換は$n$次元ユニタリ行列は$n$次行列のうちどこか2列だけが非自明な2次元ユニタリ行列で残りが単位行列の積で表されることを利用して分解する
+- 一般のqubitの制御ユニタリ変換は$n$次元ユニタリ行列は$n$次行列のうちどこか2列だけが非自明な2次元ユニタリ行列で残りが単位行列の積で表されることを利用して分解する: [詳細](https://github.com/herumi/lecture-crypto/blob/gh-pages/pdf/lec-appdx-unitary-decomp.pdf)
 
 # 量子計算機における計算
 <!-- _class: image-right -->
@@ -416,7 +432,6 @@ $U_f : |x⟩ ⊗ |y⟩ \mapsto |x⟩ ⊗ |y ⊕ f(x)⟩$ と定義する
 - ハッシュ関数の衝突（$h(x)=h(x')$ となる $x≠ x'$）を求める問題
   - 古典 $O(2^{n/2})$ で解ける
   - Q2 : $O(2^{n/3})$ で解ける, ただしメモリは $O(2^{n/3})$ : 現実的でない → 当面大丈夫
-
 # 量子暗号
 ## 量子鍵配送 QKD (Quantum Key Distribution)
 - 秘密鍵を共有する技術: *暗号化方式ではない*
