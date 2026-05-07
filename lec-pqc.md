@@ -44,7 +44,7 @@ _class: title
 
 # PQC標準化の状況
 ## 確定したもの
-- PKC/KEM : CRYSTALS-KYBER（格子）, [HQC](https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8545.pdf) (符号: 2025/3確定 2027年標準化予定)
+- KEM : CRYSTALS-KYBER（格子）, [HQC](https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8545.pdf) (符号: 2025/3確定 2027年標準化予定)
 - 署名 : CRYSTALS-Dilithium（格子）, FALCON（格子）, SPHINCS+（ハッシュ）
 
 ## その他の暗号の種類
@@ -62,11 +62,11 @@ _class: title
 ---|---|---|---|---
 ECDH|KEM|32B|32B|32B
 ECDSA|署名|32B|64B|64B
-MLKEM768 (KYBER-768)|KEM|1184B|2400B| 1088B
+ML-KEM768 (KYBER-768)|KEM|1184B|2400B| 1088B
 Dilithium|署名|1952B|4000B|3293B
 SPHINCS+|署名|32B|64B|7856B
 
-## MLKEM768のブラウザ対応
+## ML-KEM768のブラウザ対応
 - 2024/初め: Chrome 124/Edge/FirefoxがKyber-768対応
 - 2025/9: iPhone (iOS26) のブラウザも対応
 - [Cloudflare Research](https://pq.cloudflareresearch.com/) で確認できる
@@ -118,7 +118,7 @@ $[-L, L]$ の範囲で生成する（e.g., 二項分布）
 ## 多項式環上の格子
 - データサイズ削減のためにより効率のよい格子を利用する
 - $q$: 素数, $n$: 2のべき, 1の原始 $ν$ 乗根 $ζ \in 𝔽_q$ （位数が $ν$: $ζ^ν=1$）
-  - MLKEM768では $q=3329$, $n=256$, $ν=256$, $ζ=17$
+  - ML-KEM768では $q=3329$, $n=256$, $ν=256$, $ζ=17$
 - $\phi(x):=x^n+1$, $R:=ℤ[x]/(x^n+1)$, $R_q:=𝔽_q[x]/(x^n+1)$
 ## MLWE (Module LWE) 問題
 - $s \underset{U}\leftarrow {R_q}^k$ とノイズの分布 $χ$ を選ぶ（ベクトルの内積 $s \cdot a = s^T a = a^T s$ に注意）
@@ -141,9 +141,9 @@ $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
 - Decode: $r^T e + e_2 - s^T e_1$ は小さいので $q//2$ に近いか否かで $\tilde{m}$ から $m_i$ を0 or 1で復元
 - 安全性: Kyber PKEはMLWE仮定の元でIND-CPA安全
 
-# MLKEMの概要
+# ML-KEMの概要
 <!-- _class: image-right-center -->
-![w:400px](images/lec-mlkem.drawio.svg)
+![w:400px](images/lec-ML-KEM.drawio.svg)
 ## Kyber PKEからIND-CCA2安全な鍵共有(Kyber-KEM)を実現
 - 藤崎-岡本変換（の変種）をKEM単体に適用
   - 公開鍵を毎回使い捨てることでDH鍵共有と同じ通信回数
@@ -152,15 +152,16 @@ $= (r^T A s - s^T A^T r) + (r^T e + e_2 - s^T e_1) + \tilde{m}$
 - B: ランダムな $M$ を選び $m:=H(M)$として
 $c:=Enc(pk, m;H(m, pk))$ をAに送る
   - $k:=\text{KDF}(m, pk, c)$: 共有鍵
-- A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m', H(m', pk))$
+- A: $m':=Dec(sk, c)$, $c':=\text{Enc}(pk, m'; H(m', pk))$
   - $c = c'$ なら $k:=\text{KDF}(m', pk, c)$: 共有鍵
 そうでなければ $\text{KDF}(\text{乱数}, pk, c)$ を利用
 - 注意: $c≠c'$ のとき乱数を返すのは鍵の情報 ($m$) を漏らさないようにするため
-# MLKEM768 (Kyber-KEM) のパラメータと性能改善
+# ML-KEM768 (Kyber-KEM) のパラメータと性能改善
 <!-- _class: image-right -->
 ![w:400px](images/lec-dgauss.drawio.svg)
 ## 主要パラメータ
 - $n = 256$, $q = 3329 = 13n + 1$, $k = 3$, $η = 2$
+  - $k=2$（サイズ小, 安全性低）, $k=4$（サイズ大, 安全性高）
 - $e$ は $n=4$, $p=1/2$ の二項分布（範囲は  $[-2, 2]$）を利用
 ## 公開鍵サイズの削減
 - $A$ は $k^2$ 個の要素
@@ -223,7 +224,7 @@ $c_k = \sum_{i=0}^k a_i b_{k-i} + \sum_{i=k+1}^{n-1} a_i b_{k-i+n} = \sum_i a_i 
   - 添え字を $\bmod {n}$ で計算する巡回畳み込みになる
 - $𝔽_q[x]/(x^n+1)$ の中では
 $c_k = \sum_{i=0}^k a_i b_{k-i} - \sum_{i=k+1}^{n-1} a_i b_{k-i+n}$: 負巡回畳み込みという
-## MLKEM768でのNTT
+## ML-KEM768でのNTT
 - $ω=17$ とすると $ω$ は $𝔽_q$ ($q=3329$) における1の原始 $n=256$ 乗根
   - $ω^i \neq 1$ for $i \in [1,n), ω^n=1$, $w^{n/2}=-1$
 
