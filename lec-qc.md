@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/04/20
+last update: 2026/05/25
 
 # 概要
 ## 古典計算機
@@ -375,34 +375,38 @@ $U_f : |x⟩ ⊗ |y⟩ \mapsto |x⟩ ⊗ |y ⊕ f(x)⟩$ と定義する
 
 # QPEを用いた位数計算の概略
 ## 演算 $U|x⟩ := |g x \bmod n⟩$
-- このとき固有ベクトル $|w_j⟩ := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i k j / r) |g^k \bmod n⟩$ に対して固有値 $λ_j =\exp(2 π i j / r)$, つまり $U |w_j⟩ = \exp(2 π i j / r) |w_j⟩$
-  -  $g^r≡1$ なので $U$ は $|g^k \bmod n⟩$ を $|g^{(k+1)\bmod {r}} \bmod n⟩$ に移す.
-  - $\sum$ の添え字 $k$ は $k-1$ に置き換えられて $\exp$ の要素 $\exp(-2 π i (-1)j / r)=λ_j$ が出る
-- 固有値の位相に $j/r$ が含まれている
+- $|w_j⟩ := (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i k j / r) |g^k \bmod n⟩$ とすると（以下mod $n$ を略）
+  - $U|w_j⟩ = (1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i k j / r) |g^{k+1}⟩$
+    - $λ_j:=\exp(2 π i j / r)$ として $g^r≡1$ を使い, 添え字を $k+1→k$ と置き換えると
+  - $U|w_j⟩=(1/\sqrt{r}) \sum_{k=0}^{r-1} \exp(-2 π i (k-1) j / r) |g^k⟩=λ_j|w_j⟩$
+- つまり $|w_j⟩$ は $U$ の固有ベクトルで固有値は $λ_j=\exp(2 π i j / r)$ （よって $U$ はユニタリ）
+  - 固有値の位相に $j/r$ が含まれている
 - QPEにより $j/r$ の近似値が求まる
   - $(1/\sqrt{r})\sum_j |w_j⟩ = |1⟩$ なので $|w_j⟩$ を知らなくても $|1⟩$ に対してQPEを適用できる
   - 連分数展開の技法を使って正確な値を求める
-- QPEで必要な $U^{2^k}|x⟩ = |g^{2^k} x \bmod n⟩$ は $g^{2^k} x \bmod n$ を古典計算機で事前に求めておく
+- QPEで必要な $U^{2^k}|x⟩ = |g^{2^k} x⟩$ は $g^{2^k} x \bmod{n}$ を古典計算機で事前に求めておく
 
 # 量子計算機によるECDLPの解読
 ## ECDLPからQPEへ
 - $⟨P⟩$: $E(𝔽_p)$ 上の素数位数 $n$ の巡回群. $Q ∈ ⟨P⟩$ に対して $Q=x P$ となる $x$ を見つける
 - $|0,0⟩|0⟩$ にアダマールゲートを作用させて $(1/n)\sum_{a,b}|a,b⟩|0⟩$ を作る
 - $U|a,b⟩|0⟩ := |a,b⟩|aP + bQ⟩$ を作用させる
-  - 結果: $(1/n)\sum_{a,b}|a,b⟩|aP + bQ⟩ = (1/n) \sum_{R ∈ S_R}|a,b⟩|R⟩$, $S_R:=\Set{(a,b) \mid a P + b Q = R}$
-- 3番目のqubitを測定すると ある $R=c P$ が選ばれ $(1/\sqrt{|S_R|}) \sum_{(a,b) ∈ S_R} |a,b⟩ |R⟩$ になる（以降 $|R⟩$ は固定なので省略）
+  - $aP + bQ$ が同じ値 $R$ になる点の集合 $S_R:=\Set{(a,b) \mid a P + b Q = R}$ で和を取り直す
+  - $(1/n)\sum_{a,b}|a,b⟩|aP + bQ⟩ = (1/n) \sum_{R ∈ S_R}|a,b⟩|R⟩$
+- 3番目のqubitを測定すると
+ある $R=c P$ が選ばれ $(1/\sqrt{|S_R|}) \sum_{(a,b) ∈ S_R} |a,b⟩ |R⟩$ になる（以降 $|R⟩$ は固定なので略）
 - 1, 2番目のqubitに2次元版逆QFTを作用させる
   - $|a,b⟩ \mapsto (1/n) \sum_{j,k} \exp(-2 π i (a j + b k)/n) |j,k⟩$
   - 結果: $(1/(n \sqrt{|S_R|}))\sum_{j,k} (\sum_{(a,b) ∈ S_R} \exp(-2 π i (a j + b k)/n)) |j,k⟩$
-  - この状態を観測する
+  - この状態を観測
 
 # 確率の大きいところ
 ## $|j,k⟩$ が観測される確率
-- 全体の係数を無視すると、$v_{j,k}:=\sum_{(a,b)∈ S_R} \exp(-2 π i (a j + b k)/n)$ の絶対値の2乗
-- $(a,b) ∈ S_R$ ならば$a P + b (x P) = c P$ より $a ≡ c - b x \pmod{n}$
-- $a j + b k ≡ (c - b x) j + b k = c j + b(k - x j) \pmod{n}$
-- $k - x j ≡ 0 \pmod{n}$ ならば $v_{j,k} = \sum_b \exp(-2 π i c j / n) = n \exp(-2 π i c j / n)$
-  - 位相が揃って確率が最大化. それ以外は打ち消しあって小さくなる
+- 全体の係数を無視し $v_{j,k}:=\sum_{(a,b)∈ S_R} \exp(-2 π i (a j + b k)/n)$ を考える
+  - $(a,b) ∈ S_R$ ならば$a P + b (x P) = c P$ より $a ≡ c - b x \pmod{n}$（以下mod $n$ を略）
+  - $v_{j,k}=\sum_{b=0}^{n-1} e^{-2 π i ((c - b x) j + b k)/n}=\exp(-2π i c j / n) \sum_{b=0}^{n-1} \exp(-2π i b (k - x j)/n)$
+- $d:=k-x j$ とおくと $k - x j ≡ 0$ ならば $v_{j,k} = n \exp(-2 π i c j / n)$
+- $d≠0$ ならば等比数列の和より $\sum_b \exp(-2 π i b d / n) = 0$ なので $v_{j,k}=0$
   - つまり $k ≡ x j \pmod{n}$ となる $k,j$ が選ばれる確率が高い
   - $x$ が求まらなければリトライ
 - 全体で $O((\log p)^3)$ で解けることが知られている
