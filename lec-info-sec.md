@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/10
+last update: 2026/06/18
 
 # 概要
 ## 目的
