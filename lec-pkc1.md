@@ -18,7 +18,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/11/20
+last update: 2026/05/25
 
 # 概要
 ## 目的
@@ -644,31 +644,31 @@ $x^{p-1} - 1$ は $p$ で割れ, $x^{q-1} - 1$ は $q$ で割れる
 
 # RSASSA-PSS (Probabilistic Signature Scheme)
 <!-- _class: image-right -->
-![w:680px](images/lec-rsassa-pss-sign.drawio.svg)
+![w:600px](images/lec-rsassa-pss-sign.drawio.svg)
 ## より安全なRSAを使った署名方式
-- saltを入力可能にすることで同じ $m$ でも
-異なる署名を生成できる
-- MGF (Mask Generation Function): PRF
+- 署名ごとにsaltをランダムに選ぶ
+  - 同じ m でも異なる署名を生成できる
+- MGF (Mask Generation Function)
+  - 指定長の疑似乱数的なマスクを生成する
   - count:=0, T:=""
   - T := T|Hash(seed|count), count++
 - 署名
-  - $m$ から $h=H(m)$ を求めて salt と連結
-  - もう一度HashしてMGFでmaskを生成
-  - maskとsaltを連結してDBを作りmaskとxor
+  - m から h=H(m) を求めて salt と連結
+  - h'=H(0..0|h|salt)を作りMGFでmaskを生成
+  - saltから作ったDBとmaskをxor
   - それからEMを作りRSA関数で $σ$ を出力
 
 # RSASSA-PSSの検証
 <!-- _class: image-right -->
-![w:680px](images/lec-rsassa-pss-verify.drawio.svg)
-## $Ver(e, m, σ)$
-- $EM=σ^d \bmod{n}$ を求め
+![w:600px](images/lec-rsassa-pss-verify.drawio.svg)
+## Ver(e, m, σ)
+- $σ$から$EM=σ^e \bmod{n}$ を求め
 masked DBとh'を取り出す
-- $h'$ からMFGでmaskを生成し
-masked DBとxorしてmaskを復元
-- maskからsaltを取り出し
-$h''=H(0..0|h|salt)$ を計算
+- masked DBとMGF(h')をxorしてDBを復元
+- mからh=H(m)を求める
+- DBからsaltを取り出しh''=H(0..0|h|salt) を求める
 - $h'=h''$ ならvalid
 ## 特徴
 - saltは途中で復元される
 - $σ$ だけからでは $h$ を復元できない
-- RSASSA-PKCS1-v1_5と異なり安全性証明がある
+- RSASSA-PKCS1-v1_5と異なり安全性証明（RSA仮定+ランダムオラクルモデル）がある
