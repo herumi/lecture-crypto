@@ -1,6 +1,5 @@
 ---
 marp: true
-html: true
 title: slides
 paginate: true
 math: mathjax
@@ -18,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2025/12/04
+last update: 2026/05/25
 
 # 目次
 ## 用語一覧

@@ -1,6 +1,5 @@
 ---
 marp: true
-html: true
 title: slides
 paginate: true
 math: mathjax
