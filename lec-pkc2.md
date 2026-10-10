@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/05/25
+last update: 2026/08/21
 
 # 概要
 ## 目的
@@ -262,13 +262,13 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 
 # タイムスタンプを用いた否認防止
 <!-- _class: image-right -->
-![w:450px](images/lec-timestamp2.png)
+![w:440px](images/lec-timestamp2.png)
 ## $A$ は署名を失効させても否認できない
 - リンクトークン生成型タイムスタンプISO/IEC 18014-3
   - 署名情報は新聞などで広く周知（昔の話）
 - 署名ベースのタイムスタンプ: 繰り返し署名して延長可能
 ## EUの電子署名規格 eIDAS, - 2024年 [eIDAS 2.0](https://www.european-digital-identity-regulation.com/)
-- electronic IDentification and Authentication Services
+- electronic IDentification, Authentication and trust Services
 - EUC間で統一された暗号技術
   - その中でタイムスタンプも規定されている
   - 適格トラストサービスプロバイダーQTSP(Qualified Trust Service Provider) が提供
