@@ -184,9 +184,10 @@ last update: 2026/10/02
 
 # 偽URLを伴うフィッシング詐欺の横行
 ## 手口の例
-- 本物らしく見える偽ドメインへの誘導
+- 本物らしく見える偽ドメインへの誘導（国際化ドメインIDNに対するhomograph攻撃）
   - cybozu.com.*** （本当のドメインは末尾の***）
   - сybozu.com（cをキリル文字のсに置き換えた）など
+  - [2026/10/3: Chromeの厳しい対策をすり抜けたapple.comの例](https://haveibeensquatted.com/blog/turning-idn-edge-cases-into-typosquats)
 - 入力したパスワードやTOTPを攻撃者が本物のサイトに中継する
   - ログイン後のCookieを盗まれてセッションを乗っ取られる
 - メール以外の入口
