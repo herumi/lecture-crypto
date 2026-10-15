@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/05/25
+last update: 2026/08/21
 
 # 目次
 ## 用語一覧
@@ -161,12 +161,12 @@ $c=c_1$ か $c=c_2$ かを調べればどちらの平文を暗号化したのか
 ## $m$ の暗号化
 - H: SHA-2 (L=256/8 byte), k:=2048/8 byte
 MGF (Mask Generation Function): H(seed|counter)
-DB = H("") || 0...0 || 0x01 || m
+DB = H("") $\|$ 0...0 $\|$ 0x01 $\|$ m
 - dbMask = MGF(seed, |DB|): seedは乱数
 - maskedDB = DB ⊕ dbMask
 - seedMask = MGF(maskedDB, L)
 - maskedSeed = seed ⊕ seedMask
-- EM = 0x00 || maskedSeed || maskedDB
+- EM = 0x00 $\|$ maskedSeed $\|$ maskedDB
 - c = Enc(e, EM) = $EM^e \bmod{n}$（$m$ は $k - 2 L - 2=190$ byte 以下）
 
 # ハイブリッド暗号
