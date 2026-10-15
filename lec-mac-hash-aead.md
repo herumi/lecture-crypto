@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/05/25
+last update: 2026/08/21
 
 # 目次
 ## 用語一覧
@@ -62,7 +62,7 @@ MAC値（タグともいう）$t$ を出力
 3. Dec: $(c, t)$ に対して $Verify(s_2, c, t)=1$ ならば $m=Dec(s_1,c)$ を返す
 そうでなければ失敗・停止（$⊥$ (bot) を返すともいう）
 ## 安全性に関する定理
-- EncがIND-CPA安全, MACが存在的偽造不可能ならばEnc-then-MacはIND-CCA2安全
+- EncがIND-CPA安全, MACがsEUF-CMA安全ならばEnc-then-MacはIND-CCA2安全
   - R. Canetti & H. Krawczyk, ["Analysis of Key-Exchange Protocols and Their Use for Building Secure Channels"](https://link.springer.com/chapter/10.1007/3-540-44987-6_28), Eurocrypt 2001
   - H. Krawczyk, ["The Order of Encryption and Authentication for Protecting Communications (or: How Secure is SSL?)"](https://iacr.org/archive/crypto2001/21390309.pdf), CRYPTO 2001
 
@@ -71,7 +71,7 @@ MAC値（タグともいう）$t$ を出力
   - $(Enc(s_1,m), Mac(s_2,m))$
   - 一般的な構成では安全とはいえない
 ## MtE (Mac-then-Enc)
-  - $Enc(s, m \| Mac(s,m))$
+  - $Enc(s_1, m \| Mac(s_2,m))$
   - 一般的な構成では安全とはいえない
   - （例外）CBCモードやストリーム暗号（CTRモード含む）では安全
     - ただしIVの扱いや関数処理時間など実装上の問題で脆弱になりえる
@@ -97,22 +97,24 @@ $H(x)=H(x')$ となる $x$, $x'$ ($x ≠ x'$) を見つけるのが難しい
 # 答えの例
 ## $H$ を一方向性が成り立つ関数とする
 - $x \in \Set{0,1}^m$ ($m>n$) に対して、$x=x_{>0} \| x_0$ （$x_{>0}$ は $m-1$ bit, $x_0$ は1bit）と分解する
-- $H'(x):=H(x_{>0})$ とする
-1. $H'$ は一方向性関数である
-  - もし $H'(x)=H'(x')$ となる $x'(≠ x)$ が見つかれば $H(x_{>0})=H(x'_{>0})$.
-  $x_{>0}=x'_{>0}$ となる確率はとても小さいので $x_{>0} ≠ x'_{>0}$ となり $H$ の一方向性に矛盾
-2. $H'(x\|0)=H'(x\|1)$ なので衝突困難性が破れる
+## $H'(x):=H(x_{>0})$ とすると $H'$ は一方向性関数である
+- なぜならば $y=H'(x)$ に対して $H'(x')=y$ となる $x'$ が見つかったとする
+すると $y=H'(x')=H(x'_{>0})$ なので $x'_{>0}$ は $H$ における $y$ の原像
+よって $H$ の一方向性に矛盾
+## $H'(x)$ は衝突困難性を満たさない
+- $H'(x\|0)=H(x)=H'(x\|1)$ なので衝突困難性が破れる
 
 # ハッシュ関数の歴史
 ## MD5, SHA-1, SHA-2, SHA-3, ...
-- ![w:1000px](images/lec-hash-history.png)
+![w:1000px](images/lec-hash-history.png)
+
 - SHA (Secure Hash Algorithm)
   - NISTが標準化
   - 現在はSHA-2が普及（ハッシュ値が256bit, 512bitのSHA-256, SHA-512などがある）
   - SHA-3が2015年に標準化された
 
 # SHA-2 (Secure Hash Algorithm 2)
-## 内部構造
+## SHA-256の内部構造
 - 圧縮関数 $f:B × S → S$
 $B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 ## Merkle-Damgård (MD) 構造
@@ -125,9 +127,9 @@ $B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 # SHA-256の圧縮関数の概要
 ## 厳密な定義はFIPS 180-4参照
 - 512bitのブロックを32bit整数16個に分割
-- ビット回転やビットシフト、排他的論理和を組み合わせて32bit整数64個 $W$ に増やす
+- ビット回転・ビットシフト・排他的論理和・加算を組み合わせて32bit整数64個 $W$ に増やす
 - 複雑なビット演算 $F$ を64回適用して $S'$ を出力する
-- ![w:900px](images/lec-sha256-compress.png)
+![w:900px](images/lec-sha256-compress.png)
 
 # MDの弱点
 ## 伸長攻撃が可能
@@ -141,14 +143,14 @@ $B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 ![w:800px](images/lec-extension-attack.drawio.svg)
 
 # 問題
-## 脆弱なHMAC
+## 脆弱な鍵付きハッシュ
 - $H$ をSHA-2とする
 - $s$ を秘密鍵として $MAC(s,m):=H(s \| m)$ と作ったMACが安全ではない理由は?
 
 # SHA-3
 <!-- _class: image-right-center -->
 ![w:550px](images/lec-sha3.drawio.svg)
-## SHA-2に変わるハッシュ関数
+## SHA-2に代わるハッシュ関数
 - NISTがハッシュ関数のコンペ(competition)を開催
 - 2012年にKeccak（ケチャック）が選ばれ2015年にSHA-3として標準化
 ## 特徴
@@ -163,7 +165,7 @@ $B$: 512bitブロック, $S$: 256bit （32bit整数x8個）
 # 吸収フェーズ概要
 ## SHA-3-256のブロック分割
 - $r=1088=(1600-256× 2)$bitのブロック
-- 余りは最初に1bitの1, 次にブロック長にあうように0が0個以上, 最後に1bitの1を追加する
+- 余りは最初に3bitの011, 次にブロック長にあうように0が0個以上, 最後に1bitの1を追加する
 - MD構造と異なりデータサイズは追加されない
 ## 吸収フェーズ
 - 初期状態 $S$ は0で初期化
@@ -182,16 +184,16 @@ $P_k \approx 1 - \prod_{i=1}^{k-1} e^{-i/N} = 1-e^{\sum_{i=1}^{k-1}(-i/N)} = 1-e
 $k \approx \sqrt{N}$ ならば $P_k \approx 1-e^{-1/2} \approx 0.4=40\%$
 - $O(\sqrt{N})=O(2^{n/2})$ 回の計算で衝突困難性を破れる確率になる（大雑把な評価）
   - これを誕生日攻撃 (birthday attack) という
-- 理想的な $n$ bitのハッシュ関数は $n/2$ bitセキュリティ安全という
+- 理想的な $n$ bitのハッシュ関数は衝突困難性について $n/2$ bitセキュリティであること
 
 # HMACの構成
 <!-- _class: image-right-center -->
 ![w:350px](images/lec-hmac-sha-256.png)
 ## HMAC-SHA-256
 - $s$: 256bit秘密鍵, $m$: データ
-- $HMAC(s,m)=H(s ⊕ C_2  \|  H(s ⊕ C_1  \|  m))$
-  - $C_1=0x3636...36$ (256bit), $C_2=0x5c5c...5c$ (256bit)
-  - $ \| $ はデータの連結, $⊕$ はビットごとの排他的論理和
+- $HMAC(s,m)=H((s ⊕ C_2)  \|  H((s ⊕ C_1)  \|  m))$
+  - $C_1=0x3636...36$ (512bit), $C_2=0x5c5c...5c$ (512bit)
+  - $\|$ はデータの連結, $⊕$ はビットごとの排他的論理和
 ## 安全性
 - M. Bellare, "New Proofs for NMAC and HMAC:
 Security Without Collision-Resistance", CRYPTO2006
@@ -208,14 +210,14 @@ Security Without Collision-Resistance", CRYPTO2006
     - X: 入力データ
     - L: 出力データ長 (bit)
     - N: "KMAC"などの文字列, S: アプリ区別用文字列
-- 1600bitの内部状態をかき混ぜながら$(1600-c)$ bit出力ずつ出力
+- 1600bitの内部状態をかき混ぜながら$(1600-c)$ bitずつ出力
   - $c$($c=256, 512$) bitは内部に残しておく（キャパシティ）
 
 # HASH, XOF, MAC, PRFの比較
 ## 特徴の比較
 | 特性 | HASH | XOF | MAC | PRF
 |------|------|-----|-----|-----
-|関数の形|$H(m)$ | $\text{XOF}(m, \ell)$ | $\text{MAC}(s, m)$ | $\text{PRF}(s, m)$
+|関数の形|$H(m)$ | $XOF(m, l)$ | $MAC(s, m)$ | $PRF(s, m)$
 | 鍵 | なし | なし | あり | あり
 | 入力長 | 任意 | 任意 | 任意 | 通常任意<br>理論では固定
 | 出力長 | 固定 | 任意 | 固定$^{*}$ | 通常固定<br>カウンタ併用で任意長
@@ -227,7 +229,8 @@ Security Without Collision-Resistance", CRYPTO2006
 
 # SHA-3ベースのMAC
 ## KMAC
-- スポンジ構造には圧縮関数の構造が無いので伸長攻撃がない
+- 伸長攻撃を受けない
+  - 内部状態のうち一部しか出力されないためハッシュ値から内部状態を復元できない
 - ハッシュを2回して安全性を高めるのは冗長
   - $\text{KMAC}(s, m)=\text{cSHAKE128}(s \| m \| 256, 256, \texttt{"KMAC"}, \texttt{""})$ の形で安全
   - 厳密には $s \| m \| 256$ の部分はpaddingやbyte encodingなどが行われる
@@ -238,18 +241,22 @@ Security Without Collision-Resistance", CRYPTO2006
 # AEAD (Authenticated Encryption with Associated Data)
 ## 認証付き暗号
 - 秘匿性と完全性の両方を同時に満たす暗号
-  - IND-CPA安全（秘匿性）＋ 暗号文の完全性 = IND-CCA2安全
+  - IND-CPA安全（秘匿性）＋ 暗号文の完全性 → IND-CCA2安全
 - 共通鍵暗号とMACの組み合わせで実現
   - 組み合わせ方法や実装によって安全でないこともあった
   - 最初から組み合わせることを前提とした設計が望ましい
 
 - 共通鍵暗号・MAC・AEADの違い
 
+<div style="font-size:80%">
+
 暗号技術＼性質|秘匿性|完全性
 ---|---|---
 共通鍵暗号|ある|無い
 MAC|無い|ある
 AEAD|ある|ある
+
+</div>
 
 # AEADのアルゴリズム
 <!-- _class: image-right -->
@@ -268,7 +275,7 @@ AEAD|ある|ある
 # AEADの例1
 <!-- _class: image-right -->
 ![w:700px](images/lec-poly1305.drawio.svg)
-## Chacha20-Poly1305
+## ChaCha20-Poly1305
 - [RFC 8439](https://datatracker.ietf.org/doc/html/rfc8439)
 - 暗号化: ChaCha20 + MAC: Poly1305
 ## Poly1305
@@ -279,6 +286,7 @@ AEAD|ある|ある
 - $a:=0$ を初期値として
 $a:=((a+ m_i)r) \bmod{p}$ で更新
 - 最後に128bitの認証タグ $t:=(a+s) \bmod{2^{128}}$ を出力
+  - AEADでPoly1305に入力する平文はChaCha20の暗号文
 
 # AEADの例2
 <!-- _class: image-right-center -->
@@ -351,12 +359,12 @@ $a$|$1$|$x$|$x+1$
 $a^{-1}$|$1$|$x+1$|$x$
 
 # AES-GCMで使われる拡大体
-## $K_1:={𝔽_2}^8=𝔽_2[x]/(f_1(x))$
+## $K_1:=𝔽_{2^8}=𝔽_2[x]/(f_1(x))$
 - $f_1(x):=x^8+x^4+x^3+x+1$ を利用（$x^8$ を $x^4+x^3+x+1$ に置き換える）
-## $K_2:={𝔽_2}^{128}=𝔽_2[x]/(f_2(x))$
+## $K_2:=𝔽_{2^{128}}=𝔽_2[x]/(f_2(x))$
 - $f_2(x):=x^{128}+x^7+x^2+x+1$ を利用（$x^{128}$ を $x^7+x^2+x+1$ に置き換える）
 ## ビット演算との対応
-- $K_1$ の要素は各係数が0, 1の7次多項式なので8bitで表現できる
+- $K_1$ の要素は各係数が0, 1の7次以下の多項式なので8bitで表現できる
 - 8bitで表現した多項式 $a$, $b$ の加算は係数ごとの加算でそれが "$⊕$"
 よって $a ⊕ b$ で多項式の加算ができる
 - 8bitの $a=[a_0:a_1:\cdots:a_7]=\sum_{i=0}^7 a_i x^i$ と "$x$" の乗算は
@@ -370,7 +378,7 @@ $=[a_7:(a_0+a_7):a_1:(a_2+a_7):(a_3+a_7):a_4:a_5:a_6]$ となる
 - $K=𝔽_2[x]/(f(x))$ の多項式を $f(x)=x^8+x+1$ としては駄目なのか
 
 # 軽量暗号
-## 安全性を保ちつつAES-CGMやSHA-2を越える性能が欲しい
+## 安全性を保ちつつAES-GCMやSHA-2を越える性能が欲しい
 - 組み込み用ハードウェア（いわゆるIoT機器）などのリソースが限られた環境でも高性能
 ## Asconファミリー (AEAD, Hash, XOF)
 - 2023年NISTの軽量暗号コンペティションで選ばれた
