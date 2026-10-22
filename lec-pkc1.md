@@ -652,9 +652,9 @@ $x^{p-1} - 1$ は $p$ で割れ, $x^{q-1} - 1$ は $q$ で割れる
 - 署名ごとにsaltをランダムに選ぶ
   - 同じ m でも異なる署名を生成できる
 - MGF (Mask Generation Function)
-  - 指定長の疑似乱数的なマスクを生成する
-  - count:=0, T:=""
-  - T := T|Hash(seed|count), count++
+  - 指定長の疑似乱数マスクを生成するXOFの一種
+    - MGF1: count:=0, T:=""として
+    T := T|Hash(seed|count), count++を繰り返す
 - 署名
   - m から h=H(m) を求めて salt と連結
   - h'=H(0..0|h|salt)を作りMGFでmaskを生成
