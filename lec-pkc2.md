@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/08/21
+last update: 2026/10/22
 
 # 概要
 ## 目的
@@ -38,7 +38,8 @@ last update: 2026/08/21
 # TLS1.3 (Transport Layer Security)
 ## 通信を安全に暗号化するプロトコル
 - 暗号化されていないHTTP（に限らない）を安全に通信できるようにする
-- [RFC 8446](https://datatracker.ietf.org/doc/html/rfc8446), [RFC 8446bis](https://datatracker.ietf.org/doc/draft-ietf-tls-rfc8446bis/): 2025年9月現在draftが更新中
+- 2018年8月: [RFC 8446](https://datatracker.ietf.org/doc/html/rfc8446)
+- 2026年7月改訂版: [RFC 9846](https://datatracker.ietf.org/doc/html/rfc9846)
 ## 特徴
 - 盗聴・改竄を防ぐ
 - TLS1.2までに比べてハンドシェイクの効率化
@@ -58,7 +59,7 @@ last update: 2026/08/21
   - ServerHello: ECDH完了 ($b P$: $a b P$ を共有)
   - ECDH鍵共有完了でAEADによる暗号化通信開始
   - Certificate: サーバ証明書送信
-  - CertificateVerify: 検証鍵でこれまでの通信に署名
+  - CertificateVerify: 署名鍵でこれまでの通信（ハンドシェイク全体）に署名
   - Finished: 完了, 本来のデータを送信開始
 - クライアント
   - Finished: 証明書と署名を検証し通信開始
@@ -73,8 +74,8 @@ last update: 2026/08/21
 - HKDF-Expand
   - $prk$ と付加情報 info から複数の安全な擬似乱数を生成
     - $T_1=HMAC(prk, \texttt{""|info|1})$
-    - $T_2=HMAC(prk, T_1\texttt{|info|1})$
-    - $T_3=HMAC(prk, T_2\texttt{|info|1})$
+    - $T_2=HMAC(prk, T_1\texttt{|info|2})$
+    - $T_3=HMAC(prk, T_2\texttt{|info|3})$
 - Derive-Secret
   - infoにヘッダ情報を付与してHKDF-Expandを呼び出す
 
@@ -98,9 +99,9 @@ last update: 2026/08/21
 - QUIC (2012~2021) on UDP
   - TCPの3-wayハンドシェイクを止めて
   UDPによる高速接続
-  - Connection IDによるHOLBの解消
-  - コネクションマイグレーションによるハンドシェイクの削減
-    - 回線が変わっても通信の接続を維持
+  - ストリームごとに独立した再送制御によるHOLBの解消
+  - Connection IDによるコネクションマイグレーション
+    - 回線が変わっても再ハンドシェイクなしで接続を維持
 
 # HTTP/3
 ## HTTP/2の機能を引き継ぎQUIC上で動作 (2018)
@@ -118,16 +119,16 @@ last update: 2026/08/21
     - `<username>.example.com`のようなblogでユーザ名ごとに異なるサブドメイン
 - ClientHelloは盗聴される危険性
   - SNIを見て接続先のドメイン名を特定される
-  - 中国の GW (Great Firewall) ではSNIを見て接続を遮断している
+  - 中国の GFW (Great Firewall) ではSNIを見て接続を遮断している
   - ロシアも2021年ごろからSNIブロックを開始
-    ｰ 2022年3月から[HTTP/3をブロック](https://ooni.org/post/2022-russia-blocks-amid-ru-ua-conflict/)
+    - 2022年3月から[HTTP/3をブロック](https://ooni.org/post/2022-russia-blocks-amid-ru-ua-conflict/)
 
 # ClientHelloのキャプチャ例
 ## https://herumi.github.io/lecture-crypto/
 ![h:500px](images/lec-cap-sni.png)
 - name=herumi.github.io が平文で見えている
 # ECH (Encrypted Client Hello)
-## ClientHelloを暗号化する仕組み（策定中）
+## ClientHelloを暗号化する仕組み（2026年3月: [RFC 9849](https://datatracker.ietf.org/doc/html/rfc9849)）
 - ECHに対応していればClientHelloのSNIや暗号用パラメータなどが暗号化される
 - 暗号化するための鍵はどうするのか
   - DNSのhttpsレコードにech=...というパラメータがありDNSの名前解決のときに取得
@@ -177,11 +178,11 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
     - Kaminsky攻撃(2008): キャッシュサーバの中身を偽の情報で上書き
 <span class="any" style="right:0.5em;bottom:3em;">![w:600px](images/lec-dns1.png)</span>
 
-# DNSSec (DNS Security Extensions) と DoT/DoH
+# DNSSEC (DNS Security Extensions) と DoT/DoH
 <!-- _class: image-right -->
 ![w:500px](images/lec-dot-doh.png)
 ## DNSの安全性を高める仕組み
-- DNSSec: 権威サーバのレスポンスに署名を付与
+- DNSSEC: 権威サーバのレスポンスに署名を付与
   - 検証することでキャッシュポイズニングを防止
   - データ自体は平文
 
@@ -198,7 +199,7 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 
 # パブリックDNSサーバ
 ## DoT, DoHに対応している主なパブリックDNSサーバ
-- Google Public DNS (8.8.8.8): https://dns.google/ （Google Trust Servicesが運営）
+- Google Public DNS (8.8.8.8): https://dns.google/ （Googleが運営）
 - Cloudflare (1.1.1.1): https://one.one.one.one/ （CDNの大手. ECHを主導）
 - Quad9 (9.9.9.9): スイスに拠点があるプライバシー重視の非営利団体
 
@@ -230,7 +231,7 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 ## FIDO2の登録の流れ
 - アプリ, RPサーバを経由して認証器で生成した検証鍵を登録する![w:800px](images/lec-fido2-reg.png)
 - パスキー (passkey) は署名鍵を暗号化して独自サーバに保存
-  - パスキーの厳密な定義はまだない（ベンダー依存）（2025年9月時点）
+  - FIDOのパスキー（Discoverable Credentials）から定義が派生してベンダーごとに定義が異なる状態
 
 # 認証の流れ
 ## Webサービスにログインするとき
@@ -265,16 +266,16 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 ![w:440px](images/lec-timestamp2.png)
 ## $A$ は署名を失効させても否認できない
 - リンクトークン生成型タイムスタンプISO/IEC 18014-3
-  - 署名情報は新聞などで広く周知（昔の話）
+  - ハッシュ値を新聞などで広く周知（昔の話）
 - 署名ベースのタイムスタンプ: 繰り返し署名して延長可能
-## EUの電子署名規格 eIDAS, - 2024年 [eIDAS 2.0](https://www.european-digital-identity-regulation.com/)
+## EUの電子署名規格 eIDAS（2024年: [eIDAS 2.0](https://www.european-digital-identity-regulation.com/)）
 - electronic IDentification, Authentication and trust Services
-- EUC間で統一された暗号技術
+- EU加盟国間で統一された暗号規格
   - その中でタイムスタンプも規定されている
   - 適格トラストサービスプロバイダーQTSP(Qualified Trust Service Provider) が提供
 ## 日本
 - 2021年総務大臣による時刻認証業務（タイムスタンプサービス）の認定制度開始, 2023年[認定](https://www.soumu.go.jp/menu_news/s-news/01cyber01_02000001_00157.html)
-- 時刻源はNICTの原子時計, 2025年3月現在セイコー, MIND, アマノなどの[6社](https://www.soumu.go.jp/main_sosiki/joho_tsusin/top/ninshou-law/timestamp.html)
+- 時刻源はNICTの原子時計, 2026年3月現在セイコー, MIND, アマノなどの[6社](https://www.soumu.go.jp/main_sosiki/joho_tsusin/top/ninshou-law/timestamp.html)
 
 # Merkle木
 ## ハッシュ値を一本の鎖ではなく2分木で管理したもの
@@ -323,7 +324,7 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
   - 入力: 10 BTCのUTXOに $s_A$ で署名
   - 出力1: 2 BTCを $a_B$ へ
   - 出力2: 7.9998 BTC を $a'_A$ へ
-  - 手数料: 10-2-7.998=0.0002 BTC はマイナー（ブロック作成者）へ
+  - 手数料: 10-2-7.9998=0.0002 BTC はマイナー（ブロック作成者）へ
 - マイナーが $T'$ を含むブロックを生成し, そのブロックがブロックチェーンに取り込まれる
 - ブロック: ヘッダ＋トランザクションの集合
 ヘッダにはMerkle木で管理するハッシュ値, 時刻, ナンスなどが含まれる
@@ -331,17 +332,17 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 # マイニングとブロックチェーンの更新
 ## マイニング
 - ヘッダのハッシュ値が256bit整数としてターゲット値よりも小さくなるようにナンスを選ぶ
-  - 2025年9月の時点で先頭79bitが0になるように調整（約 $2^{79}$ 回の試行が必要: 早い者勝ち）
+  - 2026年10月の時点で先頭79bitが0になるように調整（約 $2^{79}$ 回の試行が必要: 早い者勝ち）
 - ブロックの検証
-  - ブロックに含まれる $T'$ の正しさを $T$ に含まれる $S_A$ で署名の検証をする
+  - $T'$ の入力内の検証鍵 $S_A$ のハッシュ値 = $T$ の $a_A$ を確認し, $s_A$ による署名を検証する
   - 二重送金などが行われないかを確認する
-  - ブロックの先頭のトランザクションに手数料が送られる（100ブロック確認後に使用可能）
+  - ブロックの先頭のトランザクションに新規発行分と手数料が送られる
 - ブロックチェーン全体の正しさと更新を報酬を受け取ることで担保する仕組み
 ## ブロックチェーンの更新
 <span class="any" style="left:50%;top:70%;">![w:600px](images/lec-blockchain-long.png)</span>
 - 最も長いチェーンが正しいチェーンである
 - 不正なブロックは無視される
-- 7ブロック追加されれば概ね正しいと扱われる
+- 6ブロック追加されれば概ね正しいと扱われる
 
 # ビットコインのまとめ
 ## 特徴
@@ -367,6 +368,6 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
   - 報酬: 正直な行動で報酬, 不正行為でステークの没収
 - 合意形成の効率化: 複数の署名を一つに集約するBLS署名（後の講義）により通信量を削減
 ## スケーラビリティの向上
-- Danksharding（導入予定）: データ可用性の拡張
+- PeerDAS: データ可用性の拡張（2025年12月導入）
 - zk-Rollup: ゼロ知識証明（後の講義）を用いたオフチェーン処理と効率的な検証
   - ゼロ知識証明はZcashなどで取引履歴の秘匿化によるプライバシー保護にも利用
