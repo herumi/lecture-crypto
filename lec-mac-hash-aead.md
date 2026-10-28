@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/10/15
+last update: 2026/10/28
 
 # 目次
 ## 用語一覧
@@ -289,6 +289,13 @@ Security Without Collision-Resistance", CRYPTO2006
 - 「以前のパスワードと1文字しか違わない」と表示するサービスはパスワードを保存している
   - その方が脆弱. パスワードは保存しない. 定期的な変更の強制もしない（[NIST SP 800-63B](https://pages.nist.gov/800-63-4/sp800-63b.html#passwordver)）
     - 暗号化してパスワードを保存しても, その暗号化の鍵も奪われて復号された例も
+
+# 秘密のsaltを併用する
+## [pepper](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#peppering)
+- DBとは別のHSMのような耐タンパー性のあるところに保存する単一の秘密情報
+  - 前述のハッシュ値を秘密の値(pepper)を使ってHMACを取り, それをDBに保存する
+- OWASP(Open Worldwide Application Security Project: オワスプ)による呼び方
+  - NISTでは以前はsecret saltと呼んでいたがrev.4ではsecret keyと呼んでいる
 
 # AEAD (Authenticated Encryption with Associated Data)
 ## 認証付き暗号
