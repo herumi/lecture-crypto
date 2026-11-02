@@ -12,8 +12,7 @@ headingDivider: 1
 -->
 # 光成滋生
 <!-- _class: image-right -->
-![w:200px](images/lec-google-oss.png)
-![w:200px](images/mvp.png)
+![h:120px](images/book.jpg)![h:120px](images/imasara.jpg)![h:120px](images/binary-hacks-rebooted.jpg)![w:150px](images/lec-google-oss.png)![w:150px](images/mvp.png)
 ## サイボウズ・ラボで暗号と高速化のR&D
 ## OSS開発
 - [Xbyak](https://github.com/herumi/xbyak)ファミリー
