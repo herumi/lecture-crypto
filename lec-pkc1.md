@@ -17,7 +17,7 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/10/15
+last update: 2026/11/11
 
 # 概要
 ## 目的
@@ -427,7 +427,7 @@ $a ∈ [1, p-1]$ をランダムに選び $a P$ を相手に送る方式のDH鍵
 - $\cal A$ は $q$ 回 $m_i$ を選び $\cal C$ に依頼して $σ_i=Sign(sk,m_i)$ を得る
 - $Ver(vk,m,σ)=1$ なる $(m, σ) \notin \{(m_i, σ_i)\}_{i=1}^q$ を作れたら1, それ以外は0を出力
 ## 安全性の定義
-- どんなPPT攻撃者 $\cal A$ に対しても優位性 $Adv_{\cal A}(λ):=Pr[Exp_{\cal A}(λ)=1] < negl(λ)$ のときsEUF-CMA安全という
+- どんなPPT攻撃者 $\cal A$ に対しても優位性 $Adv_{\cal A}(λ):=Pr[Exp_{\cal A}(λ)=1] < negl(λ)$ のときsEUF-CMA(strong Existential Unforgeability under Chosen Message Attack)安全という
 ![w:800px](images/lec-sign-seuf-cma.drawio.svg)
 
 # sshの公開鍵認証
