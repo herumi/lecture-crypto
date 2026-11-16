@@ -17,12 +17,12 @@ _class: title
 <br>
 光成滋生
 <br>
-last update: 2026/10/22
+last update: 2026/11/16
 
 # 概要
 ## 目的
 - 現在のブラウザで標準的な暗号プロトコルを理解する
-- 署名の応用であるFIDO2, ビットコインやEthereumの概要を理解する
+- 署名の応用であるFIDO2, SSO, ビットコインやEthereumの概要を理解する
 
 # 目次
 ## 用語一覧
@@ -30,6 +30,7 @@ last update: 2026/10/22
 - HTTP/3, QUIC
 - ECH, DNS, DoT, DoH
 - FIDO2
+- SSO, Kerberos, SAML, OIDC, PKCE
 - 否認防止
 - タイムスタンプ
 - Merkle木
@@ -80,7 +81,7 @@ last update: 2026/10/22
   - infoにヘッダ情報を付与してHKDF-Expandを呼び出す
 
 # 鍵導出手順
-## 詳細はRFC8446参照
+## 詳細はRFC9846参照
 - ECDH鍵共有で得られた秘密情報からKDFを用いて複数の鍵を導出
   - どれかの鍵が漏洩してもすぐさま他の鍵に影響がないように個別に鍵を生成する
 ![w:650px](images/lec-tls-kdf.png)
@@ -210,34 +211,190 @@ cloudflare-ech.com.     131     IN      A       104.18.10.118
 - 国ごとの事情（日本のISPは緊急避難として児童ポルノをブロック）には自発的には対応しない
   - 大規模なpublic DNSサーバはBGPのanycastにより複数拠点のノードが同一IPを共有
   - 技術的には地域別のブロックは可能だが裁判所命令を除き原則として行われていない
-  - [IIJ Public DNSサービス](https://www.iij.ad.jp/en/dns/)は国内向けにブロッキング対応
+  - [IIJ Public DNSサービス](https://policy.public.dns.iij.jp/)は国内向けにブロッキング対応. [2026/11 Quad9がフランスから撤退](https://gigazine.net/news/20261023-quad9-farewell-france/)
 
 # FIDO2 (Fast IDentity Online)
-## 高速なオンラインID認証
-- 多要素認証を統一的に扱う規格
+## 多要素認証を統一的に扱う規格（FIDOアライアンスが策定・認定）
 - 登場人物
   - 認証器 (Authenticator)
     - 指紋・虹彩・静脈・顔などの認証機能
     - 認証用に用いる署名鍵の生成・署名機能
-    - FIDOアライアンスが認定したことを示すattestation
-      - 信頼できる機関（FIDOサーバ）の検証鍵で検証されたもの
-  - RP (Relying Party)
+    - 正規の製品であることを示すattestation用の署名鍵
+      - ベンダーが認証器に持たせ, 対応する検証鍵を公開する
+  - RPサーバ (Relying Party)
     - サービス提供者: FIDOサーバを兼ねることもある
   - FIDOサーバ: ユーザのIDを登録・認証管理するサーバ
+    - attestationの署名をベンダーの検証鍵で検証する
   - クライアントアプリ
     - WebAuthn (Web Authentication) を用いたブラウザやアプリ
 
 # 検証鍵の登録
 ## FIDO2の登録の流れ
 - アプリ, RPサーバを経由して認証器で生成した検証鍵を登録する![w:800px](images/lec-fido2-reg.png)
-- パスキー (passkey) は署名鍵を暗号化して独自サーバに保存
-  - FIDOのパスキー（Discoverable Credentials）から定義が派生してベンダーごとに定義が異なる状態
+- 同期パスキー (passkey) は署名鍵を暗号化して独自サーバに保存
 
 # 認証の流れ
 ## Webサービスにログインするとき
 - サーバが生成したチャレンジに署名する
 - RPサーバに保存されている検証鍵で検証![w:800px](images/lec-fido2-auth.png)
 - パスワードなどの情報がネットワークを流れない
+
+# SSO (Single Sign-On)
+## 一度のログインで複数のサービスを利用できる仕組み
+- 社内ネットワークで複数サービスがあるとき, それぞれにパスワードを管理するのは大変
+- WebサービスでGoogleやFacebookなどの著名なサービスを利用して別サービスにログイン
+- セキュリティの観点からも重要
+  - パスワードリスト攻撃を避けるにはサービスごとに別のパスワードが必要
+  - FIDOでもサービスごとに署名鍵を管理する必要がある
+
+## 主な実現方法
+
+ <div style="font-size:70%">
+
+手法|登場時期|主な用途|主なクライアント|エンティティ（登場人物）|技術要素|トークン種類
+-|-|-|-|-|-|-
+Kerberos|1988|社内ネットワーク|OS・ドメイン|KDC|共通鍵|Ticket
+SAML|2002|企業Web / SaaS|ブラウザ中心|IdP / SP|XML署名|Assertion
+OIDC|2014|モダンWeb / API|ブラウザ・アプリ中心|OP (IdP) / RP|JWT署名|IDトークン
+
+</div>
+
+- トークンは細部は違うが概ね認証結果を相手に伝えるための証明の役割
+
+# Kerberos認証
+## スケーラビリティと安全性のためにKDCに認証と鍵管理を集約
+- WindowsのActive Directoryなどで利用されている
+### 登場人物
+- クライアント(Client)
+- KDC (Key Distribution Center)
+  - 認証サーバAS (Authentication Server)
+    - クライアントごとの秘密鍵$s_i$を管理し, クライアントの本人認証を行う
+    - TGT (Ticket Granting Ticket)を発行する
+  - チケット発行サーバTGS (Ticket Granting Server)
+    - TGTを受理してサービスチケット（認証情報・セッション鍵を含む）を発行する
+  - ASとTGSは論理的には別だが多くの実装で同一KDC（同じ鍵管理・信頼境界を持つ）
+- SS (Service Server): 実際にサービスを提供するサーバ
+  - SSの鍵はKDCに登録されている
+
+# Kerberos認証の流れ
+<!-- _class: image-right-center -->
+### クライアント⇔AS
+![w:700px](images/lec-kerberos.drawio.svg)
+- パスワードからKDF (Key Derivation Function) を用いて$s_i$を生成
+- TGTはTGSに見せるための一時チケット（$K_{as,tgs}$で暗号化）
+  - ID, 有効期限, セッション鍵など
+### クライアント⇔TGS
+- TGTと認証子（タイムスタンプ含む）を送る
+  - リプレイ耐性をもたせるため
+- サービスチケットは$K_{tgs,ss}$で暗号化され
+クライアントは見れない
+### クライアント⇔SS
+- サービスチケットと認証子を検証する
+### 特徴
+- ①は最初のログイン時のみ. 以降は②と③だけで複数のSSを利用でき, SSOを実現できる
+
+<span class="any" style="right:1em;top:1em;">
+$K_{as,tgs}$: 長期鍵<br>
+$K_{c,tgs}$: 一時鍵<br>
+$K_{c,ss}$: 一時鍵<br>
+$K_{tgs,ss}$: 長期鍵<br>
+</span>
+
+# SAML (Security Assertion Markup Language)
+## 主に企業向けID連携技術
+- IdP (Identity Provider): ユーザを認証して認証結果を発行する
+  - 例: 社内認証基盤, Entra ID, Okta など
+- SP (Service Provider): 認証結果を受け取り, ログインを成立させるサービス
+  - 例: 社内の業務システム, Salesforce, Google Workspace など
+- Assertion: IdPが発行する「このユーザは認証済みである」という主張
+  - IdPの署名鍵で署名されたXML形式のデータ
+  - Kerberosのサービスチケット相当
+  - 主に以下を含む：
+    - ユーザ識別子 (NameID): メールアドレス・社員番号など
+    - 認証した事実
+    - 有効期限, 属性情報（メールアドレスなど）
+
+# SAML Login Flow
+<!-- _class: image-right -->
+## Web SSOのユーザ認証の概要
+![w:680px](images/lec-saml.drawio.svg)
+- IdPがユーザ認証してAssertionを発行する
+  - Assertion/ResponseをIdPの署名鍵で署名する
+- Assertionはブラウザ経由でSPへ直接渡される
+  - SPはIdPの検証鍵で署名を検証する
+  - Assertionには短い有効期限がある
+    - Replay攻撃対策
+  - どのSP向けかの情報 (Audience) を含む
+    - 他のSPで使い回しができない
+- 主流の方式ではSPとIdPは直接通信せず, ブラウザがAssertionを中継する
+### 特徴
+- IdP / SP 間で明示的な信頼関係を構築し, 企業向けSSOで広く使われている
+- XMLベースで設定項目が多く, 運用がやや重い
+
+# OpenID Connect (OIDC)
+## ID連携技術
+- あるWebサービスのログイン画面にある別のサービスの「○○でログイン」ボタン
+- OAuth 2.0 (2012) は認可の仕組み（「lec-info-sec.pdf」のOAuthを参照）
+  - OpenID: ユーザ認証のみ (2005-2007): 事実上廃止でOIDCとは別物
+- OpenID Connect (2014) = OAuth 2.0 ＋ 認証 ＋ IDトークン
+### OAuthは「認可（何をしてよいか）」/OIDCは「認証（誰であるか）」を扱う
+
+# OIDCの用語
+## IDトークン
+- ユーザの属性情報 (claim) を含むJWT (JSON Web Token: ジョット)
+  - JWT: 改竄検知 (HMAC, 署名) 対応
+  - claimは最小限で, 詳細はUserInfoエンドポイントで取得
+## OP (OpenID Provider)
+- 認証してIDトークンとアクセストークンを発行
+  - IdPと呼ばれることも多い. 以下ではSAMLとそろえてIdPと呼ぶ
+  - IDトークン: ログイン用（本人確認証, SAMLのAssertion相当）
+  - アクセストークン: APIアクセス用
+## RP (Relying Party)
+- IDトークンを検証してログイン処理をする
+  - SAMLのSP, OAuth 2.0のクライアント相当
+
+# Authorization Code Flow (1/2)
+<!-- _class: image-right -->
+![w:500px](images/lec-oidc1.drawio.svg)
+## ユーザ認証・登録の流れ
+- RPが発行してIdPに送る2個の乱数
+  - `state`: CSRF (Cross-Site Request Forgery) 対策
+    - CSRF: ユーザの意図しない動作を強制させる攻撃
+    - 攻撃者の認可コードを使わせないようにする
+    - `RESP`（IdPからブラウザに戻るデータ）に含まれることを検証
+  - `nonce`: リプレイ攻撃対策
+    - 一度しか使わない (number used once)
+    - 盗聴されたIDトークンを再利用させない
+    - IDトークンに含まれることを検証（次ページ）
+- ユーザは何の情報を提供することに認可するかに同意
+- `CODE`: 認可コード（有効期限の短い乱数）を含む
+- `GRANT`: 認可コード, クライアントの情報を含む
+
+# Authorization Code Flow (2/2)
+<!-- _class: image-right -->
+![w:450px](images/lec-oidc2.drawio.svg)
+## トークンレスポンスの続き
+- IdPが認可コードを検証しIDトークン, アクセストークンを発行
+- RPはIDトークンの署名と`nonce`を検証
+  - 署名の検証に必要な検証鍵（公開鍵）はIdPが提供
+    - OpenID Configurationから取得 e.g. [Google](https://accounts.google.com/.well-known/openid-configuration)
+    - 検証鍵はそこに記載された`jwks_uri`で配布
+  - アクセストークンを用いてユーザ情報を取得
+  - `sub`: ユーザ識別子 (Subject), SAMLのNameID相当
+    - RPごとに異なる値にもできる
+      - RPを越えてユーザを識別・追跡させないため
+- `sub`をキーとしてアカウント発行・登録
+
+- ユーザーは「IDを預ける」のではなく, IdPが発行したIDトークン（本人確認証）をRPに渡す
+
+# PKCE (Proof Key for Code Exchange: ピクシー)
+## 認可コード横取り攻撃の防止
+- 認可リクエスト時とトークン取得時のRPが同一の主体であることを証明する
+- RPが認可リクエスト直前に乱数`code_verifier`を生成
+  - そのハッシュ値`code_challenge`をIdPに送る
+- トークン取得時にRPがIdPに`code_verifier`を提示
+  - IdPは認可リクエスト時のRPと同一のRPであることを検証
+- 現在の主流はAuthorization Code Flow + PKCE
 
 # 否認防止
 ## 正しい署名は署名鍵を持つ本人 $A$ しか作れない
